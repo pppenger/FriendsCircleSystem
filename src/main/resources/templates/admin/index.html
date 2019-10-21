@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<body class="bg-light">
+<span id="loadaction"></span>
+<div class="container" id="AdminIndex">
+
+
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+
+<script>
+
+    // DOM 加载完再执行
+    $(function() {
+
+        $("#loadaction").click(function() {
+            var url = "users/userlist";
+
+            // 加载list模块的页面到工作区
+            $.ajax({
+                url: url,
+                contentType : 'application/json',
+                data:{
+                    "pageIndex":0,
+                    "pageSize":5,
+                },
+                success: function (data) {
+                    //console.log(data);
+                    $("#AdminIndex").html(data);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+        $("#loadaction").trigger("click");
+
+
+    })
+
+
+</script>
+</body>
+</html>

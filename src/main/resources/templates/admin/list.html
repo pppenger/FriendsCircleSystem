@@ -1,0 +1,239 @@
+<div class="card-header">
+    <div class="input-group mb-3 col-md-7 col-xl-6">
+        <input type="text" id="searchName" class="form-control" placeholder="输入用户名称进行搜索" th:value="${searchUsername}" >
+        <div class="input-group-append" >
+            <button class="btn btn-outline-secondary" type="button" id="searchNameBtn">搜</button>
+        </div>
+        <button type="button " class="btn btn-success ml-4 add-modal"  data-toggle="modal" data-target="#exampleModal">添加</button>
+    </div>
+</div>
+
+<div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col" >邮箱</th>
+            <th scope="col" >账号</th>
+            <th scope="col" >角色</th>
+            <th scope="col">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${userModel.userList}">
+            <th scope="row"  th:text="${user.id}">1</th>
+            <td th:text="${user.email}">Mark</td>
+            <td th:text="${user.username}">Otto</td>
+            <td th:text="${user.authorities}">Otto</td>
+            <td>
+                <button type="button " class="btn btn-success  edit-modal" data-th-attr="userId=${user.id}" data-toggle="modal" data-target="#exampleModal" >修改</button>
+                <button type="button " class="btn btn-success del-modal" data-th-attr="userId=${user.id}">删除</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:replace="fragments/page :: pagehtml">...</div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">新增/编辑</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- <input type="text" class="modelid" value="22"> -->
+                <form action="" id="userForm">
+                    <input type="hidden" name="id" value="" id="model-id">
+
+                    <div class="form-group ">
+                        <label  class="col-form-label">邮箱</label>
+                        <input name="email" type="email" class="form-control" id="model-email" aria-describedby="emailHelp" maxlength="50" placeholder="请输入邮箱">
+                    </div>
+
+                    <div class="form-group ">
+                        <label  class="col-form-label">账号</label>
+                        <input name="username" type="text" class="form-control" id="model-username" maxlength="20" placeholder="请输入账号(个数在3到20之间)">
+                    </div>
+
+                    <div class="form-group ">
+                        <label  class="col-form-label">密码</label>
+                        <input name="password" type="text" class="form-control" id="model-password" placeholder="请输入密码(个数在20以内)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-form-label">角色</label>
+                        <select id="model-authoritie" name="authorityId" class="form-control form-control-chosen" data-placeholder="请选择">
+                            <option value="2">博主</option>
+                            <option value="1">管理员</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closemodel" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submitUserEdit">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script  type="text/javascript">
+    $(function() {
+        var _pageSize=5;
+
+    // 根据用户名、页面索引、页面大小获取用户列表
+    function getUersByName(pageIndex, pageSize) {
+
+                  // alert($("#searchName").val());
+            $.ajax({
+            url: "/users/userlist",
+            contentType : 'application/json',
+            data:{
+            "pageIndex":pageIndex,
+            "pageSize":pageSize,
+            "name":$("#searchName").val()
+            },
+            success: function(data){
+            //$("html").html(data)
+            //console.log(data);
+                $("#AdminIndex").html(data);
+            //$("#mainContainer").html(data);
+            },
+            error : function() {
+                toastr.error("error!");
+            }
+            });
+    }
+
+
+    // 搜索
+    $("#searchNameBtn").click(function() {
+    getUersByName(0, _pageSize);
+    });
+
+    //分页
+    $(".pagebutJump").click(function () {
+        var pageIndex=$(this).attr("id")-1;
+        getUersByName(pageIndex,_pageSize);
+    });
+
+    $(".pagebutNum").click(function () {
+        var pageIndex=$(this).attr("value")-1;
+        getUersByName(pageIndex,_pageSize);
+    });
+
+        
+        //弹出增加
+
+    $(".add-modal").click(function(){
+        //$('#userForm')[0].reset();
+         $("#model-id").val("");
+         $("#model-email").val("");
+         $("#model-username").val("");
+         $("#model-password").val("");
+    });
+
+        //弹出编辑界面
+
+    $(".edit-modal").click(function(){
+            $.ajax({
+                //默认get请求
+                url: "/users/edit/" + $(this).attr("userId"),
+                success: function(result){
+                    // jsonData = JSON.stringify(result);
+                    // alert(jsonData);
+                    $("#model-id").val(result.data.id);
+                    $("#model-email").val(result.data.email);
+                    $("#model-username").val(result.data.username);
+                    $("#model-password").val(result.data.password);
+
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+        //提交，修改或者新建
+        $("#submitUserEdit").click(function () {
+            var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+            if ($("#model-email").val()==""||(!reg.test($("#model-email").val()))){
+                toastr.error("请正确输入邮箱!");
+                return;
+            }
+
+            var myReg = /^[a-zA-Z0-9_]{0,}$/;
+            if (!myReg.test($("#model-password").val())) {
+                toastr.warning("密码不能含有中文或特殊字符!");
+                return;
+            }
+
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+                url: "/users",
+                type: 'POST',
+                data:$('#userForm').serialize(),
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    // jsonData = JSON.stringify(result);
+                    // alert(jsonData);
+                    if (result.code==0) {
+                        $('#exampleModal').modal('hide');//隐藏modal
+                        $('.modal-backdrop').remove();//去掉遮罩层
+                         //从新刷新主界面
+                        getUersByName($(".nowPageIndex").val()-1, _pageSize);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+        //删除
+        $(".del-modal").click(function(){
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                //默认get请求
+                url: "/users/" + $(this).attr("userId"),
+                method:"DELETE",
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    // jsonData = JSON.stringify(result);
+                    // alert(jsonData);
+                    if (result.code==0) {
+                        //从新刷新主界面
+                        getUersByName($(".nowPageIndex").val()-1, _pageSize);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        });
+        
+
+
+
+
+})
+</script>

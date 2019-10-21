@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+</head>
+<body>
+
+<div data-th-fragment="pagehtml">
+<div  class="btn-toolbar mb-3">
+    <button type="button" class="btn  btn-outline-success mr-3" disabled>
+        共<span th:text="${userModel.page.totalElements}"></span> 条
+    </button>
+    <button th:unless="${userModel.page.first}" type="button" class="btn btn-outline-success mr-1 pagebutJump" id="1">首页</button>
+
+    <button th:unless="${userModel.page.first}" type="button" class="btn btn-outline-success mr-1 pagebutJump"  th:id="${userModel.page.number}">上一页</button>
+
+    <div class="btn-group" role="group" aria-label="First group">
+        <!--总页数小于等于7且大于0-->
+        <div th:if="${(userModel.page.totalPages le 7) and (userModel.page.totalPages gt 0)}" th:remove="tag">
+            <div th:each="pg : ${#numbers.sequence(0, userModel.page.totalPages - 1)}" th:remove="tag">
+                 <span th:if="${pg eq userModel.page.getNumber()}" th:remove="tag">
+                     <input type="button" class="btn btn-outline-success active nowPageIndex" th:value="${pg+1}">
+                 </span>
+                <span th:unless="${pg eq userModel.page.getNumber()}" th:remove="tag">
+                    <input  type="button" class="btn btn-outline-success pagebutNum"  th:value="${pg+1}">
+                </span>
+
+                <!--<button type="button" class="btn btn-outline-success pagebut" >1</button>-->
+                <!--<button type="button" class="btn btn-outline-success pagebut">2</button>-->
+                <!--<button type="button" class="btn btn-outline-success pagebut">3</button>-->
+                <!--<button type="button" class="btn btn-outline-success pagebut">4</button>-->
+            </div>
+        </div>
+
+        <!-- 总数数大于7时 -->
+        <div th:if="${userModel.page.totalPages gt 10}" th:remove="tag">
+            <input th:if="${userModel.page.number -3 ge 0}"  type="button" class="btn btn-outline-success pagebutNum"  th:value="${userModel.page.number -2}">
+            <input th:if="${userModel.page.number -2 ge 0}"  type="button" class="btn btn-outline-success pagebutNum"  th:value="${userModel.page.number -1}">
+            <input th:if="${userModel.page.number -1 ge 0}"  type="button" class="btn btn-outline-success pagebutNum"  th:value="${userModel.page.number}">
+            <input  type="button" class="btn btn-outline-success active nowPageIndex" th:value="${page.number+1}">
+            <input th:if="${userModel.page.number +1 lt page.totalPages}"  type="button" class="btn btn-outline-success pagebutNum"  th:value="${userModel.page.number+2}">
+            <input th:if="${userModel.page.number +2 lt page.totalPages}"  type="button" class="btn btn-outline-success pagebutNum"  th:value="${userModel.page.number+3}">
+            <input th:if="${userModel.page.number +3 lt page.totalPages}"  type="button" class="btn btn-outline-success pagebutNum"  th:value="${userModel.page.number+4}">
+        </div>
+    </div>
+
+    <button th:unless="${userModel.page.last}" type="button" class="btn btn-outline-success ml-1 pagebut pagebutJump" th:id="${page.number+2}">下一页</button>
+    <button th:unless="${userModel.page.last}" type="button" class="btn btn-outline-success ml-1 pagebut pagebutJump" th:id="${page.totalPages}">尾页</button>
+
+</div>
+</div>
+
+
+<!--<script>-->
+    // $(".pagebutJump").onclick(function () {
+    //     var pageIndex=$("this").attr(id)-1;
+    //     getUersByName(pageIndex,5);
+    // })
+    //
+    // $(".pagebutNum").onclick(function () {
+    //     var pageIndex=$("this").attr(value)-1;
+    //     getUersByName(pageIndex,5);
+    // })
+<!--</script>-->
+
+</body>
+</html>

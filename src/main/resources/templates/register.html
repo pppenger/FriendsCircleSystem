@@ -1,0 +1,115 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4" data-th-fragment="header">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSRF -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <!-- Bootstrap CSS -->
+    <link href="/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- toastr CSS -->
+    <link href="../../css/toastr.min.css" th:href="@{/css/toastr.min.css}" rel="stylesheet">
+    <title>Hello, world!</title>
+
+    <style>
+    
+    .form-signin {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    margin: auto;
+    margin-top: 60px;
+    }
+    .form-control:focus {
+        box-shadow: none;
+    }
+    </style>
+  </head>
+  <body class="text-center bg-light">
+
+  <form  action="/register" th:action="@{/register}" id="registerForm" method="post" class="form-signin bg-white shadow ">
+    <img class="mb-4" src="./images/logo.png" alt="" width="72" height="72">
+    <h1 class="h3 mb-4 font-weight-normal">注册</h1>
+    <div class="form-group border ">
+      <input type="text" class="form-control bg-light rounded-0"
+             name="username" id="exampleInputUsername1"  placeholder="用户名">
+      <input type="email" class="form-control bg-light rounded-0"
+             name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="邮箱">
+      <input type="password" class="form-control bg-light rounded-0"
+             name="password" id="exampleInputPassword1" placeholder="密码">
+      <input type="password" class="form-control bg-light rounded-0" id="password2"
+             placeholder="确认密码">
+    </div>
+
+    <button type="button" id="sub" class="btn btn-outline-primary btn-block rounded-pill">注册</button>
+    <p class="mt-5 mb-3 text-muted" style="font-size:5px;">点击‘注册’则表示您同意并愿意遵守<br>
+      <a href="">用户协议</a> 和 <a href="">隐私政策</a> </p>
+  </form>
+
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="../../js/jquery-3.1.1.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+  <script src="../../js/bootstrap.min.js" th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+
+  <script src="../../js/jquery.form.min.js" th:src="@{/js/jquery.form.min.js}"></script>
+  <script src="../../js/toastr.min.js" th:src="@{/js/toastr.min.js}"></script>
+
+  <script>
+
+    $("#sub").click(function () {
+        var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+        if ($("#exampleInputEmail1").val()==""||(!reg.test($("#exampleInputEmail1").val()))){
+            toastr.error("请正确输入邮箱!");
+            return;
+        }
+
+        var myReg = /^[a-zA-Z0-9_]{0,}$/;
+        if (!myReg.test($("#exampleInputPassword1").val())) {
+            toastr.warning("密码不能含有中文或特殊字符!");
+            return;
+        }
+
+        if ($("#exampleInputPassword1").val()!=$("#password2").val()) {
+            toastr.warning("两次密码不相同!");
+            return;
+        }
+
+        // 获取 CSRF Token
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        $.ajax({
+            url: "/register",
+            type: 'POST',
+            data:$('#registerForm').serialize(),
+            beforeSend: function(request) {
+                request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+            },
+            success: function(result){
+                // jsonData = JSON.stringify(result);
+                // alert(jsonData);
+                if (result.code==0) {
+                    window.location.href = "/login";
+                } else {
+                    toastr.error(result.msg);
+                }
+            },
+            error : function() {
+                toastr.error("error!");
+            }
+        });
+    })
+  </script>
+  </body>
+</html>
