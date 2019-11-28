@@ -100,8 +100,12 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 
 	//重写UserDetailsService的loadUserByUsername方法
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		return userRepository.findByEmail(email);
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		UserDetails userDetails=userRepository.findByUsername(username);
+		if(userDetails==null){
+			throw new UsernameNotFoundException("The acccount not exist【账号不存在】");
+		}
+		return userDetails;
 	}
 
 

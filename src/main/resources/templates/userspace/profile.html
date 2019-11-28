@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<body class="bg-light">
+<style>
+    a{
+        color: #888;
+    }
+    .imageBox {
+        position: relative;
+        height: 400px;
+        width: 400px;
+        border: 1px solid #aaa;
+        background: white;
+        overflow: hidden;
+        background-repeat: no-repeat;
+        cursor: move;
+        box-shadow: 4px 4px 12px #B0B0B0;
+    }
+    .imageBox .thumbBox {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200px;
+        height: 200px;
+        margin-top: -100px;
+        margin-left: -100px;
+        box-sizing: border-box;
+        border: 1px solid rgb(102, 102, 102);
+        box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+        background: none repeat scroll 0% 0% transparent;
+    }
+    .imageBox .spinner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        text-align: center;
+        line-height: 400px;
+        background: rgba(0,0,0,0.7);
+    }
+
+    #avatar-div{
+        width: 200px;
+        height: 200px;
+    }
+    #upload-file{
+        width: 200px;
+        height: 200px;
+        position: relative;
+        top: -200px;
+        left: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        background-size: contain;
+    }
+
+</style>
+
+
+<div class="container mt-5 shadow p-4">
+    <div class="row justify-content-center" >
+        <div id="avatar-div"  class="col-3">
+            <img th:src="${userModel.user.avatar} == null ? '../../images/logo.png' : ${userModel.user.avatar}"  alt="" id="avatarimg">
+            <input type="file" class="btn btn-primary" name="upload-file" id="upload-file" data-toggle="modal" data-target="#exampleModal" value="上传图片" style="cursor:pointer"/>
+
+        </div>
+
+        <div class="col-6">
+            <form class="form-signin" th:object="${userModel.user}" id="userForm">
+                <input type="hidden"  name="id" id="userId" th:value="*{id}" >
+                <div class="form-group">
+                    <h5><label for="inputAddress">用户名</label></h5>
+                    <input type="text" class="form-control" id="inputAddress"  maxlength="20" placeholder="请输入账号(个数在3到20之间)" th:value="*{username}">
+                </div>
+                <div class="form-group">
+                    <h5><label for="inputAddress">邮箱</label></h5>
+                    <input type="text" class="form-control" id="inputAddress" placeholder="请输入邮箱" aria-describedby="emailHelp" maxlength="50" th:value="*{email}">
+                </div>
+                <div class="form-group">
+                    <h5><label for="inputAddress">密码【可不填】</label></h5>
+                    <input type="text" class="form-control" id="inputAddress" placeholder="请输入密码(个数在20以内)" th:value="*{password}">
+                </div>
+                <div class="form-group">
+                    <h5><label for="inputAddress">确认密码【可不填】</label></h5>
+                    <input type="text" class="form-control" id="inputAddress" placeholder="请输入密码" th:value="*{password}">
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-lg">更改</button>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div>
+                    <div class="imageBox">
+                        <div class="thumbBox"></div>
+                        <div class="spinner" style="display: none">Loading...</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="btnZoomIn"  value="+"  class="btn btn-outline-primary">
+                <input type="button" id="btnZoomOut"  value="-"  class="btn btn-outline-primary">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <input type="button" class="btn btn-primary " id="btnCrop" value="上传"></input>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+
+
+<script type="text/javascript" >
+    $(window).on('load',function() {
+        var options =
+            {
+                thumbBox: '.thumbBox',
+                spinner: '.spinner',
+                // imgSrc: '../../images/logo.png'
+            }
+        var cropper = $('.imageBox').cropbox(options);
+        $('#upload-file').on('change', function(){
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                options.imgSrc = e.target.result;
+                cropper = $('.imageBox').cropbox(options);
+            }
+            reader.readAsDataURL(this.files[0]);
+            this.files = [];
+        })
+        $('#btnCrop').on('click', function(){
+            var img = cropper.getDataURL();
+            alert(img);
+            alert(cropper.getBlob());
+        })
+        $('#btnZoomIn').on('click', function(){
+            cropper.zoomIn();
+        })
+        $('#btnZoomOut').on('click', function(){
+            cropper.zoomOut();
+        })
+    });
+</script>
+
+
+</body>
+</html>
