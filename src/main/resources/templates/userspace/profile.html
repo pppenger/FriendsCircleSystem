@@ -71,7 +71,7 @@
         </div>
 
         <div class="col-6">
-            <form class="form-signin" th:object="${userModel.user}" id="userForm">
+            <form th:action="@{/u/admin/profile}"  class="form-signin" th:object="${userModel.user}" id="userForm">
                 <input type="hidden"  name="id" id="userId" th:value="*{id}" >
                 <div class="form-group">
                     <h5><label for="inputAddress">用户名</label></h5>
@@ -162,6 +162,9 @@
             cropper.zoomOut();
         })
     });
+
+
+
 </script>
 
 
