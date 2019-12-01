@@ -178,4 +178,27 @@ public class Blog implements Serializable {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
+    /**
+     * 添加评论
+     * @param comment
+     */
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        this.commentSize = this.comments.size();
+    }
+    /**
+     * 删除评论
+     * @param comment
+     */
+    public void removeComment(Long commentId) {
+        for (int index=0; index < this.comments.size(); index ++ ) {
+            if (comments.get(index).getId() == commentId) {
+                this.comments.remove(index);
+                break;
+            }
+        }
+
+        this.commentSize = this.comments.size();
+    }
 }

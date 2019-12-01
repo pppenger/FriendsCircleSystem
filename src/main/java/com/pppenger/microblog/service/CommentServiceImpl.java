@@ -2,11 +2,10 @@ package com.pppenger.microblog.service;
 
 import javax.transaction.Transactional;
 
+import com.pppenger.microblog.domin.Comment;
+import com.pppenger.microblog.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.waylau.spring.boot.blog.domain.Comment;
-import com.waylau.spring.boot.blog.repository.CommentRepository;
 
 /**
  * Comment 服务.

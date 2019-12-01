@@ -46,7 +46,12 @@ public class MainController {
 		return "index";
 	}
 
-	@GetMapping("/error")
+    @GetMapping("/403")
+    public String fa() {
+        return "403";
+    }
+
+    @GetMapping("/error")
 	public String error() {
 		return "index";
 	}

@@ -6,6 +6,7 @@ package com.pppenger.microblog.exception;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -52,6 +53,11 @@ public class WebExceptionHandler {
 			ObjectError error = errors.get(0);
 			String msg = error.getDefaultMessage();
 			return Result.error(CodeMsg.BIND_ERROR.fillArgs(msg));
+		}else if(e instanceof AccessDeniedException) {
+			System.out.println("检测到权限异常");
+			return null;
+			//AccessDeniedException ex = (AccessDeniedException)e;
+			//return Result.success(ex.getMessage());
 		}else {
 			return Result.error(CodeMsg.SERVER_ERROR);
 		}

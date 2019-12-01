@@ -2,16 +2,16 @@ package com.pppenger.microblog.service;
 
 import javax.transaction.Transactional;
 
+import com.pppenger.microblog.domin.Blog;
+import com.pppenger.microblog.domin.Comment;
+import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.waylau.spring.boot.blog.domain.Blog;
-import com.waylau.spring.boot.blog.domain.Comment;
-import com.waylau.spring.boot.blog.domain.User;
-import com.waylau.spring.boot.blog.repository.BlogRepository;
 
 /**
  * Blog 服务.
@@ -86,7 +86,7 @@ public class BlogServiceImpl implements BlogService {
 	@Override
 	public Blog createComment(Long blogId, String commentContent) {
 		Blog originalBlog = blogRepository.findOne(blogId);
-		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal(); 
+		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Comment comment = new Comment(user, commentContent);
 		originalBlog.addComment(comment);
 		return blogRepository.save(originalBlog);
