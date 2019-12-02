@@ -44,6 +44,11 @@ public class User implements UserDetails, Serializable {
 	@Column(nullable = false, length = 20, unique = true)
 	private String username;
 
+	@NotEmpty(message = "昵称不能为空")
+	@Size(min=3, max=20,message = "昵称个数必须在3和20之间")
+	@Column(nullable = false, length = 20, unique = true)
+	private String name;
+
 	@NotEmpty(message = "密码不能为空")
 	@Size(max=100)
 	@Column(length = 100)
@@ -60,8 +65,9 @@ public class User implements UserDetails, Serializable {
 	protected User() { // JPA 的规范要求无参构造函数；设为 protected 防止直接使用
 	}
 
-	public User(String email, String username, String password) {
+	public User(String email, String username,String name, String password) {
 		this.email = email;
+		this.name = name;
 		this.username = username;
 		this.password = password;
 	}
@@ -102,6 +108,14 @@ public class User implements UserDetails, Serializable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

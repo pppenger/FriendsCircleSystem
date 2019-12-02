@@ -45,13 +45,13 @@ public class UserController {
     @GetMapping("/userlist")
     public ModelAndView list(@RequestParam(value = "pageIndex",required = false,defaultValue = "0")int pageIndex,
                              @RequestParam(value = "pageSize",required = false,defaultValue = "10")int pageSize,
-                             @RequestParam(value = "name",required = false,defaultValue = "")String name,
+                             @RequestParam(value = "name",required = false,defaultValue = "")String searchName,
                              Model model
                            ){
-        Page<User> page=userService.listUsersByNameLike(name,pageIndex,pageSize);
+        Page<User> page=userService.listUsersByNameLike(searchName,pageIndex,pageSize);
         List<User> list = page.getContent();	// 当前所在页面数据列表
 
-        model.addAttribute("searchUsername", name);
+        model.addAttribute("searchUsername", searchName);
         model.addAttribute("page", page);
         model.addAttribute("userList", list);
         //return page;
@@ -104,7 +104,7 @@ public class UserController {
 
 
     /**
-     * 新建用户
+     * 管理员新建/修改用户
      * @param user
      * @param result
      * @param redirect
@@ -120,6 +120,7 @@ public class UserController {
             if (userService.hadRegister(user.getUsername(),user.getEmail())!=null){
                 return Result.error(CodeMsg.BIND_ERROR.fillArgs(userService.hadRegister(user.getUsername(),user.getEmail())));
             }
+
             user.setEncodePassword(user.getPassword()); // 加密密码
         }
         //存在，更改用户

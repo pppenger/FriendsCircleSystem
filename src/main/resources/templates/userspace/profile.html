@@ -64,30 +64,36 @@
 
 <div class="container mt-5 shadow p-4">
     <div class="row justify-content-center" >
-        <div id="avatar-div"  class="col-3">
-            <img th:src="${userModel.user.avatar} == null ? '../../images/logo.png' : ${userModel.user.avatar}"  alt="" id="avatarimg">
+        <div style="width: 220px;height: 220px; margin-right: 30px;" >
+        <div id="avatar-div"  class="col-6">
+            <img th:src="${userModel.user.avatar} == null ? '../../images/logo.png' : ${userModel.user.avatar}"  alt="" id="avatarimg"  class="shadow">
             <input type="file" class="btn btn-primary" name="upload-file" id="upload-file" data-toggle="modal" data-target="#exampleModal" value="上传图片" style="cursor:pointer"/>
 
         </div>
+        </div>
 
         <div class="col-6">
-            <form th:action="'/u/'+${userModel.user.username}+'/profile'"  method="post"   class="form-signin" th:object="${userModel.user}" id="userForm">
+            <form th:action="'/u/'+${userModel.user.username}+'/profile'"  method="post"  onsubmit="return checkBeforeSubmit()"  class="form-signin" th:object="${userModel.user}" id="userForm">
                 <input type="hidden"  name="id" id="userId" th:value="*{id}" >
                 <div class="form-group">
-                    <h5><label for="inputAddress">用户名</label></h5>
-                    <input type="text" name="username" class="form-control" id="username"  maxlength="20" placeholder="请输入账号(个数在3到20之间)" th:value="*{username}">
+                    <label >用户名</label>
+                    <input type="text" name="username" class="form-control" id="username"  maxlength="20" readonly="readonly" th:value="*{username}">
                 </div>
                 <div class="form-group">
-                    <h5><label for="inputAddress">邮箱</label></h5>
+                    <label >昵称</label>
+                    <input type="text" name="name"  class="form-control" id="name"  maxlength="20" placeholder="请输入账号(个数在3到20之间)"  th:value="*{name}">
+                </div>
+                <div class="form-group">
+                    <label >邮箱</label>
                     <input type="text" name="email" class="form-control" id="email" placeholder="请输入邮箱" aria-describedby="emailHelp" maxlength="50" th:value="*{email}">
                 </div>
                 <div class="form-group">
-                    <h5><label for="inputAddress">密码【可不填】</label></h5>
+                    <label >密码【可不填】</label>
                     <input type="text" name="password" class="form-control" id="password" placeholder="请输入密码(个数在20以内)" th:value="*{password}">
                 </div>
                 <div class="form-group">
-                    <h5><label for="inputAddress">确认密码【可不填】</label></h5>
-                    <input type="text" class="form-control" id="inputAddress" placeholder="请输入密码" th:value="*{password}">
+                    <label >确认密码【可不填】</label>
+                    <input type="text" class="form-control" id="password2" placeholder="请输入密码" th:value="*{password}">
                 </div>
 
                 <button type="submit" class="btn btn-outline-primary btn-lg">更改</button>
@@ -134,6 +140,26 @@
 <script src="../../js/cropbox.js" th:src="@{/js/cropbox.js}"></script>
 
 <script type="text/javascript" >
+    function checkBeforeSubmit(){
+        var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+        if ($("#email").val()==""||(!reg.test($("#email").val()))){
+            toastr.error("请正确输入邮箱!");
+            return;
+        }
+
+        var myReg = /^[a-zA-Z0-9_]{0,}$/;
+        if ($("#password").val()==$("#password2").val()){
+            if (!myReg.test($("#model-password").val())) {
+                toastr.warning("密码不能含有中文或特殊字符!");
+                return;
+            }
+        }else {
+            toastr.warning("两个密码不一样哦!");
+        }
+    }
+
+
+
     $(window).on('load',function() {
         var options =
             {
@@ -152,26 +178,31 @@
             this.files = [];
         })
         $('#btnCrop').on('click', function(){
+
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
             var img = cropper.getBlob();
             console.log(img);
             var formdata = new FormData();
             var username = $('#username').val();
-            //formdata.append("imagefile", img);
-            formdata.append("username", username);
+            formdata.append("imagefile", img);
+            //formdata.append("username", username);
             $.ajax({
-                url:'/u/iitoyo/avatarr',
+                url:'/u/'+username+'/avatar',
                 type:"post",
-                data: username,
+                data: formdata,
                 //默认值: true。默认情况下，通过data选项传递进来的数据，如果是一个对象(技术上讲只要不是字符串)，
                 // 都会处理转化成一个查询字符串，以配合默认内容类型 "application/x-www-form-urlencoded"。如果要发送 DOM 树信息或其它不希望转换的信息，请设置为 false。
                 processData: false,
                 contentType: false,
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
                 success: function(oResult) {
-                    if(oResult.success!=null){
-                        alert(oResult);
-                    }else{
-                        alert(oResult);
-                    }
+                    // toastr.warning(oResult);
+                    toastr.warning("更换头像请求已发送");
+                    window.location.href = '/u/'+username+'/profile';
+
                 }
             })
         })

@@ -14,7 +14,8 @@
         <tr>
             <th scope="col">id</th>
             <th scope="col" >邮箱</th>
-            <th scope="col" >账号</th>
+            <th scope="col" >用户名</th>
+            <th scope="col" >昵称</th>
             <th scope="col" >角色</th>
             <th scope="col">操作</th>
         </tr>
@@ -24,6 +25,7 @@
             <th scope="row"  th:text="${user.id}">1</th>
             <td th:text="${user.email}">Mark</td>
             <td th:text="${user.username}">Otto</td>
+            <td th:text="${user.name}">Otto</td>
             <td th:text="${user.authorities}">Otto</td>
             <td>
                 <button type="button " class="btn btn-success  edit-modal" data-th-attr="userId=${user.id}" data-toggle="modal" data-target="#exampleModal" >修改</button>
@@ -50,6 +52,7 @@
                 <!-- <input type="text" class="modelid" value="22"> -->
                 <form action="" id="userForm">
                     <input type="hidden" name="id" value="" id="model-id">
+                    <input type="hidden" name="avatar" id="model-avatar">
 
                     <div class="form-group ">
                         <label  class="col-form-label">邮箱</label>
@@ -57,13 +60,19 @@
                     </div>
 
                     <div class="form-group ">
-                        <label  class="col-form-label">账号</label>
+                        <label  class="col-form-label">用户名</label>
                         <input name="username" type="text" class="form-control" id="model-username" maxlength="20" placeholder="请输入账号(个数在3到20之间)">
+                    </div>
+
+                    <div class="form-group ">
+                        <label  class="col-form-label">昵称</label>
+                        <input name="name" type="text" class="form-control" id="model-name" maxlength="20" placeholder="请输入账号(个数在3到20之间)">
                     </div>
 
                     <div class="form-group ">
                         <label  class="col-form-label">密码</label>
                         <input name="password" type="text" class="form-control" id="model-password" placeholder="请输入密码(个数在20以内)">
+                        <input type="hidden"  id="model-password2">
                     </div>
 
                     <div class="form-group">
@@ -134,9 +143,11 @@
     $(".add-modal").click(function(){
         //$('#userForm')[0].reset();
          $("#model-id").val("");
+         $("#model-avatar").val("");
          $("#model-email").val("");
          $("#model-username").val("");
          $("#model-password").val("");
+         $("#model-password2").val("");
     });
 
         //弹出编辑界面
@@ -149,10 +160,12 @@
                     // jsonData = JSON.stringify(result);
                     // alert(jsonData);
                     $("#model-id").val(result.data.id);
+                    $("#model-avatar").val(result.data.avatar);
                     $("#model-email").val(result.data.email);
                     $("#model-username").val(result.data.username);
+                    $("#model-name").val(result.data.name);
                     $("#model-password").val(result.data.password);
-
+                    $("#model-password2").val(result.data.password);
                 },
                 error : function() {
                     toastr.error("error!");
@@ -169,9 +182,11 @@
             }
 
             var myReg = /^[a-zA-Z0-9_]{0,}$/;
-            if (!myReg.test($("#model-password").val())) {
-                toastr.warning("密码不能含有中文或特殊字符!");
-                return;
+            if ($("#model-password").val()!=$("#model-password2").val()){
+                if (!myReg.test($("#model-password").val())) {
+                    toastr.warning("密码不能含有中文或特殊字符!");
+                    return;
+                }
             }
 
             // 获取 CSRF Token

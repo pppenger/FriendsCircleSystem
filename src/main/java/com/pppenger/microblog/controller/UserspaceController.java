@@ -2,8 +2,11 @@ package com.pppenger.microblog.controller;
 
 import com.pppenger.microblog.domin.Blog;
 import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.result.CodeMsg;
+import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.BlogService;
 import com.pppenger.microblog.service.UserService;
+import com.pppenger.microblog.service.UserspaceService;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +45,9 @@ public class UserspaceController {
 
         @Autowired
         private UserService userService;
+
+        @Autowired
+        private UserspaceService userspaceService;
 
         @Autowired
         private BlogService blogService;
@@ -74,6 +81,7 @@ public class UserspaceController {
         User originalUser = userService.getUserById(user.getId());
         originalUser.setEmail(user.getEmail());
         originalUser.setUsername(user.getUsername());
+        originalUser.setName(user.getName());
 
         // 判断密码是否做了变更
         String rawPassword = originalUser.getPassword();
@@ -89,87 +97,20 @@ public class UserspaceController {
         return "redirect:/u/" + username + "/profile";
     }
 
-    @RequestMapping(value = "/{username}/avatar")
+    @PostMapping(value = "/{username}/avatar")
     @PreAuthorize("authentication.name.equals(#username)")
-    public String saveAvatar(@PathVariable("username") String username,
-                             @RequestParam("imagefile") MultipartFile imagefile) {
+    @ResponseBody
+    public Result<String> saveAvatar(@PathVariable("username") String username,
+                                     @RequestParam("imagefile") MultipartFile imagefile) {
 
-        StringBuilder sb=new StringBuilder();
-
-
-        if (!imagefile.isEmpty()){
-                //String localPath = "src/main/resources/static/images";
-                //String localPath="C:/Users/asus/Desktop";
-                String filename=imagefile.getOriginalFilename();
-                // 获得文件类型
-                String fileType = imagefile.getContentType();
-                // 获得文件后缀名称
-                String suffix=filename.substring(filename.lastIndexOf("."));
-                String realSuffix=filename.substring(filename.lastIndexOf(".")+1);
-                //String imageName = fileType.substring(fileType.indexOf("/") + 1);
-
-                String allowImgFormat = "gif,jpg,jpeg,png";
-                if (!allowImgFormat.contains(realSuffix.toLowerCase())) {
-                    System.out.println( "上传的图片不符合格式要求");
-                }
-
-                String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-                String newFileName=uuid+suffix;
-
-                String path="D:/IntelliJ IDEA 2018.2.4/uploadImages/";
-                // 生成保存路径名
-                String realPath = path + "/" + newFileName;
-
-                File dest = new File(realPath);
-
-                //判断文件父目录是否存在
-                if(!dest.getParentFile().exists()){
-                    dest.getParentFile().mkdirs();
-                }
-
-                try {
-                    //保存文件
-                    imagefile.transferTo(dest);
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                System.out.println(path+"   "+filename+"   "+fileType+"   "+newFileName);
-                try {
-                    Thumbnails.of(realPath)
-                            .size(120, 120)
-                            .toFile(path + "/compress/" + newFileName);
-                }catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                //读取相对路径
-                String getpath="/" + newFileName;
-                String getcompresspath="/compress/" + newFileName;
-                System.out.println(getpath);
-                System.out.println(getcompresspath);
-                //return "redirect:/"+newFileName;
-                //model.addAttribute("img", "/" + newFileName);
-                sb.append(getpath+","+getcompresspath+";");
-            }
-
-        //System.out.println(text1);
-        String msg=sb.toString();
-        System.out.println(msg);
-        return msg;
-
-
-//        User originalUser = userService.getUserById(user.getId());
-//        userService.saveUser(originalUser);
-//        return "redirect:/u/" + username + "/profile";
+        String msg = userspaceService.saveAvatar(username,imagefile);
+        return Result.success(msg);
+        //return "redirect:/u/" + username + "/profile";
     }
 
     @PostMapping("/iitoyo/avatarr")
     @PreAuthorize("authentication.name.equals(#username)")
     public String saveAvatar(@RequestParam("username") String username) {
-
         StringBuilder sb=new StringBuilder();
 
         String msg=sb.toString();

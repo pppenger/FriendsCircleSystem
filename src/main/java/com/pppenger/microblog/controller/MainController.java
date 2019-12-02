@@ -46,9 +46,14 @@ public class MainController {
 		return "index";
 	}
 
-    @GetMapping("/403")
-    public String fa() {
-        return "403";
+	@GetMapping("/403")
+	public String fuckme() {
+		return "404";
+	}
+
+    @GetMapping("/404")
+    public String fuckyou() {
+        return "redirect:/403";
     }
 
     @GetMapping("/error")
@@ -104,6 +109,7 @@ public class MainController {
 		List<Authority> authorities = new ArrayList<>();
 		authorities.add(authorityService.getAuthorityById(ROLE_USER_AUTHORITY_ID));
 		user.setAuthorities(authorities);
+		user.setName(user.getName());
 		user.setEncodePassword(user.getPassword());
 		userService.saveUser(user);
 		return Result.success();

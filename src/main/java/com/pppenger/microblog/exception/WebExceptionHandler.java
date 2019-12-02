@@ -36,7 +36,7 @@ public class WebExceptionHandler {
 	 */
 	@ResponseBody
 	@ExceptionHandler(value=Exception.class)
-	public Result<String> exceptionHandler(Exception e){
+	public Result<String> exceptionHandler(Exception e) throws Exception{
 		e.printStackTrace();
 		if(e instanceof GlobalException) {
 			GlobalException ex = (GlobalException)e;
@@ -55,7 +55,8 @@ public class WebExceptionHandler {
 			return Result.error(CodeMsg.BIND_ERROR.fillArgs(msg));
 		}else if(e instanceof AccessDeniedException) {
 			System.out.println("检测到权限异常");
-			return null;
+			throw new AccessDeniedException("不允许访问-异常-抛出给Security处理");
+			//return null;
 			//AccessDeniedException ex = (AccessDeniedException)e;
 			//return Result.success(ex.getMessage());
 		}else {
