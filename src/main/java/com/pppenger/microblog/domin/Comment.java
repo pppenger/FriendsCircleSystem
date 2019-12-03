@@ -31,10 +31,11 @@ public class Comment implements Serializable {
     private Long id; // 用户的唯一标识
 
     @NotEmpty(message = "评论内容不能为空")
-    @Size(min=2, max=500)
+    @Size(min=2, max=100)
     @Column(nullable = false) // 映射为字段，值不能为空
     private String content;
 
+    //谁发表的评论
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;

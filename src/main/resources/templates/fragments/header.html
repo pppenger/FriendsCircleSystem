@@ -93,21 +93,12 @@
         </button>
         <div class="collapse navbar-collapse justify-content-around" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Disabled</a>
+                    <a class="nav-link" href="#">所有分区</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        下拉框
+                        我的分区
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a class="dropdown-item" href="#">Action</a>
@@ -115,11 +106,14 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-toggle="modal" data-target="#wirteblog">写微博</a>
+                </li>
             </ul>
 
             <form class="form-inline ">
                 <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">搜索</button>
             </form>
 
             <ul sec:authorize="isAnonymous()" class="navbar-nav">
@@ -147,6 +141,45 @@
 <!--        <div sec:authorize="isAuthenticated()">-->
 <!--            <span>你好</span><a href="" th:text="${#authentication.name}"></a>-->
 <!--        </div>-->
+    </div>
+
+    <!-- 写文章Modal -->
+    <div class="modal fade" id="wirteblog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">blog</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- <input type="text" class="modelid" value="22"> -->
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">微博标题</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="请控制在20字内" maxlength="20">
+                        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">内容分享</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" maxlength="150" placeholder="请控制在150字内"></textarea>
+                    </div>
+
+                    <form class="form-inline">
+                        <div class="form-group mb-2">
+                            <label  class="sr-only">分区</label>
+                            <input type="test" class="form-control"  placeholder="输入分区名搜索">
+                        </div>
+                        <button type="submit" class="btn btn-outline-info mb-2">搜</button>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="modelclose" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-info" id="modelsave">发布</button>
+                </div>
+            </div>
+        </div>
     </div>
 </nav>
 </body>

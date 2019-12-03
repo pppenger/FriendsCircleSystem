@@ -89,11 +89,11 @@
                 </div>
                 <div class="form-group">
                     <label >密码【可不填】</label>
-                    <input type="text" name="password" class="form-control" id="password" placeholder="请输入密码(个数在20以内)" th:value="*{password}">
+                    <input type="text" name="password" class="form-control" id="password" maxlength="20" placeholder="请输入密码(个数在20以内)" th:value="*{password}">
                 </div>
                 <div class="form-group">
                     <label >确认密码【可不填】</label>
-                    <input type="text" class="form-control" id="password2" placeholder="请输入密码" th:value="*{password}">
+                    <input type="text" class="form-control" id="password2" maxlength="20" placeholder="请输入密码" th:value="*{password}">
                 </div>
 
                 <button type="submit" class="btn btn-outline-primary btn-lg">更改</button>
@@ -144,17 +144,28 @@
         var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
         if ($("#email").val()==""||(!reg.test($("#email").val()))){
             toastr.error("请正确输入邮箱!");
-            return;
+            return false;
+        }
+
+        if ($("#name").val().length<3){
+            toastr.error("昵称长度不得小于3");
+            return false;
+        }
+
+        if ($("#password").val()==""){
+            toastr.error("密码长度不符!");
+            return false;
         }
 
         var myReg = /^[a-zA-Z0-9_]{0,}$/;
         if ($("#password").val()==$("#password2").val()){
             if (!myReg.test($("#model-password").val())) {
                 toastr.warning("密码不能含有中文或特殊字符!");
-                return;
+                return false;
             }
         }else {
             toastr.warning("两个密码不一样哦!");
+            return false;
         }
     }
 

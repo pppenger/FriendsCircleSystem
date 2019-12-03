@@ -23,28 +23,14 @@ public class Blog implements Serializable {
     private Long id; // 用户的唯一标识
 
     @NotEmpty(message = "标题不能为空")
-    @Size(min=2, max=100)
+    @Size(min=2, max=20)
     @Column(nullable = false, length = 50) // 映射为字段，值不能为空
     private String title;
 
     @NotEmpty(message = "摘要不能为空")
-    @Size(max=3000)
-//    @Column(nullable = false) // 映射为字段，值不能为空
+    @Size(max=150)
+    @Column(length = 150) // 映射为字段，值不能为空
     private String summary;
-
-    @Lob  // 大对象，映射 MySQL 的 Long Text 类型
-    @Basic(fetch=FetchType.LAZY) // 懒加载
-    @NotEmpty(message = "内容不能为空")
-    @Size(min=2)
-    @Column(nullable = false) // 映射为字段，值不能为空
-    private String content;
-
-    @Lob  // 大对象，映射 MySQL 的 Long Text 类型
-    @Basic(fetch=FetchType.LAZY) // 懒加载
-    @NotEmpty(message = "内容不能为空")
-    @Size(min=2)
-    @Column(nullable = false) // 映射为字段，值不能为空
-    private String htmlContent; // 将 md 转为 html
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
@@ -63,7 +49,6 @@ public class Blog implements Serializable {
     @Column(name="voteSize")
     private Integer voteSize = 0;  // 点赞量
 
-
     @Column(name="report_size")
     private Integer reportSize = 0;  // 举报量
 
@@ -72,12 +57,12 @@ public class Blog implements Serializable {
     @JoinTable(name = "blog_comment", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"))
     private List<Comment> comments;
-//
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinTable(name = "blog_vote", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "vote_id", referencedColumnName = "id"))
-//    private List<Vote> votes;
-//
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "blog_vote", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "vote_id", referencedColumnName = "id"))
+    private List<Vote> votes;
+
 //    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
 //    @JoinColumn(name="catalog_id")
 //    private Catalog catalog;
@@ -107,21 +92,6 @@ public class Blog implements Serializable {
         this.summary = summary;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getHtmlContent() {
-        return htmlContent;
-    }
-
-    public void setHtmlContent(String htmlContent) {
-        this.htmlContent = htmlContent;
-    }
 
     public User getUser() {
         return user;
