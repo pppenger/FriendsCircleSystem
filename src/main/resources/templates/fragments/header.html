@@ -113,7 +113,7 @@
             border: none;
         }
         #imgPreview img {
-            margin-right: 10px;
+            margin-right: 5px;
             width: 50px;
             height: 50px;
             object-fit:cover
@@ -192,21 +192,23 @@
                 <div class="modal-body">
                     <!-- <input type="text" class="modelid" value="22"> -->
                     <div class="form-group">
-                        <label for="exampleInputEmail1">微博标题</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="请控制在20字内" maxlength="20">
+                        <label >微博标题</label>
+                        <input type="email" class="form-control" id="blogEditTitle" aria-describedby="emailHelp" placeholder="请控制在20字内" maxlength="20">
                         <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                     </div>
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">内容分享</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" maxlength="150" placeholder="请控制在150字内"></textarea>
+                        <label >内容分享</label>
+                        <textarea class="form-control" id="blogEditContent" rows="6" maxlength="150" placeholder="请控制在150字内"></textarea>
                     </div>
 
 
                     <div class="clearfix">
                         <p>上传图片：</p>
                         <div id="imgPreview">
-                            <span class="upload-img"><input id="fileUpload"  type="file" multiple="multiple" accept="image/gif,image/jpeg,image/jpg,image/png"></span>
                         </div>
+                        <form id="fileUploadForm">
+                        <span class="upload-img" id="fileUploadSpan"><input id="fileUpload"  type="file" multiple="multiple" accept="image/gif,image/jpeg,image/jpg,image/png"></span>
+                        </form>
                     </div>
                     <br>
 
@@ -214,15 +216,16 @@
                     <form class="form-inline">
                         <div class="form-group mb-2">
                             <label  class="sr-only">分区</label>
-                            <input type="test" class="form-control"  placeholder="输入分区名搜索">
+                            <input id="blogEditPartition" type="test" class="form-control"  placeholder="输入分区名搜索">
                         </div>
                         <button type="submit" class="btn btn-outline-info mb-2">搜</button>
                     </form>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="modelclose" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-outline-info" id="modelsave">发布</button>
+                    <button type="button" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-secondary" id="resetEditBlog">重置</button>
+                    <button type="button" class="btn btn-outline-info" id="postEditBlog">发布</button>
                 </div>
             </div>
         </div>

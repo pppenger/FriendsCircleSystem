@@ -39,11 +39,69 @@
             "hideMethod": "fadeOut" //消失时的动画方式
         };
 
-            $("#fileUpload").change(function () {
+        $("#resetEditBlog").click(function (){resetEditBlog()});
+
+        function resetEditBlog(){
+                $("#blogEditTitle").val("");
+                $("#blogEditContent").val("");
+                $("#blogEditPartition").val("");
+                $("#imgPreview").empty();
+                $("#fileUploadForm")[0].reset();
+        }
+
+        $("#postEditBlog").click(function (){
+
+            var arr=[];
+            $("#imgPreview img").each(function(){
+                var src=$(this).attr("src");
+                arr.push(src);
+            });
+
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url: '/u/'+ $(this).attr("userName") + '/blogs/edit',
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data:JSON.stringify({"id":$('#blogId').val(),
+                    "title": $('#blogEditTitle').val(),
+                    "content": $('#blogEditContent').val(),
+                    "partition":$('#blogEditPartition').val(),
+                    "fileURL":arr
+                }),
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (data.success) {
+                        // 成功后，重定向
+                        //window.location = data.body;
+                        alert(result.data());
+                    } else {
+                        toastr.error("error!"+result.msg);
+                    }
+
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            })
+        })
+
+        $("#fileUpload").change(function () {
                 if($(this).val() != ""){
+                    var imglist=$("#imgPreview img");
+                    if (imglist.length+$("#fileUpload")[0].files.length>8){
+                        toastr.warning("图片数量请不要超过八张");
+                        return;
+                    }
+                    if (imglist.length+$("#fileUpload")[0].files.length==8){
+                        $("#fileUploadSpan").hide();
+                    }
                     var csrfToken = $("meta[name='_csrf']").attr("content");
                     var csrfHeader = $("meta[name='_csrf_header']").attr("content");
-
                     var formdata=new FormData();
                     for (var i=0;i<$("#fileUpload")[0].files.length;i++) {
                         formdata.append("files",$("#fileUpload")[0].files[i]);
@@ -59,26 +117,23 @@
                         },
                         success:function(result){
                             var dvPreview = $("#imgPreview");
-
                             $.each(result.data,function(index,items){
-                                var img = $("<img class='bigbigpicture' />");
+                                var img = $("<img class='bigbigpicture shadow' />");
                                 img.attr("src", items.compressPath);
                                 dvPreview.append(img);
-                                console.info(index+":"+items.path);
-                                console.info(index+":"+items.compressPath);
                             });
-
                         },
                         error:function(e){
-                            alert("错误！！");
+                            toastr.error("发生未知错误！！");
                         }
                     });
                 }
+                $("#fileUploadForm")[0].reset();
+                //$("#fileUpload").replaceWith('<input id="fileUpload"  type="file" multiple="multiple" accept="image/gif,image/jpeg,image/jpg,image/png">');
+        });
 
-            });
 
-            //$(".bigbigpicture").live("click",function(){
-            $(document).on("click", ".bigbigpicture", function () {
+        $(document).on("click", ".bigbigpicture", function () {
                 var src = $(this).attr('src');
                 var realpath = src.substring(src.lastIndexOf('/'),src.lastIndexOf('g')+1);
                 //自定页
@@ -97,7 +152,7 @@
                             });
                         }
                     });
-            })
+        })
 
 
 
