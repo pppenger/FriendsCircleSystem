@@ -111,16 +111,16 @@ public class UserspaceController {
         return Result.success(msg);
         //return "redirect:/u/" + username + "/profile";
     }
-
-    @PostMapping("/iitoyo/avatarr")
-    @PreAuthorize("authentication.name.equals(#username)")
-    public String saveAvatar(@RequestParam("username") String username) {
-        StringBuilder sb=new StringBuilder();
-
-        String msg=sb.toString();
-        System.out.println(msg);
-        return msg;
-    }
+//
+//    @PostMapping("/iitoyo/avatarr")
+//    @PreAuthorize("authentication.name.equals(#username)")
+//    public String saveAvatar(@RequestParam("username") String username) {
+//        StringBuilder sb=new StringBuilder();
+//
+//        String msg=sb.toString();
+//        System.out.println(msg);
+//        return msg;
+//    }
 
 
     @GetMapping("/{username}/blogs")

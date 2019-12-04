@@ -42,6 +42,17 @@
             height: 30px;
             width: 30px;
         }
+
+        .avatar-100{
+            border-radius: 50%;
+            height: 100px;
+            width: 100px;
+        }
+        .avatar-30-co {
+            border-radius: 50%;
+            height: 30px;
+            width: 30px;
+        }
         .itemimg img{
             width: 80px;
             height: 80px;
@@ -82,6 +93,31 @@
           display: none;
         }
     */
+
+        .upload-img {
+            display: block;
+            width: 50px;
+            height: 50px;
+            overflow: hidden;
+            background: url("./images/upload.png") no-repeat 0;
+            background-size: contain;
+        }
+        /*//这儿是为了改变上传按钮样式把input设为了透明色*/
+        .upload-img input {
+            height: 50px;
+            opacity: 0;
+            filter: alpha(opacity=0);
+        }
+        #imgPreview {
+            float: left;
+            border: none;
+        }
+        #imgPreview img {
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
+            object-fit:cover
+        }
     </style>
 </head>
 <body>
@@ -165,6 +201,16 @@
                         <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" maxlength="150" placeholder="请控制在150字内"></textarea>
                     </div>
 
+
+                    <div class="clearfix">
+                        <p>上传图片：</p>
+                        <div id="imgPreview">
+                            <span class="upload-img"><input id="fileUpload"  type="file" multiple="multiple" accept="image/gif,image/jpeg,image/jpg,image/png"></span>
+                        </div>
+                    </div>
+                    <br>
+
+
                     <form class="form-inline">
                         <div class="form-group mb-2">
                             <label  class="sr-only">分区</label>
@@ -182,5 +228,11 @@
         </div>
     </div>
 </nav>
+
+
+<script type="text/javascript" >
+
+
+</script>
 </body>
 </html>

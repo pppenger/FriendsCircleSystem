@@ -6,11 +6,20 @@ import com.pppenger.microblog.domin.Blog;
 import com.pppenger.microblog.domin.Comment;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.repository.BlogRepository;
+import com.pppenger.microblog.vo.PictureVO;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -79,14 +88,14 @@ public class BlogServiceImpl implements BlogService {
 	@Override
 	public void readingIncrease(Long id) {
 		Blog blog = blogRepository.findOne(id);
-		blog.setReadSize(blog.getCommentSize()+1);
+		blog.setReadSize(blog.getCommentSize() + 1);
 		blogRepository.save(blog);
 	}
 
 	@Override
 	public Blog createComment(Long blogId, String commentContent) {
 		Blog originalBlog = blogRepository.findOne(blogId);
-		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		Comment comment = new Comment(user, commentContent);
 		originalBlog.addComment(comment);
 		return blogRepository.save(originalBlog);
@@ -97,5 +106,50 @@ public class BlogServiceImpl implements BlogService {
 		Blog originalBlog = blogRepository.findOne(blogId);
 		originalBlog.removeComment(commentId);
 		blogRepository.save(originalBlog);
+	}
+
+
+	@Override
+	public List uploadPictures(MultipartFile[] multipartFiles) {
+		List list = new ArrayList();
+
+		if (multipartFiles.length > 0) {
+			for (MultipartFile multipartFile : multipartFiles) {
+				//String filename = multipartFile.getOriginalFilename();
+				String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+				String newFileName = uuid + ".png";
+
+				String path = "D:/uploadImages/";
+				String compresspath = "D:/uploadImages/compress/";
+				// 生成保存路径名
+				String realPath = path + "/" + newFileName;
+				File dest = new File(realPath);
+				//判断文件父目录是否存在
+				if (!dest.getParentFile().exists()) {
+					dest.getParentFile().mkdirs();
+				}
+				try {
+					//保存文件
+					multipartFile.transferTo(dest);
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				try {
+					Thumbnails.of(realPath)
+							.size(50, 50)
+							.toFile(compresspath + newFileName);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				//读取相对路径
+				String getpath = "/" + newFileName;
+				String getcompresspath = "/compress/" + newFileName;
+				PictureVO pictureVO = new PictureVO(getpath, getcompresspath);
+				list.add(pictureVO);
+			}
+		}
+		return list;
 	}
 }

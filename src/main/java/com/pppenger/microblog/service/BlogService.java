@@ -4,6 +4,9 @@ import com.pppenger.microblog.domin.Blog;
 import com.pppenger.microblog.domin.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 /**
@@ -76,4 +79,12 @@ public interface BlogService {
 	 * @return
 	 */
 	void removeComment(Long blogId, Long commentId);
+
+
+	/**
+	 * 上传多张图片并返回真实链接和压缩链接
+	 * @param multipartFiles
+	 * @return
+	 */
+	List uploadPictures(MultipartFile[] multipartFiles);
 }
