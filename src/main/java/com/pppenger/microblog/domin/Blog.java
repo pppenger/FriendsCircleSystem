@@ -63,9 +63,14 @@ public class Blog implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "vote_id", referencedColumnName = "id"))
     private List<Vote> votes;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "blog_pictures", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id"))
+    private List<Picture> pictures;
+
 //    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
 //    @JoinColumn(name="catalog_id")
-//    private Catalog catalog;
+//    private Partition catalog;
 
 
     public Long getId() {
@@ -149,6 +154,14 @@ public class Blog implements Serializable {
         this.comments = comments;
     }
 
+    public List<Picture> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(List<Picture> pictures) {
+        pictures = pictures;
+    }
+
     /**
      * 添加评论
      * @param comment
@@ -159,7 +172,7 @@ public class Blog implements Serializable {
     }
     /**
      * 删除评论
-     * @param comment
+     * @param
      */
     public void removeComment(Long commentId) {
         for (int index=0; index < this.comments.size(); index ++ ) {

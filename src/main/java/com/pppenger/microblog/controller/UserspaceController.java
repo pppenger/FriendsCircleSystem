@@ -1,6 +1,7 @@
 package com.pppenger.microblog.controller;
 
 import com.pppenger.microblog.domin.Blog;
+import com.pppenger.microblog.domin.Picture;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
@@ -35,6 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -243,11 +245,33 @@ public class UserspaceController {
      */
     @PostMapping("/{username}/blogs/edit")
     @PreAuthorize("authentication.name.equals(#username)")
-    public Result saveBlog(@PathVariable("username") String username, @RequestBody Blog blog) {
+    @ResponseBody
+    public Result saveBlog(@PathVariable("username") String username,
+                           @RequestParam(value = "id",required=false)  String id,
+                           @RequestParam("title") String title,
+                           @RequestParam("summary") String summary,
+                           @RequestParam(value = "fileURL",required = false) String[] fileURL) {
         User user = (User)userDetailsService.loadUserByUsername(username);
+        Blog blog=new Blog();
+        List<Picture> pictureList = new ArrayList();
+        if (fileURL!=null){
+            for (String url:fileURL){
+                Picture picture = new Picture(user,url);
+                pictureList.add(picture);
+            }
+            blog.setPictures(pictureList);
+        }
+
+        if (id!=null) {
+            blog.setId(Long.parseLong(id));
+        }
         blog.setUser(user);
-        blogService.saveBlog(blog);
-        String redirectUrl = "/u/" + username + "/blogs/" + blog.getId();
+        blog.setTitle(title);
+        blog.setSummary(summary);
+        Blog saveblog = blogService.saveBlog(blog);
+
+
+        //String redirectUrl = "/u/" + username + "/blogs/" + blog.getId();
         return Result.success("处理成功");
     }
 

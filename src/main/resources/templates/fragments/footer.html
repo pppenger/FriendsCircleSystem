@@ -43,7 +43,7 @@
 
         function resetEditBlog(){
                 $("#blogEditTitle").val("");
-                $("#blogEditContent").val("");
+                $("#blogEditSummary").val("");
                 $("#blogEditPartition").val("");
                 $("#imgPreview").empty();
                 $("#fileUploadForm")[0].reset();
@@ -56,31 +56,34 @@
                 var src=$(this).attr("src");
                 arr.push(src);
             });
-
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
             $.ajax({
-                url: '/u/'+ $(this).attr("userName") + '/blogs/edit',
+                url: '/u/'+ $("#navusername").text() + '/blogs/edit',
                 type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data:JSON.stringify({"id":$('#blogId').val(),
-                    "title": $('#blogEditTitle').val(),
-                    "content": $('#blogEditContent').val(),
-                    "partition":$('#blogEditPartition').val(),
-                    "fileURL":arr
-                }),
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                traditional: true,
+                data: {
+                    id: $('#blogId').val(),
+                    title: $('#blogEditTitle').val(),
+                    summary: $('#blogEditSummary').val(),
+                    // "partition":$('#blogEditPartition').val(),
+                    fileURL: arr,
+                },
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
                 success: function(result){
-                    if (data.success) {
+                    if (result.code=="0") {
                         // 成功后，重定向
                         //window.location = data.body;
-                        alert(result.data());
+                        toastr.success(result.data);
+                        resetEditBlog();
+                        $("#closeEditBlog").click();
                     } else {
-                        toastr.error("error!"+result.msg);
+                        toastr.error("服务器result："+result.msg);
                     }
 
                 },
