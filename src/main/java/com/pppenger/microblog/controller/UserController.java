@@ -55,7 +55,7 @@ public class UserController {
         model.addAttribute("page", page);
         model.addAttribute("userList", list);
         //return page;
-        return new ModelAndView("admin/list", "userModel", model);
+        return new ModelAndView("admin/list", "model", model);
     }
 
     //////用来测试page的

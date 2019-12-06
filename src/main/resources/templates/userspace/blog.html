@@ -1,0 +1,240 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<style>
+  .icon-user-good{
+    background: url("../../../images/icon-good.png") left top no-repeat;
+    background-size: 23px;
+  }
+  .icon-user-good:hover{
+    background: url("../../../images/icon-good-highlight.png")  left top no-repeat;
+    background-size: 23px;
+  }
+  .icon-user-collect{
+    background: url("../../../images/icon-collect.png") left top no-repeat;
+    background-size: 23px;
+  }
+  .icon-user-collect:hover{
+    background: url("../../../images/icon-collect-highlight.png")  left top no-repeat;
+    background-size: 23px;
+  }
+  .icon-user-commit{
+    background: url("../../../images/icon-commit.png") left top no-repeat;
+    background-size: 23px;
+  }
+  .icon-user-commit:hover{
+    background: url("../../../images/icon-commit-highlight.png")  left top no-repeat;
+    background-size: 23px;
+  }
+</style>
+<body class="bg-light">
+
+<div class="container ">
+      <div class="row justify-content-center " >
+        <div class="col-7 bg-white m-2 shadow-sm" >
+<!--          <button style="" type="button" class=" btn btn-outline-primary mt-2 btn-sm  btn-block" id="editBlogBut">修改</button>-->
+          <button sec:authorize="isAuthenticated()" type="button" class=" btn btn-outline-danger mt-2 btn-sm  btn-block" id="delBlogBut"></a>删除</button>
+          <div class=" m-2 border-bottom pb-2">
+            <div class="container">
+              <div class="row">
+                <div class="col-9" style="padding:0">
+                  <a href=""><img th:src="${blog.user.avatar}" src="../../../images/avatarboy.png" alt="" class="avatar-50"></a>
+                  <a href="" th:text="${blog.user.username}" class="ml-3 text-success">这是姓名</a>
+                  <small class="text-muted">信誉度：</small>
+                </div>
+                <div class="col-3  mt-2">
+                  <small th:text="${#dates.format(blog.createTime,'yyyy.MM.dd HH:mm:ss')}" class="">2010.09.04-14:20</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <h3><a href="" th:text="${blog.title}" class="text-dark">标题</a></h3>
+              <p th:text="'简介'+${blog.summary}">简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
+              <div class="itemimg">
+                <span th:each="picture : ${blog.pictures}" >
+                  <img th:src=${picture.pictureURL} alt="" class="bigbigpicture"  data-realsrc="./images/test.png">
+                </span>
+              </div>
+              <div class="row pl-3 pt-2 pb-1">
+              <a href="" class=" icon-user-good pl-4" data-smsid="填短讯id">222</a>
+              <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
+              <a href="" class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
+              </div>
+              <div class="container text-commit">
+                  <div class="row border-left">
+                  <div class="col-2" style="padding:0">
+                    <div>
+                      <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
+                      <a href="" class=" text-success">评论姓名</a>
+                    </div>
+                    <div >
+                      <small>2010.09.04-14:20</small>
+                    </div>
+
+                  </div>
+                  <div class="col-9">
+                    的发顺丰水电费水电费水电
+                  </div>
+                  <div class="col-1">
+                    
+                    <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                  </div>
+                  </div>
+
+                  <div class="row border-left mt-2">
+                  <div class="col-2" style="padding:0">
+                    <div>
+                      <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
+                      <a href="" class=" text-success">评论姓名</a>
+                    </div>
+                    <div >
+                      <small>2010.09.04-14:20</small>
+                    </div>
+
+                  </div>
+                  <div class="col-9">
+                    的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
+                  </div>
+
+                  <div class="col-1">
+                    
+                    <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                  </div>
+                  </div>
+              </div>
+            </div>
+
+            <div class="form-group clearfix">
+              <hr>
+              <label for="commit">发表评论</label>
+              <textarea class="form-control " id="commit" rows="4" maxlength="100" placeholder="请控制在100字内"></textarea>
+               <button style="float:right;" type="button" class=" btn btn-outline-success mt-2 btn-sm" id="">发布</button>
+            </div>
+          </div>
+        </div>
+
+    <div class="rightcontent col-3  m-2" style="text-align:center">
+      <div class="bg-white p-3 mb-3 shadow-sm">
+            <div class="mb-3 ">
+              <a href="">
+              <img src="../../../images/test.png" alt="" id="rightavter" class="avatar-100 m-auto"  style="display:block;">
+              </a>
+            </div>
+            <div  class="mb-2 text-secondary">
+            <span>邮箱：958310042@qq.com</span>
+            </div>
+            <div   class="mb-2 text-secondary">
+            <span>用户名</span>
+            </div>
+            <input type="button" class="btn btn-outline-primary btn-sm mb-3" value="更改个人信息">
+      </div>
+
+
+
+      <div class="bg-white p-2 shadow-sm">
+        <div class="card" style="">
+          <div class="card-header">
+            提醒
+          </div>
+        </div>
+        <div class="card" style="">
+          <div class="card-header">
+            我的分区
+          </div>
+        </div>
+        <div class="card" style="">
+          <div class="card-header">
+            收藏列表
+          </div>
+          <!-- <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              
+                  <span style="display:inline-block;width: 7rem;">技士大夫圣</span>
+                  <span>
+                    <input type="button" value="改" class="btn btn-outline-primary btn-sm ">
+                    <input type="button" value="删" class="btn btn-outline-primary btn-sm ">
+                  </span>
+                </tr>
+              </table>
+            </li>
+            <li class="list-group-item">
+              
+                  <span style="display:inline-block;width: 7rem;">技士大夫圣</span>
+                  <span>
+                    <input type="button" value="改" class="btn btn-outline-primary btn-sm ">
+                    <input type="button" value="删" class="btn btn-outline-primary btn-sm ">
+                  </span>
+                </tr>
+              </table>
+            </li>
+          </ul> -->
+        </div>
+      </div>
+
+        </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+    <div th:replace="~{fragments/footer :: footer}">...</div>
+
+    <script type="text/javascript" >
+        var blogId = [[${blog.id}]];
+        var blogUrl = '/u/' + '[[${blog.user.username}]]' + '/blogs/' + [[${blog.id}]];
+        //询问框
+        $("#delBlogBut").click(function () {
+          layer.confirm('您确定要删除本条微博吗？', {
+            btn: ['是的', '算了'] //按钮
+          }, function () {
+            //layer.msg('的确很重要', {icon: 1});
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+              url: blogUrl,
+              type: 'DELETE',
+              beforeSend: function (request) {
+                request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+              },
+              success: function (result) {
+                if (result.code == "0") {
+                  // 成功后，重定向
+                  // window.location = data.body;
+                  window.location = result.data;
+                  //toastr.success(result.data);
+                } else {
+                  toastr.error(result.msg);
+                }
+              },
+              error: function () {
+                toastr.error("error!");
+              }
+            });
+          }, function () {
+            //算了
+          })
+        })
+
+
+
+    $(".icon-good").click(function(){
+      alert($(this).attr('data-smsid'));
+    })
+
+    $(".icon-collect").click(function(){
+      alert($(this).attr('data-smsid'));
+    })
+    </script>
+  </body>
+</html>

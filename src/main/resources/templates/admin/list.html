@@ -21,7 +21,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${userModel.userList}">
+        <tr th:each="user : ${model.userList}">
             <th scope="row"  th:text="${user.id}">1</th>
             <td th:text="${user.email}">Mark</td>
             <td th:text="${user.username}">Otto</td>

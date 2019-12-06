@@ -1,5 +1,6 @@
 package com.pppenger.microblog.domin;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -38,6 +39,7 @@ public class Blog implements Serializable {
 
     @Column(nullable = false) // 映射为字段，值不能为空
     @org.hibernate.annotations.CreationTimestamp  // 由数据库自动创建时间
+    //@JsonFormat(shape= JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Timestamp createTime;
 
     @Column(name="readSize")
@@ -159,7 +161,7 @@ public class Blog implements Serializable {
     }
 
     public void setPictures(List<Picture> pictures) {
-        pictures = pictures;
+        this.pictures = pictures;
     }
 
     /**

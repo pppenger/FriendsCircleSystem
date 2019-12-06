@@ -1,0 +1,243 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<style>
+    .icon-user-good{
+        background: url("../../images/icon-good.png") left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-good:hover{
+        background: url("../../images/icon-good-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-collect{
+        background: url("../../images/icon-collect.png") left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-collect:hover{
+        background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-commit{
+        background: url("../../images/icon-commit.png") left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-commit:hover{
+        background: url("../../images/icon-commit-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+</style>
+<body class="bg-light">
+
+<div class="container">
+<!--    <input type="text" th:value="${user.username}" type="hidden" id="thisBlogUsername">-->
+    <div class="row justify-content-center" >
+        <div class="col-7 bg-white m-2 " >
+            <div class="clearfix border-right:">
+                <div class="shadow " style="float:right;">
+                    <a href="" class=" text-success" >按热度排序</a><span class="text-success"> | </span>
+                    <a href="" class=" text-success" >按时间排序(默认)</a>
+                </div>
+            </div>
+            <div class=" m-2 border-bottom pb-2"   id="mainContainerRepleace"  th:each="blog : ${blogList}">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9" style="padding:0">
+                            <a href=""><img th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50 shadow"></a>
+                            <a href="" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
+                        </div>
+                        <div class="col-3  mt-2">
+                            <small class="" th:text="${#dates.format(blog.createTime,'yyyy.MM.dd HH:mm:ss')}">2010.09.04-14:20</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
+                    <p th:text="'简介：'+ ${blog.summary}">简介：+${blog.summary}+</p>
+                    <div class="itemimg">
+                        <span th:each="picture : ${blog.pictures}" >
+                        <img th:src=${picture.pictureURL} alt="" class="bigbigpicture"  data-realsrc="./images/test.png">
+                        </span>
+                    </div>
+                    <div class="row pl-3 pt-2 pb-1">
+                        <a href="" class=" icon-user-good pl-4" data-smsid="填短讯id">222</a>
+                        <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
+                        <a href="" class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
+                    </div>
+                    <div class="container text-commit">
+                        <div class="row border-left">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="../../images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-9">
+                                的发顺丰水电费水电费水电
+                            </div>
+                            <div class="col-1">
+
+                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                            </div>
+                        </div>
+
+                        <div class="row border-left mt-2">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="../../images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-9">
+                                的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
+                            </div>
+
+                            <div class="col-1">
+                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:replace="fragments/page :: pagehtml">...</div>
+
+
+        </div>
+
+        <div class="rightcontent col-3 m-2 p-3 " style="text-align:center">
+            <div class="bg-white p-3 mb-3 shadow-sm">
+                <div class="mb-3 ">
+                    <a href="">
+                        <img src="./images/test.png" alt="" id="rightavter" class="avatar-100 m-auto"  style="display:block;">
+                    </a>
+                </div>
+                <div  class="mb-2 text-secondary">
+                    <span>邮箱：958310042@qq.com</span>
+                </div>
+                <div   class="mb-2 text-secondary">
+                    <span>用户名</span>
+                </div>
+                <input type="button" class="btn btn-outline-primary btn-sm mb-3" value="更改个人信息">
+            </div>
+
+
+
+            <div class="bg-white p-2 shadow-sm">
+                <div class="card" style="">
+                    <div class="card-header">
+                        提醒
+                    </div>
+                </div>
+                <div class="card" style="">
+                    <div class="card-header">
+                        我的分区
+                    </div>
+                </div>
+                <div class="card" style="">
+                    <div class="card-header">
+                        收藏列表
+                    </div>
+                </div>
+                <div class="card" style="">
+                    <div class="card-header">
+                        分区管理
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+
+
+<script type="text/javascript" >
+
+    function getBlogByUsername(pageIndex) {
+        $.ajax({
+            url: "/u/"+$("#thisBlogUsername").val()+"/blogs",
+            contentType : 'application/json',
+            data:{
+                "pageIndex":pageIndex,
+            },
+            success: function(data){
+                //$("#AdminIndex").html(data);
+                //$("#mainContainer").html(data);
+                document.html(data);
+            },
+            error : function() {
+                toastr.error("error!");
+            }
+        });
+    }
+
+    //分页
+    $(".pagebutJump").click(function () {
+        var pageIndex=$(this).attr("id")-1;
+        getBlogByUsername(pageIndex);
+    });
+
+    $(".pagebutNum").click(function () {
+        var pageIndex=$(this).attr("value")-1;
+        getBlogByUsername(pageIndex);
+    });
+
+
+
+
+
+    $(".icon-good").click(function(){
+        alert($(this).attr('data-smsid'));
+    })
+
+    $(".icon-collect").click(function(){
+        alert($(this).attr('data-smsid'));
+    })
+
+
+    //DOM加载完就执行
+    $(function() {
+        var _pageSize; // 存储用于搜索
+        // 根据用户名、页面索引、页面大小获取用户的博客列表
+        function getBlogsByName(pageIndex, pageSize) {
+            $.ajax({
+                url: "/u/" + username + "/blogs",
+                contentType: 'application/json',
+                data: {
+                    "async": true,
+                    // "pageIndex": pageIndex,
+                    // "pageSize": pageSize,
+                    //"keyword": $("#keyword").val()
+                },
+                success: function (data) {
+                    alert(data);
+                    $("#mainContainer").html(data);
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        }
+    })
+</script>
+</body>
+</html>
