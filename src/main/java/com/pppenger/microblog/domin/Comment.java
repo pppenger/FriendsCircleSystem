@@ -2,6 +2,7 @@ package com.pppenger.microblog.domin;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 
@@ -40,9 +43,22 @@ public class Comment implements Serializable {
     @JoinColumn(name="user_id")
     private User user;
 
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "comment_vote", joinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "vote_id", referencedColumnName = "id"))
+    private List<Vote> votes;
+
+    @Column(name="voteSize")
+    private Integer voteSize = 0;  // 点赞量
+
+    @Column(name="report_size")
+    private Integer reportSize = 0;  // 举报量
+
     @Column(nullable = false) // 映射为字段，值不能为空
     @org.hibernate.annotations.CreationTimestamp  // 由数据库自动创建时间
     private Timestamp createTime;
+
 
     protected Comment() {
         // TODO Auto-generated constructor stub
@@ -78,4 +94,19 @@ public class Comment implements Serializable {
         return createTime;
     }
 
+    public Integer getVoteSize() {
+        return voteSize;
+    }
+
+    public void setVoteSize(Integer voteSize) {
+        this.voteSize = voteSize;
+    }
+
+    public Integer getReportSize() {
+        return reportSize;
+    }
+
+    public void setReportSize(Integer reportSize) {
+        this.reportSize = reportSize;
+    }
 }

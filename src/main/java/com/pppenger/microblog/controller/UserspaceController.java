@@ -157,12 +157,14 @@ public class UserspaceController {
         List<Blog> list = page.getContent();	// 当前所在页面数据列表
 
         model.addAttribute("order", order);
-        model.addAttribute("model.page", page);
+        model.addAttribute("page", page);
         model.addAttribute("blogList", list);
         //return (async==true?"/userspace/u :: #mainContainerRepleace":"/userspace/u");
         //return "/userspace/blog";
 
         return (async==true?"/userspace/u :: #mainContainerRepleace":"/userspace/u");
+//        return (async==true?new ModelAndView("/userspace/u :: #mainContainerRepleace", "model", model):
+//                new ModelAndView("/userspace/u", "model", model));
     }
 
     /**
