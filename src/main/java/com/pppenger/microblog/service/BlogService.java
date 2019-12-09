@@ -70,7 +70,7 @@ public interface BlogService {
 	 * @param commentContent
 	 * @return
 	 */
-	Blog createComment(Long blogId, String commentContent);
+	Blog createComment(Long blogId, String commentContent, String toUser);
 	
 	/**
 	 * 删除评论

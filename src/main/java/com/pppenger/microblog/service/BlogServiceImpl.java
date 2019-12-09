@@ -8,10 +8,12 @@ import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.repository.BlogRepository;
 import com.pppenger.microblog.vo.PictureVO;
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +32,9 @@ import java.util.UUID;
  */
 @Service
 public class BlogServiceImpl implements BlogService {
+
+	@Autowired
+	UserDetailsService userDetailsService;
 
 	@Autowired
 	private BlogRepository blogRepository;
@@ -93,10 +98,18 @@ public class BlogServiceImpl implements BlogService {
 	}
 
 	@Override
-	public Blog createComment(Long blogId, String commentContent) {
+	public Blog createComment(Long blogId, String commentContent, String toUserName) {
+
 		Blog originalBlog = blogRepository.findOne(blogId);
-		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Comment comment = new Comment(user, commentContent);
+		User formuser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Comment comment;
+		if (StringUtils.isNotEmpty(toUserName)){
+			User toUser = (User) userDetailsService.loadUserByUsername(toUserName);
+			 comment = new Comment(formuser,toUser, commentContent);
+		}else{
+
+			 comment = new Comment(formuser, commentContent);
+		}
 		originalBlog.addComment(comment);
 		return blogRepository.save(originalBlog);
 	}

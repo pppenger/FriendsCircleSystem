@@ -10,6 +10,7 @@ import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.BlogService;
 import com.pppenger.microblog.service.CommentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -74,10 +75,9 @@ public class CommentController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
-    public Result createComment(Long blogId, String commentContent) {
-
+    public Result createComment(Long blogId, String commentContent,String toUser) {
         try {
-            blogService.createComment(blogId, commentContent);
+            blogService.createComment(blogId, commentContent,toUser);
         } catch (ConstraintViolationException e)  {
             throw e;
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class CommentController {
     public Result deleteBlog(@PathVariable("id") Long id, Long blogId) {
 
         boolean isOwner = false;
-        User user = commentService.getCommentById(id).getUser();
+        User user = commentService.getCommentById(id).getFormUser();
 
         // 判断操作用户是否是博客的所有者
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()

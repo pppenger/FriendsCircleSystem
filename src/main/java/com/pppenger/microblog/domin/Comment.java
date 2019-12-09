@@ -40,9 +40,13 @@ public class Comment implements Serializable {
 
     //谁发表的评论
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    private User user;
+    @JoinColumn(name="form_user_id")
+    private User formUser;
 
+    //谁发表的评论
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name="to_user_id")
+    private User toUser;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "comment_vote", joinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"),
@@ -65,7 +69,13 @@ public class Comment implements Serializable {
     }
     public Comment(User user, String content) {
         this.content = content;
-        this.user = user;
+        this.formUser = user;
+    }
+
+    public Comment(User formUser, User toUser, String content) {
+        this.content = content;
+        this.formUser = formUser;
+        this.toUser = toUser;
     }
 
     public Long getId() {
@@ -83,13 +93,6 @@ public class Comment implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
-    public User getUser() {
-        return user;
-    }
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -108,5 +111,29 @@ public class Comment implements Serializable {
 
     public void setReportSize(Integer reportSize) {
         this.reportSize = reportSize;
+    }
+
+    public User getFormUser() {
+        return formUser;
+    }
+
+    public void setFormUser(User formUser) {
+        this.formUser = formUser;
+    }
+
+    public User getToUser() {
+        return toUser;
+    }
+
+    public void setToUser(User toUser) {
+        this.toUser = toUser;
+    }
+
+    public List<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
     }
 }
