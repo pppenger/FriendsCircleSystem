@@ -1,5 +1,7 @@
 package com.pppenger.microblog.controller;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
 
@@ -52,7 +54,8 @@ public class CommentController {
     public String listComments(@RequestParam(value="blogId",required=true) Long blogId, Model model) {
         Blog blog = blogService.getBlogById(blogId);
         List<Comment> comments = blog.getComments();
-
+        List<Comment> hotList = comments.stream().sorted(Comparator.comparing(Comment::getVoteSize).reversed()).collect(Collectors.toList());
+        List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime)).collect(Collectors.toList());
         // 判断操作用户是否是评论的所有者
         String commentOwner = "";
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
