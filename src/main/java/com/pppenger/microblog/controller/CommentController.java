@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -75,6 +75,7 @@ public class CommentController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+    @ResponseBody
     public Result createComment(Long blogId, String commentContent,String toUser) {
         try {
             blogService.createComment(blogId, commentContent,toUser);

@@ -64,47 +64,27 @@
               <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
               <a href="" class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
               </div>
-              <div class="container text-commit">
-                  <div class="row border-left">
+              <div class="container text-commit" th:each="comment,commentStat : ${comments}" th:object="${comment}">
+                  <div class="row border-left  mt-2">
                   <div class="col-2" style="padding:0">
                     <div>
                       <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
+                      <a href="" th:href="'/u/'+ *{user.username}" class=" text-success" th:text="*{formUser.username}">评论姓名</a>
                     </div>
                     <div >
-                      <small>2010.09.04-14:20</small>
+                      <small th:text="*{createTime}">2010.09.04-14:20</small>
                     </div>
 
                   </div>
-                  <div class="col-9">
+                  <div class="col-9" th:text="*{content}">
                     的发顺丰水电费水电费水电
                   </div>
                   <div class="col-1">
                     
-                    <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                    <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>
                   </div>
                   </div>
 
-                  <div class="row border-left mt-2">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-9">
-                    的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
-                  </div>
-
-                  <div class="col-1">
-                    
-                    <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
-                  </div>
-                  </div>
               </div>
             </div>
 
@@ -249,8 +229,9 @@
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
-                success: function(data){
-                    if (data.success) {
+                success: function(result){
+                    if (result.code == "0") {
+                        toastr.error(result.data);
                         // 清空评论框
                         $('#commentContent').val('');
                         // 获取评论列表
