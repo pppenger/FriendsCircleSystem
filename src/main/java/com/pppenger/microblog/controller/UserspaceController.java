@@ -1,6 +1,7 @@
 package com.pppenger.microblog.controller;
 
 import com.pppenger.microblog.domin.Blog;
+import com.pppenger.microblog.domin.Comment;
 import com.pppenger.microblog.domin.Picture;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.result.CodeMsg;
@@ -37,8 +38,10 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -155,6 +158,15 @@ public class UserspaceController {
             page = blogService.listBlogsByTitleLike(user, keyword, pageable);
         }
         List<Blog> list = page.getContent();	// 当前所在页面数据列表
+        //对评论进行筛选
+        list.stream().forEach(blog ->
+        {
+            blog.setComments(
+                    blog.getComments().stream().sorted(
+                            Comparator.comparing(
+                                    Comment::getVoteSize).reversed()).limit(2).collect(Collectors.toList())
+            );
+        });
 
         model.addAttribute("order", order);
         model.addAttribute("page", page);

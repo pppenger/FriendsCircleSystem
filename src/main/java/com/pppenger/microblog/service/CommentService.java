@@ -20,4 +20,10 @@ public interface CommentService {
 	 * @return
 	 */
 	void removeComment(Long id);
+	/**
+	 * 更新评论——原先的删除功能变成修改内容，内容设置成了系统默认值
+	 * @param id
+	 * @return
+	 */
+	void updateComment(Long id);
 }

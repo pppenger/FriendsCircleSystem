@@ -105,7 +105,9 @@ public class BlogServiceImpl implements BlogService {
 		Comment comment;
 		if (StringUtils.isNotEmpty(toUserName)){
 			User toUser = (User) userDetailsService.loadUserByUsername(toUserName);
+			commentContent="@"+toUserName+"："+toUser.getName();
 			 comment = new Comment(formuser,toUser, commentContent);
+			 //添加提醒信息——未完成
 		}else{
 
 			 comment = new Comment(formuser, commentContent);
@@ -120,7 +122,6 @@ public class BlogServiceImpl implements BlogService {
 		originalBlog.removeComment(commentId);
 		blogRepository.save(originalBlog);
 	}
-
 
 	@Override
 	public List uploadPictures(MultipartFile[] multipartFiles) {

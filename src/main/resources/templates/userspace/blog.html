@@ -64,33 +64,75 @@
               <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
               <a href="" class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
               </div>
-              <div class="container text-commit" id="mainContainerRepleace" th:each="comment,commentStat : ${comments}" th:object="${comment}">
-                  <div class="row border-left  mt-2">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
-                      <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.username}">评论姓名</a>
-                    </div>
-                    <div >
-                      <small th:text="*{createTime}">2010.09.04-14:20</small>
-                    </div>
+              <div  class="container text-commit" id="mainContainerRepleace">
+                  <div th:if="${hotcomments}!=null">
+                  <br>
+                  <div id="top10"  class="border-left border-bottom border-primary row">&nbsp;top5</div>
+                  <br>
+                  <div  th:each="comment,commentStat : ${hotcomments}" th:object="${comment}">
+                      <div class="row border-left  mt-2">
+                      <div class="col-2" style="padding:0">
+                        <div>
+                          <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
+                          <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.name}">评论姓名</a>
+                        </div>
+                        <div >
+                          <small th:text="*{createTime}">2010.09.04-14:20</small>
+                        </div>
 
-                  </div>
-                  <div class="col-9" th:text="*{content}">
-                    的发顺丰水电费水电费水电
-                  </div>
-                  <div class="col-1">
-                    
-                    <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>
-                  </div>
+                      </div>
+                      <div class="col-8" th:text="*{content}">
+                        的发顺丰水电费水电费水电
+                      </div>
+                      <div class="col-2">
+
+                        <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>
+                          <a href="#replyName" class="reply" th:name="*{formUser.name}" th:data-replyusername="*{formUser.username}">回复</a>
+                          <a class="delCommentId" th:attr="data-commentId=*{id}">删除</a>
+                      </div>
+                      </div>
                   </div>
 
+                  <br>
+                  <div id=""  class="border-left border-bottom border-primary row">&nbsp;最新评论</div>
+                  <br>
+                  <div   th:each="comment,commentStat : ${timecomments}" th:object="${comment}">
+                      <div class="row border-left  mt-2">
+                          <div class="col-2" style="padding:0">
+                              <div>
+                                  <a href=""><img src="../../../images/avatarboy.png" alt="" class="avatar-30-co"></a>
+                                  <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.name}">评论姓名</a>
+                              </div>
+                              <div >
+                                  <small th:text="*{createTime}">2010.09.04-14:20</small>
+                              </div>
+
+                          </div>
+                          <div class="col-8" th:text="*{content}">
+                              的发顺丰水电费水电费水电
+                          </div>
+                          <div class="col-2">
+                              <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>
+                              <a href="#replyName" class="reply" th:name="*{formUser.name}" th:data-replyusername="*{formUser.username}">回复</a>
+                              <span sec:authorize="isAuthenticated()">
+                              <a  th:if="*{content}!='[系统提示：改评论内容已被删除！]'" class="delCommentId" th:attr="data-commentId=*{id}" >删除</a>
+                              </span>
+                          </div>
+                      </div>
+                  </div>
+
+              </div>
               </div>
             </div>
 
             <div class="form-group clearfix">
               <hr>
               <label >发表评论</label>
+                <div>
+                    <input type="text" name="replyName" id="replyName" readonly style="border: 0" value="回复：">
+                    <input type="text" id="replyRealyName" readonly style="display: none">
+                    <a id="cancelReply" class=" badge badge-light" style="display: none;">取消@</a>
+                </div>
               <textarea class="form-control " id="commentContent" rows="4" maxlength="100" placeholder="请控制在100字内"></textarea>
                <button style="float:right;" type="button" class=" btn btn-outline-success mt-2 btn-sm" id="submitComment">发布</button>
             </div>
@@ -189,7 +231,7 @@
                         request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                     },
                     success: function (data) {
-                        $("#mainContainer").html(data);
+                        $("#mainContainerRepleace").html(data);
 
                     },
                     error: function () {
@@ -198,7 +240,7 @@
                 });
             };
 
-        //询问框
+        //删除微博
         $("#delBlogBut").click(function () {
           layer.confirm('您确定要删除本条微博吗？', {
             btn: ['是的', '算了'] //按钮
@@ -232,6 +274,57 @@
         });
 
 
+        //删除评论
+        $(document).on("click",".delCommentId",function(){
+            var th = $(this).parent().prev();
+            var commemtId = $(this).attr("data-commentId");
+            layer.confirm('确定删除评论内容吗？', {
+                btn: ['是的', '算了'] //按钮
+            }, function (index) {
+                //layer.msg('的确很重要', {icon: 1});
+                var csrfToken = $("meta[name='_csrf']").attr("content");
+                var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+                $.ajax({
+                    url: '/comments/'+commemtId,
+                    type: 'DELETE',
+                    beforeSend: function (request) {
+                        request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                    },
+                    success: function (result) {
+                        layer.close(index);
+                        if (result.code == 0) {
+                            // window.location = result.data;
+                            th.html("[系统提示：改评论内容已被删除！]");
+                        } else {
+                            toastr.error(result.msg);
+                        }
+
+                    },
+                    error: function () {
+                        layer.close(index);
+                        toastr.error("error!");
+                    }
+                });
+            }, function () {
+                //算了
+            })
+        })
+
+
+
+        $(document).on("click",".reply",function(){
+
+            $("#replyName").attr("value","回复：@"+$(this).attr("name"));
+            $("#cancelReply").show();
+            $("#replyRealyName").attr("value",$(this).attr("data-replyusername"));
+        })
+
+        $(document).on("click","#cancelReply",function(){
+
+            $("#replyName").attr("value","回复：");
+            $("#replyRealyName").attr("value","");
+            $("#cancelReply").hide();
+        })
 
     $(".icon-good").click(function(){
       alert($(this).attr('data-smsid'));
@@ -243,14 +336,21 @@
 
         // 提交评论
         $(".container").on("click","#submitComment", function () {
+            if($('#commentContent').val()==""){
+                toastr.error("评论内容不能为空");
+                return;
+            }
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
-
             $.ajax({
                 url: '/comments',
                 type: 'POST',
-                data:{"blogId":blogId, "commentContent":$('#commentContent').val()},
+                data:{
+                    "blogId":blogId,
+                    "commentContent":$('#commentContent').val(),
+                    "toUserName":$("#replyRealyName").val()
+                },
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
@@ -260,9 +360,9 @@
                         // 清空评论框
                         $('#commentContent').val('');
                         // 获取评论列表
-                        //getCommnet(blogId);
+                        getCommnet(blogId);
                     } else {
-                        toastr.error(data.message);
+                        toastr.error("请先登录!");
                     }
                 },
                 error : function() {

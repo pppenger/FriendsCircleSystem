@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,8 +55,8 @@ public class CommentController {
     public String listComments(@RequestParam(value="blogId",required=true) Long blogId, Model model) {
         Blog blog = blogService.getBlogById(blogId);
         List<Comment> comments = blog.getComments();
-        List<Comment> hotList = comments.stream().sorted(Comparator.comparing(Comment::getVoteSize).reversed()).collect(Collectors.toList());
-        List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime)).collect(Collectors.toList());
+        List<Comment> hotList = comments.stream().sorted(Comparator.comparing(Comment::getVoteSize).reversed()).limit(5).collect(Collectors.toList());
+        List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime).reversed()).collect(Collectors.toList());
         // 判断操作用户是否是评论的所有者
         String commentOwner = "";
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
@@ -67,7 +68,9 @@ public class CommentController {
         }
 
         model.addAttribute("commentOwner", commentOwner);
-        model.addAttribute("comments", comments);
+//        model.addAttribute("comments", comments);
+        model.addAttribute("hotcomments", hotList);
+        model.addAttribute("timecomments", timeList);
         return "/userspace/blog :: #mainContainerRepleace";
     }
     /**
@@ -79,9 +82,9 @@ public class CommentController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
     @ResponseBody
-    public Result createComment(Long blogId, String commentContent,String toUser) {
+    public Result createComment(Long blogId, String commentContent,String toUserName) {
         try {
-            blogService.createComment(blogId, commentContent,toUser);
+            blogService.createComment(blogId, commentContent,toUserName);
         } catch (ConstraintViolationException e)  {
             throw e;
         } catch (Exception e) {
@@ -90,16 +93,44 @@ public class CommentController {
         return Result.success("创建评论成功");
     }
 
+//    /**
+//     * 删除评论
+//     * @return
+//     */
+//    @DeleteMapping("/{id}")
+//    public Result deleteBlog(@PathVariable("id") Long id, Long blogId) {
+//        boolean isOwner = false;
+//        User user = commentService.getCommentById(id).getFormUser();
+//        // 判断操作用户是否是博客的所有者
+//        if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+//                &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
+//            User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//            if (principal !=null && user.getUsername().equals(principal.getUsername())) {
+//                isOwner = true;
+//            }
+//        }
+//        if (!isOwner) {
+//            return Result.error(CodeMsg.HAVE_NOT_AUTHORITY);
+//        }
+//        try {
+//            blogService.removeComment(blogId, id);
+//            commentService.removeComment(id);
+//        } catch (ConstraintViolationException e)  {
+//            throw e;
+//        } catch (Exception e) {
+//            throw e;
+//        }
+//        return Result.success("删除评论成功");
+//    }
     /**
-     * 删除评论
+     * 更新评论(设为默认值)
      * @return
      */
     @DeleteMapping("/{id}")
-    public Result deleteBlog(@PathVariable("id") Long id, Long blogId) {
-
+    @ResponseBody
+    public Result deleteBlog(@PathVariable("id") Long id) {
         boolean isOwner = false;
         User user = commentService.getCommentById(id).getFormUser();
-
         // 判断操作用户是否是博客的所有者
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
                 &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
@@ -108,20 +139,17 @@ public class CommentController {
                 isOwner = true;
             }
         }
-
         if (!isOwner) {
             return Result.error(CodeMsg.HAVE_NOT_AUTHORITY);
         }
-
         try {
-            blogService.removeComment(blogId, id);
-            commentService.removeComment(id);
+            commentService.updateComment(id);
         } catch (ConstraintViolationException e)  {
             throw e;
         } catch (Exception e) {
             throw e;
         }
-
-        return Result.success("删除评论成功");
+        return Result.success("评论内容已被系统删除");
     }
+
 }

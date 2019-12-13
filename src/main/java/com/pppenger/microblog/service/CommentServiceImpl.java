@@ -26,6 +26,15 @@ public class CommentServiceImpl implements CommentService {
 	public void removeComment(Long id) {
 		commentRepository.delete(id);
 	}
+
+	@Override
+	@Transactional
+	public void updateComment(Long id) {
+		Comment comment = commentRepository.getOne(id);
+		comment.setContent("[系统提示：改评论内容已被删除！]");
+		commentRepository.save(comment);
+	}
+
 	@Override
 	public Comment getCommentById(Long id) {
 		return commentRepository.findOne(id);
