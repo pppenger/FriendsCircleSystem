@@ -67,7 +67,7 @@
                     <div class="row pl-3 pt-2 pb-1">
                         <a href="" class=" icon-user-good pl-4" data-smsid="填短讯id">222</a>
                         <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
-                        <a href="" class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
+                        <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id" th:text="*{blog.commentSize}">52</a>
                     </div>
                     <div class="container text-commit" th:each="comment : ${blog.comments}" th:object="${comment}">
                         <div class="row border-left">

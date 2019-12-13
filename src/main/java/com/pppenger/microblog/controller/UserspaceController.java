@@ -4,6 +4,7 @@ import com.pppenger.microblog.domin.Blog;
 import com.pppenger.microblog.domin.Comment;
 import com.pppenger.microblog.domin.Picture;
 import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.domin.Vote;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.BlogService;
@@ -203,21 +204,21 @@ public class UserspaceController {
             }
         }
 
-//        // 判断操作用户的点赞情况
-//        List<Vote> votes = blog.getVotes();
-//        Vote currentVote = null; // 当前用户的点赞情况
-//
-//        if (principal !=null) {
-//            for (Vote vote : votes) {
-//                vote.getUser().getUsername().equals(principal.getUsername());
-//                currentVote = vote;
-//                break;
-//            }
-//        }
+        // 判断操作用户的点赞情况
+        List<Vote> votes = blog.getVotes();
+        Vote currentVote = null; // 当前用户的点赞情况
+
+        if (principal !=null) {
+            for (Vote vote : votes) {
+                vote.getUser().getUsername().equals(principal.getUsername());
+                currentVote = vote;
+                break;
+            }
+        }
 
         model.addAttribute("isBlogOwner", isBlogOwner);
         model.addAttribute("blog",blog);
-        //model.addAttribute("currentVote",currentVote);
+        model.addAttribute("currentVote",currentVote);
         return "/userspace/blog";
     }
 

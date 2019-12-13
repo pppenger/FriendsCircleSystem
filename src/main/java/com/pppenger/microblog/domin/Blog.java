@@ -148,6 +148,15 @@ public class Blog implements Serializable {
         this.reportSize = reportSize;
     }
 
+    public List<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
+        this.voteSize = this.votes.size();
+    }
+
     public List<Comment> getComments() {
         return comments;
     }
@@ -185,5 +194,42 @@ public class Blog implements Serializable {
         }
 
         this.commentSize = this.comments.size();
+    }
+
+    /**
+     * 点赞
+     * @param vote
+     * @return
+     */
+    public boolean addVote(Vote vote) {
+        boolean isExist = false;
+        // 判断重复
+        for (int index=0; index < this.votes.size(); index ++ ) {
+            if (this.votes.get(index).getUser().getId() == vote.getUser().getId()) {
+                isExist = true;
+                break;
+            }
+        }
+
+        if (!isExist) {
+            this.votes.add(vote);
+            this.voteSize = this.votes.size();
+        }
+
+        return isExist;
+    }
+    /**
+     * 取消点赞
+     * @param voteId
+     */
+    public void removeVote(Long voteId) {
+        for (int index=0; index < this.votes.size(); index ++ ) {
+            if (this.votes.get(index).getId() == voteId) {
+                this.votes.remove(index);
+                break;
+            }
+        }
+
+        this.voteSize = this.votes.size();
     }
 }

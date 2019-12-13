@@ -5,6 +5,7 @@ import javax.transaction.Transactional;
 import com.pppenger.microblog.domin.Blog;
 import com.pppenger.microblog.domin.Comment;
 import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.domin.Vote;
 import com.pppenger.microblog.repository.BlogRepository;
 import com.pppenger.microblog.vo.PictureVO;
 import net.coobird.thumbnailator.Thumbnails;
@@ -165,5 +166,24 @@ public class BlogServiceImpl implements BlogService {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public Blog createVote(Long blogId) {
+		Blog originalBlog = blogRepository.findOne(blogId);
+		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Vote vote = new Vote(user);
+		boolean isExist = originalBlog.addVote(vote);
+		if (isExist) {
+			throw new IllegalArgumentException("该用户已经点过赞了");
+		}
+		return blogRepository.save(originalBlog);
+	}
+
+	@Override
+	public void removeVote(Long blogId, Long voteId) {
+		Blog originalBlog = blogRepository.findOne(blogId);
+		originalBlog.removeVote(voteId);
+		blogRepository.save(originalBlog);
 	}
 }
