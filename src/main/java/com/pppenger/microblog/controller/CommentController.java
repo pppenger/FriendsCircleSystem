@@ -1,4 +1,5 @@
 package com.pppenger.microblog.controller;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import javax.validation.ConstraintViolationException;
 import com.pppenger.microblog.domin.Blog;
 import com.pppenger.microblog.domin.Comment;
 import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.domin.Vote;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.BlogService;
@@ -53,19 +55,34 @@ public class CommentController {
      */
     @GetMapping
     public String listComments(@RequestParam(value="blogId",required=true) Long blogId, Model model) {
-        Blog blog = blogService.getBlogById(blogId);
-        List<Comment> comments = blog.getComments();
-        List<Comment> hotList = comments.stream().sorted(Comparator.comparing(Comment::getVoteSize).reversed()).limit(5).collect(Collectors.toList());
-        List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime).reversed()).collect(Collectors.toList());
         // 判断操作用户是否是评论的所有者
         String commentOwner = "";
+        User principal = null;
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
                 &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
-            User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal !=null) {
                 commentOwner = principal.getUsername();
             }
         }
+        Blog blog = blogService.getBlogById(blogId);
+        List<Comment> comments = blog.getComments();
+
+        if (principal !=null) {
+            for (Comment comment : comments){
+                List list1 = new ArrayList();
+                for (Vote vote : comment.getVotes()){
+                    vote.getUser().getUsername().equals(principal.getUsername());
+                    list1.add(vote);
+                    break;
+                }
+                comment.setVotes(list1);
+            }
+        }
+
+        List<Comment> hotList = comments.stream().sorted(Comparator.comparing(Comment::getVoteSize).reversed()).limit(5).collect(Collectors.toList());
+        List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime).reversed()).collect(Collectors.toList());
+
 
         model.addAttribute("commentOwner", commentOwner);
 //        model.addAttribute("comments", comments);
