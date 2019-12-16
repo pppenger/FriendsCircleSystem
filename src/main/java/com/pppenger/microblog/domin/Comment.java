@@ -64,6 +64,7 @@ public class Comment implements Serializable {
     private Timestamp createTime;
 
 
+
     protected Comment() {
         // TODO Auto-generated constructor stub
     }
@@ -135,5 +136,42 @@ public class Comment implements Serializable {
 
     public void setVotes(List<Vote> votes) {
         this.votes = votes;
+    }
+
+    /**
+     * 点赞
+     * @param vote
+     * @return
+     */
+    public boolean addVote(Vote vote) {
+        boolean isExist = false;
+        // 判断重复
+        for (int index=0; index < this.votes.size(); index ++ ) {
+            if (this.votes.get(index).getUser().getId() == vote.getUser().getId()) {
+                isExist = true;
+                break;
+            }
+        }
+
+        if (!isExist) {
+            this.votes.add(vote);
+            this.voteSize = this.votes.size();
+        }
+
+        return isExist;
+    }
+    /**
+     * 取消点赞
+     * @param voteId
+     */
+    public void removeVote(Long voteId) {
+        for (int index=0; index < this.votes.size(); index ++ ) {
+            if (this.votes.get(index).getId() == voteId) {
+                this.votes.remove(index);
+                break;
+            }
+        }
+
+        this.voteSize = this.votes.size();
     }
 }

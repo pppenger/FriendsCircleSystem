@@ -3,8 +3,11 @@ package com.pppenger.microblog.service;
 import javax.transaction.Transactional;
 
 import com.pppenger.microblog.domin.Comment;
+import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.domin.Vote;
 import com.pppenger.microblog.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -40,4 +43,23 @@ public class CommentServiceImpl implements CommentService {
 		return commentRepository.findOne(id);
 	}
 
+
+	@Override
+	public Comment createVote(Long commentId) {
+		Comment originalComment = commentRepository.findOne(commentId);
+		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Vote vote = new Vote(user);
+		boolean isExist = originalComment.addVote(vote);
+		if (isExist) {
+			throw new IllegalArgumentException("该用户已经点过赞了");
+		}
+		return commentRepository.save(originalComment);
+	}
+
+	@Override
+	public void removeVote(Long commentId, Long voteId) {
+		Comment originalComment = commentRepository.findOne(commentId);
+		originalComment.removeVote(voteId);
+		commentRepository.save(originalComment);
+	}
 }

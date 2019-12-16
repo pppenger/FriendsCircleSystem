@@ -5,6 +5,7 @@ import javax.validation.ConstraintViolationException;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.BlogService;
+import com.pppenger.microblog.service.CommentService;
 import com.pppenger.microblog.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ public class VoteController {
 	
 	@Autowired
 	private VoteService voteService;
+
+	@Autowired
+	private CommentService commentService;
  
 	/**
 	 * 发表点赞
@@ -83,6 +87,66 @@ public class VoteController {
 		
 		try {
 			blogService.removeVote(blogId, id);
+			voteService.removeVote(id);
+		} catch (ConstraintViolationException e)  {
+			throw e;
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return Result.success( "取消点赞成功");
+	}
+
+
+
+	/**
+	 * 发表点赞
+	 * @param commentId
+	 * @return
+	 */
+	@PostMapping("/comment")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+	@ResponseBody
+	public Result createCommentVote(Long commentId) {
+
+		try {
+			commentService.createVote(commentId);
+		} catch (ConstraintViolationException e)  {
+			throw e;
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return Result.success("点赞成功");
+	}
+
+	/**
+	 * 删除点赞
+	 * @return
+	 */
+	@DeleteMapping("/comment/{id}")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+	@ResponseBody
+	public Result commentDelete(@PathVariable("id") Long id, Long commentId) {
+
+		boolean isOwner = false;
+		User user = voteService.getVoteById(id).getUser();
+
+		// 判断操作用户是否是点赞的所有者
+		if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+				&&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
+			User principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if (principal !=null && user.getUsername().equals(principal.getUsername())) {
+				isOwner = true;
+			}
+		}
+
+		if (!isOwner) {
+			return Result.success( "没有操作权限");
+		}
+
+		try {
+			commentService.removeVote(commentId, id);
 			voteService.removeVote(id);
 		} catch (ConstraintViolationException e)  {
 			throw e;

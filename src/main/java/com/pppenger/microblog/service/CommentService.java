@@ -26,4 +26,19 @@ public interface CommentService {
 	 * @return
 	 */
 	void updateComment(Long id);
+
+	/**
+	 * 点赞
+	 * @param commentId
+	 * @return
+	 */
+	Comment createVote(Long commentId);
+
+	/**
+	 * 取消点赞
+	 * @param commentId
+	 * @param voteId
+	 * @return
+	 */
+	void removeVote(Long commentId, Long voteId);
 }

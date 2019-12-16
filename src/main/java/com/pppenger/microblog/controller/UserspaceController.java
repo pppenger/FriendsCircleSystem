@@ -148,6 +148,13 @@ public class UserspaceController {
 //            return "/u";
 //
 //        }
+
+        User principal = null;
+        if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+
         Page<Blog> page = null;
         if (order.equals("hot")) { // 最热查询【先按阅读量评论量等排序一个Sort，然后再去查询】
             Sort sort = new Sort(Sort.Direction.DESC,"reading","comments","likes");
@@ -168,6 +175,18 @@ public class UserspaceController {
                                     Comment::getVoteSize).reversed()).limit(2).collect(Collectors.toList())
             );
         });
+
+        if (principal !=null) {
+            for (Blog blog : list){
+                List list1 = new ArrayList();
+                for (Vote vote : blog.getVotes()){
+                    vote.getUser().getUsername().equals(principal.getUsername());
+                    list1.add(vote);
+                    break;
+                }
+                blog.setVotes(list1);
+            }
+        }
 
         model.addAttribute("order", order);
         model.addAttribute("page", page);

@@ -13,6 +13,10 @@
         background: url("../../images/icon-good-highlight.png")  left top no-repeat;
         background-size: 23px;
     }
+    .icon-user-good-had{
+        background: url("../../images/icon-good-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
     .icon-user-collect{
         background: url("../../images/icon-collect.png") left top no-repeat;
         background-size: 23px;
@@ -57,6 +61,7 @@
                 </div>
 
                 <div class="pt-2">
+                    <input readonly type="hidden" th:value="${blog.id}">
                     <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
                     <p th:text="'简介：'+ ${blog.summary}">简介：+${blog.summary}+</p>
                     <div class="itemimg">
@@ -65,7 +70,8 @@
                         </span>
                     </div>
                     <div class="row pl-3 pt-2 pb-1">
-                        <a href="" class=" icon-user-good pl-4" data-smsid="填短讯id">222</a>
+                        <a th:if="${blog.votes.size()} == 0" name="blogSubmitVote"  class=" icon-user-good pl-4 blogSubmitVote"  th:text="*{blog.voteSize}" >222</a>
+                        <a th:if="${blog.votes.size()} gt 0" name="blogCancelVote"  class=" icon-user-good-had pl-4 blogCancelVote" th:attr="voteId=${blog.votes[0].id}" th:text="*{blog.voteSize}" >222</a>
                         <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
                         <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id" th:text="*{blog.commentSize}">52</a>
                     </div>
@@ -153,6 +159,8 @@
     //DOM加载完就执行
     $(function() {
 
+        var thisBlogUsername = $("#thisBlogUsername").val();
+
     function getBlogByUsername(pageIndex) {
         $.ajax({
             url: "/u/"+$("#thisBlogUsername").val()+"/blogs",
@@ -201,6 +209,73 @@
         alert($(this).attr('data-smsid'));
     })
 
+
+        // 提交点赞
+        $(document).on("click",".blogSubmitVote", function () {
+            var blogId = $(this).parent().parent().children(0).val();
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th =$(this);
+            $.ajax({
+                url: '/votes',
+                type: 'POST',
+                data:{"blogId":blogId},
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        //toastr.info(result.data);
+                        // 成功后，重定向
+                        //window.location = blogUrl;
+                        //window.location = '/u/' + thisBlogUsername + '/blogs';
+                        window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                        //th.attr("class","icon-user-good-had pl-4 blogSubmitVote");
+                        //th.val(th.val()+1);
+                    } else {
+                        toastr.error(result.msg);
+                        //toastr.error("error!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 取消点赞
+        $(document).on("click",".blogCancelVote", function () {
+            var blogId = $(this).parent().parent().children(0).val();
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                url: '/votes/'+$(this).attr('voteId')+'?blogId='+blogId,
+                type: 'DELETE',
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        //toastr.info(result.data);
+                        // 成功后，重定向
+                        //window.location = blogUrl;
+                        //window.location ='/u/' + thisBlogUsername + '/blogs';
+                        window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                    } else {
+                        toastr.error(result.msg);
+                        //toastr.error("error!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
 
 
         // var _pageSize; // 存储用于搜索
