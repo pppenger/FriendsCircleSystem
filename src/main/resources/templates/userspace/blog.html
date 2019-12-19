@@ -91,9 +91,10 @@
                       </div>
                       <div class="col-2">
 
-                        <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>
-                          <a th:if="${hotcomments.votes.size()} == 0" name="commentSubmitVote"  class=" icon-user-good pl-4 commentSubmitVote"  th:text="*{hotcomments.voteSize}" >222</a>
-                          <a th:if="${hotcomments.votes.size()} gt 0" name="commentCancelVote"  class=" icon-user-good-had pl-4 commentCancelVote" th:attr="voteId=${hotcomments.votes[0].id}" th:text="*{hotcomments.voteSize}" >222</a>
+<!--                        <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>-->
+                          <a th:if="${comment.votes.size()} == 0" name="commentSubmitVote" th:data-smsid="${comment.id}"  class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
+                          <a th:if="${comment.votes.size()} gt 0" name="commentCancelVote" th:data-smsid="${comment.id}"  class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+
                           <a href="#replyName" class="reply" th:name="*{formUser.name}" th:data-replyusername="*{formUser.username}">回复</a>
                           <span sec:authorize="isAuthenticated()">
                               <a  th:if="*{content}!='[系统提示：改评论内容已被删除！]'" class="delCommentId" th:attr="data-commentId=*{id}" >删除</a>
@@ -121,9 +122,9 @@
                               的发顺丰水电费水电费水电
                           </div>
                           <div class="col-2">
-                              <a th:if="${timecomments.votes.size()} == 0" name="commentSubmitVote"  class=" icon-user-good pl-4 commentSubmitVote"  th:text="*{timecomments.voteSize}" >222</a>
-                              <a th:if="${timecomments.votes.size()} gt 0" name="commentCancelVote"  class=" icon-user-good-had pl-4 commentCancelVote" th:attr="voteId=${timecomments.votes[0].id}" th:text="*{timecomments.voteSize}" >222</a>
-                              <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>
+                              <a th:if="${comment.votes.size()} == 0" name="commentSubmitVote" th:data-smsid="${comment.id}" class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
+                              <a th:if="${comment.votes.size()} gt 0" name="commentCancelVote" th:data-smsid="${comment.id}" class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+<!--                              <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填博客id和评论id" th:text="*{voteSize}">23</a>-->
                               <a href="#replyName" class="reply" th:name="*{formUser.name}" th:data-replyusername="*{formUser.username}">回复</a>
                               <span sec:authorize="isAuthenticated()">
                               <a  th:if="*{content}!='[系统提示：改评论内容已被删除！]'" class="delCommentId" th:attr="data-commentId=*{id}" >删除</a>
@@ -440,16 +441,17 @@
         });
 
         // 提交评论点赞
-        $(document).on("click",".blogSubmitVote", function () {
-            var blogId = $(this).parent().parent().children(0).val();
+        $(document).on("click",".commentSubmitVote", function () {
+
+            var commentId = $(this).attr('data-smsid');
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
             var th =$(this);
             $.ajax({
-                url: '/votes',
+                url: '/votes/comment',
                 type: 'POST',
-                data:{"blogId":blogId},
+                data:{"commentId":commentId},
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
@@ -459,12 +461,13 @@
                         // 成功后，重定向
                         //window.location = blogUrl;
                         //window.location = '/u/' + thisBlogUsername + '/blogs';
-                        window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                        window.location.reload(blogUrl);
                         //th.attr("class","icon-user-good-had pl-4 blogSubmitVote");
                         //th.val(th.val()+1);
                     } else {
-                        toastr.error(result.msg);
+                        //toastr.error(result.msg);
                         //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
                     }
                 },
                 error : function() {
@@ -475,14 +478,14 @@
         });
 
         // 取消评论点赞
-        $(document).on("click",".blogCancelVote", function () {
-            var blogId = $(this).parent().parent().children(0).val();
+        $(document).on("click",".commentCancelVote", function () {
+            var commentId = $(this).attr('data-smsid');
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
             $.ajax({
-                url: '/votes/'+$(this).attr('voteId')+'?blogId='+blogId,
+                url: '/votes/comment/'+$(this).attr('voteId')+'?commentId='+commentId,
                 type: 'DELETE',
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
@@ -493,10 +496,11 @@
                         // 成功后，重定向
                         //window.location = blogUrl;
                         //window.location ='/u/' + thisBlogUsername + '/blogs';
-                        window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                        window.location.reload(blogUrl);
                     } else {
-                        toastr.error(result.msg);
+                        //toastr.error(result.msg);
                         //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
                     }
                 },
                 error : function() {

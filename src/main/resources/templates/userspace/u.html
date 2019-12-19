@@ -91,8 +91,9 @@
                                 的发顺丰水电费水电费水电
                             </div>
                             <div class="col-1">
-
-                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id" th:text="*{voteSize}">23</a>
+                                <a th:if="${comment.votes.size()} == 0"  class=" icon-user-good pl-4 pt-2 "  th:text="${comment.voteSize}" >222</a>
+                                <a th:if="${comment.votes.size()} gt 0"  class=" icon-user-good-had pl-4 pt-2 " th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+<!--                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id" th:text="*{voteSize}">23</a>-->
                             </div>
                         </div>
                     </div>

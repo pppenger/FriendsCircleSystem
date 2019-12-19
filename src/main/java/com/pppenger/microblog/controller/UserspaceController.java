@@ -185,7 +185,19 @@ public class UserspaceController {
                     break;
                 }
                 blog.setVotes(list1);
+
+
+                for (Comment comment : blog.getComments()){
+                    List list2 = new ArrayList();
+                    for (Vote vote : comment.getVotes()){
+                        vote.getUser().getUsername().equals(principal.getUsername());
+                        list2.add(vote);
+                        break;
+                    }
+                    comment.setVotes(list2);
+                }
             }
+
         }
 
         model.addAttribute("order", order);
