@@ -12,6 +12,9 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+/**
+ * 提示消息实体
+ */
 @Entity // 实体
 public class Message  implements Serializable {
     private static final long serialVersionUID = 1L;
