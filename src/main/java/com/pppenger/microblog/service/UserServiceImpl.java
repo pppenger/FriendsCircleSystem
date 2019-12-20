@@ -108,5 +108,14 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		return userDetails;
 	}
 
+	@Override
+	public List<User> loadUserByUsernames(List usernames) throws UsernameNotFoundException {
+		List<User> userList=userRepository.findByUsernameIn(usernames);
+		if(userList==null){
+			throw new UsernameNotFoundException("查询用户异常");
+		}
+		return userList;
+	}
+
 
 }

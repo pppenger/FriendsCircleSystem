@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pppenger.microblog.domin.Catalog;
 import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.domin.UserCatalog;
 
 /**
  * Catalog 服务接口.
@@ -38,4 +39,13 @@ public interface CatalogService {
 //	 * @return
 //	 */
 //	List<Catalog> listCatalogs(User user);
+
+
+   List<Catalog> listCatalogs(String userName);
+
+   List<Catalog> listCatalogNames(String catalogId);
+
+   List<Catalog> listCatalogs();
+
+   List<UserCatalog> listUsernamesByCatalog(String catalogId);
 }

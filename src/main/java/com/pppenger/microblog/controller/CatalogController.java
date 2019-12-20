@@ -1,9 +1,16 @@
 package com.pppenger.microblog.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
 
+import com.pppenger.microblog.domin.Catalog;
+import com.pppenger.microblog.domin.User;
+import com.pppenger.microblog.domin.UserCatalog;
+import com.pppenger.microblog.service.CatalogService;
+import com.pppenger.microblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,11 +37,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/catalogs")
 public class CatalogController {
 	
-//	@Autowired
-//	private CatalogService catalogService;
-//
-//	@Autowired
-//	private UserDetailsService userDetailsService;
+	@Autowired
+	private CatalogService catalogService;
+
+	@Autowired
+	private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserService userService;
 //	/**
 //	 * 获取分类列表
 //	 * @param blogId
@@ -61,6 +71,51 @@ public class CatalogController {
 //		model.addAttribute("catalogs", catalogs);
 //		return "/userspace/u :: #catalogRepleace";
 //	}
+    /**
+	 * 我关注的分区
+	 * @param username
+	 * @param model
+	 * @return
+	 */
+	@GetMapping
+	public String listCatalogs(@RequestParam(value="username",required=true) String username, Model model) {
+		User user = (User)userDetailsService.loadUserByUsername(username);
+		List<Catalog> catalogs = catalogService.listCatalogs(username);
+
+		model.addAttribute("catalogs", catalogs);
+		return "/userspace/u :: #catalogRepleace";
+	}
+
+
+    /**
+     * 所有分区
+     * @param model
+     * @return
+     */
+    @GetMapping
+    public String listCatalogs(Model model) {
+        List<Catalog> catalogs = catalogService.listCatalogs();
+
+        model.addAttribute("catalogs", catalogs);
+        return "/userspace/u :: #catalogRepleace";
+    }
+
+    /**
+     * 分区成员
+     * @param catalogId
+     * @param model
+     * @return
+     */
+    @GetMapping
+    public String listCatalogUsers(@RequestParam(value="catalogId",required=true) String catalogId, Model model) {
+        List list = new ArrayList();
+        list.add(catalogId);
+        List<UserCatalog> catalogs = catalogService.listUsernamesByCatalog(catalogId);
+        List<String> userNames = catalogs.stream().map(UserCatalog::getUsername).collect(Collectors.toList());
+        List<User> userList = userService.loadUserByUsernames(userNames);
+        model.addAttribute("userList", userList);
+        return "/userspace/u :: #catalogRepleace";
+    }
 //	/**
 //	 * 发表分类
 //	 * @param blogId

@@ -3,6 +3,7 @@ package com.pppenger.microblog.service;
 import com.pppenger.microblog.domin.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
@@ -72,4 +73,6 @@ public interface UserService {
 	String hadRegister(String username,String email);
 
 	String hadRegister(String username,String email,User user);
+
+	List<User> loadUserByUsernames(List usernames) throws UsernameNotFoundException;
 }

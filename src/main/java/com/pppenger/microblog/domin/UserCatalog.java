@@ -27,7 +27,7 @@ public class UserCatalog {
 
     @NotEmpty(message = "catalogId不能为空")
     @Column(nullable = false) // 映射为字段，值不能为空
-    private User catalogId;
+    private String catalogId;
 
     public Long getId() {
         return id;
@@ -45,11 +45,11 @@ public class UserCatalog {
         this.username = username;
     }
 
-    public User getCatalogId() {
+    public String getCatalogId() {
         return catalogId;
     }
 
-    public void setCatalogId(User catalogId) {
+    public void setCatalogId(String catalogId) {
         this.catalogId = catalogId;
     }
 }

@@ -16,6 +16,13 @@ public interface UserCatalogRepository extends JpaRepository<UserCatalog, Long> 
     List<UserCatalog> findByUsername(String username);
 
     /**
+     * 根据用户查询
+     * @param usernames
+     * @return
+     */
+    List<UserCatalog> findByUsernameIn(List usernames);
+
+    /**
      * 根据分区id查询
      * @param catalogId
      * @return

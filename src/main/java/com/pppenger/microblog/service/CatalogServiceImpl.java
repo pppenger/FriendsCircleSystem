@@ -1,7 +1,13 @@
 package com.pppenger.microblog.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.pppenger.microblog.domin.Catalog;
+import com.pppenger.microblog.domin.UserCatalog;
+import com.pppenger.microblog.repository.CatalogRepository;
+import com.pppenger.microblog.repository.UserCatalogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +20,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CatalogServiceImpl implements CatalogService{
 
-//	@Autowired
-//	private CatalogRepository catalogRepository;
+    @Autowired
+	private UserCatalogRepository userCatalogRepository;
+
+	@Autowired
+	private CatalogRepository catalogRepository;
 //
 //	@Override
 //	public Catalog saveCatalog(Catalog catalog) {
@@ -42,4 +51,27 @@ public class CatalogServiceImpl implements CatalogService{
 //		return catalogRepository.findByUser(user);
 //	}
 
+    @Override
+	public List<Catalog> listCatalogs(String userName) {
+        List<UserCatalog> userCatalogList = userCatalogRepository.findByUsername(userName);
+        List<String> catalogIds = userCatalogList.stream().map(UserCatalog::getCatalogId).collect(Collectors.toList());
+		return catalogRepository.findByCatalogIdIn(catalogIds);
+	}
+
+    @Override
+    public List<Catalog> listCatalogNames(String catalogId) {
+        List list = new ArrayList();
+        list.add(catalogId);
+        return catalogRepository.findByCatalogIdIn(list);
+    }
+
+    @Override
+    public List<UserCatalog> listUsernamesByCatalog(String catalogId) {
+        return userCatalogRepository.findByCatalogId(catalogId);
+    }
+
+    @Override
+    public List<Catalog> listCatalogs() {
+        return catalogRepository.findAll();
+    }
 }
