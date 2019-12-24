@@ -32,5 +32,5 @@ public interface CatalogRepository extends JpaRepository<Catalog, Long>{
 
 	List<Catalog> findByUsernameIn(List usernames);
 
-	List<Catalog> findByCatalogIdIn(List catalogIds);
+	List<Catalog> findByIdIn(List catalogIds);
 }

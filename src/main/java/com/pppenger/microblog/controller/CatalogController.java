@@ -9,6 +9,7 @@ import javax.validation.ConstraintViolationException;
 import com.pppenger.microblog.domin.Catalog;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.domin.UserCatalog;
+import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.CatalogService;
 import com.pppenger.microblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,13 +78,14 @@ public class CatalogController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping
-	public String listCatalogs(@RequestParam(value="username",required=true) String username, Model model) {
+	@GetMapping("/my")
+    @PreAuthorize("authentication.name.equals(#username)")
+	public String myCatalogs(@PathVariable("username") String username, Model model) {
 		User user = (User)userDetailsService.loadUserByUsername(username);
 		List<Catalog> catalogs = catalogService.listCatalogs(username);
 
 		model.addAttribute("catalogs", catalogs);
-		return "/userspace/u :: #catalogRepleace";
+		return "/userspace/myCategory";
 	}
 
 
@@ -92,12 +94,12 @@ public class CatalogController {
      * @param model
      * @return
      */
-    @GetMapping
-    public String listCatalogs(Model model) {
+    @GetMapping("/all")
+    public String allCatalogs(Model model) {
         List<Catalog> catalogs = catalogService.listCatalogs();
 
         model.addAttribute("catalogs", catalogs);
-        return "/userspace/u :: #catalogRepleace";
+        return "/userspace/allCategory";
     }
 
     /**
@@ -106,7 +108,7 @@ public class CatalogController {
      * @param model
      * @return
      */
-    @GetMapping
+    @GetMapping("/users")
     public String listCatalogUsers(@RequestParam(value="catalogId",required=true) String catalogId, Model model) {
         List list = new ArrayList();
         list.add(catalogId);
@@ -114,8 +116,57 @@ public class CatalogController {
         List<String> userNames = catalogs.stream().map(UserCatalog::getUsername).collect(Collectors.toList());
         List<User> userList = userService.loadUserByUsernames(userNames);
         model.addAttribute("userList", userList);
-        return "/userspace/u :: #catalogRepleace";
+        return "/userspace/category";
     }
+
+    /**
+     * 提议新建分类界面
+     * @return
+     */
+    @GetMapping("/add")
+    public String addCatalog() {
+        return "/userspace/addCategory";
+    }
+
+    /**
+	 * 提议新建分类
+	 * @param catalogName
+	 * @param catalogSummary
+	 * @return
+	 */
+	@PostMapping("/add")
+	public Result createCatalog(@RequestParam(value="catalogName",required=true) String catalogName,
+                         @RequestParam(value="catalogSummary",required=true) String catalogSummary) {
+
+        String catalogOwner = "";
+        User principal = null;
+        if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal !=null) {
+                catalogOwner = principal.getUsername();
+            }
+        }
+
+        Catalog catalog = new Catalog();
+        catalog.setName(catalogName);
+        catalog.setSummary(catalogSummary);
+        catalog.setUsername(catalogOwner);
+        catalog.setIsOpen(0);
+
+		try {
+			catalogService.saveCatalog(catalog);
+		} catch (ConstraintViolationException e)  {
+            throw e;
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return Result.success("提议成功");
+	}
+
+
+
 //	/**
 //	 * 发表分类
 //	 * @param blogId

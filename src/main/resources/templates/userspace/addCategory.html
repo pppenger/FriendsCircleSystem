@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<body class="bg-light">
+<style>
+    a{
+        color: #888;
+    }
+</style>
+
+
+<div class="container">
+    <div class="row justify-content-center" >
+
+
+        <div class="rightcontent col-3 m-2 p-3 border-right border-left">
+            <ul compact="nav flex-column">
+                <li class="nav-link border-bottom">
+                    <a href="">所有分区</a>
+                </li>
+                <li class="nav-link border-bottom">
+                    <a href="">我关注的分区</a>
+                </li>
+                <li class="nav-link border-bottom">
+                    <a href="">分区成员</a>
+                </li>
+                <li class="nav-link border-bottom">
+                    <a href="">提议新建分区</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="col-7 bg-white m-2 " >
+
+            <form  action="/catalogs/add"  method="post" onsubmit="return checkBeforeSubmit()">
+                <div class="form-group">
+                    <label >分区标题</label>
+                    <input type="text" name="catalogName" id="catalogName" class="form-control"  placeholder="不得超过八个字符" maxlength="8">
+
+                </div>
+                <div class="form-group">
+                    <label >分区概述</label>
+                    <small  class="form-text text-muted">分区概述请认真填写，其决定了分区的内容性质，管理员将按照该内容来管理分区，分区此内容提交后不可修改</small>
+                    <hr>
+                    <textarea type="text" name="catalogSummary"  id="catalogSummary" rows="6" maxlength="200" class="form-control" placeholder="不得超过200个字符" ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="addCatalog">提议新建</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+<script src="../../js/cropbox.js" th:src="@{/js/cropbox.js}"></script>
+
+<script type="text/javascript" >
+    function checkBeforeSubmit(){
+
+        if ($("#catalogName").val()==""){
+            toastr.error("分区标题不能为空！");
+            return false;
+        }
+
+        if ($("#catalogSummary").val()==""){
+            toastr.error("分区概述不能为空！");
+            return false;
+        }
+
+    }
+    // $(document).on("click",".commentSubmitVote", function () {
+    //
+    //     var commentId = $(this).attr('data-smsid');
+    //     // 获取 CSRF Token
+    //     var csrfToken = $("meta[name='_csrf']").attr("content");
+    //     var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+    //     var th =$(this);
+    //     $.ajax({
+    //         url: '/votes/comment',
+    //         type: 'POST',
+    //         data:{"commentId":commentId},
+    //         beforeSend: function(request) {
+    //             request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+    //         },
+    //         success: function(result){
+    //             if (result.code==0) {
+    //                 //toastr.info(result.data);
+    //                 // 成功后，重定向
+    //                 //window.location = blogUrl;
+    //                 //window.location = '/u/' + thisBlogUsername + '/blogs';
+    //                 window.location.reload(blogUrl);
+    //                 //th.attr("class","icon-user-good-had pl-4 blogSubmitVote");
+    //                 //th.val(th.val()+1);
+    //             } else {
+    //                 //toastr.error(result.msg);
+    //                 //toastr.error("error!");
+    //                 toastr.error("请检查是否已登录!");
+    //             }
+    //         },
+    //         error : function() {
+    //             //toastr.error("error!");
+    //             toastr.error("请先登录!");
+    //         }
+    //     });
+    // });
+
+
+
+
+</script>
+
+
+</body>
+</html>

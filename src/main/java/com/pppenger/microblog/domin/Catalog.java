@@ -42,14 +42,23 @@ public class Catalog implements Serializable {
 	@Column(length = 200) // 映射为字段，值不能为空
 	private String summary;
 
+    //username提议者username
+    @Column // 映射为字段，值不能为空
+    private String username;
+
+    //是否已经启用
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 2)
+    private Integer isOpen;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "catalog_blogs", joinColumns = @JoinColumn(name = "catalog_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"))
 	private List<Blog> blogs;
- 
-	protected Catalog() {
-	}
-	
+
+    public Catalog() {
+
+    }
+
 	public Catalog( String name) {
 		this.name = name;
 	}
@@ -84,4 +93,20 @@ public class Catalog implements Serializable {
 	public void setBlogs(List<Blog> blogs) {
 		this.blogs = blogs;
 	}
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Integer getIsOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(Integer isOpen) {
+        this.isOpen = isOpen;
+    }
 }

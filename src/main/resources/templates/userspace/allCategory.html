@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<body class="bg-light">
+<style>
+    a{
+        color: #888;
+    }
+    .icon-user-good{
+        background: url("../../../images/icon-good.png") left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-good:hover{
+        background: url("../../../images/icon-good-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-good-had{
+        background: url("../../../images/icon-good-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-collect{
+        background: url("../../../images/icon-collect.png") left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-collect:hover{
+        background: url("../../../images/icon-collect-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-commit{
+        background: url("../../../images/icon-commit.png") left top no-repeat;
+        background-size: 23px;
+    }
+    .icon-user-commit:hover{
+        background: url("../../../images/icon-commit-highlight.png")  left top no-repeat;
+        background-size: 23px;
+    }
+</style>
+
+
+<div class="container">
+    <div class="row justify-content-center" >
+
+
+        <div class="rightcontent col-3 m-2 p-3 border-right border-left">
+            <ul compact="nav flex-column">
+                <li class="nav-link border-bottom ">
+                    <a href="" class=" text-dark h5">所有分区</a>
+                </li>
+                <li class="nav-link border-bottom">
+                    <a href="./myCategory.html">我关注的分区</a>
+                </li>
+                <li class="nav-link border-bottom">
+                    <a href="">分区成员</a>
+                </li>
+                <li class="nav-link border-bottom">
+                    <a href="">提议新建分区</a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="col-7 bg-white m-2 " >
+
+            <div class="alert alert-success" role="alert">
+                <a href="#" class="badge badge-info mr-1">默认分区</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">默认分区</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">默认分区</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">默认分区</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">默认分区</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <a href="#" class="badge badge-info mr-1">分区名</a>
+                <div>当前分区：again
+                    <a href="#" class="badge badge-warning mr-1">关注</a>
+                </div>
+            </div>
+
+            <div class="clearfix border-right:">
+                <div class="shadow " style="float:right;">
+                    <a href="" class=" text-success" >按热度排序</a><span class="text-success"> | </span>
+                    <a href="" class=" text-success" >按时间排序(默认)</a>
+                </div>
+            </div>
+
+
+            <div class=" m-2 border-bottom pb-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9" style="padding:0">
+                            <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
+                            <a href="" class="ml-3 text-success">这是姓名</a>
+                        </div>
+                        <div class="col-3  mt-2">
+                            <small class="">2010.09.04-14:20</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h3><a href="" class="text-dark">标题</a></h3>
+                    <p>简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
+                    <div class="itemimg">
+                        <img src="./images/test.png" alt="" data-realsrc="./images/test.png">
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <br>
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                    </div>
+                    <div class="row pl-3 pt-2 pb-1">
+                        <a href="" class=" icon-good pl-4" data-smsid="填短讯id">222</a>
+                        <a href="" class=" icon-collect pl-4 ml-5" data-smsid="填短讯id"></a>
+                        <a href="" class=" icon-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
+                    </div>
+                    <div class="container text-commit">
+                        <div class="row border-left">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-9">
+                                的发顺丰水电费水电费水电
+                            </div>
+                            <div class="col-1">
+
+                                <a href="" class=" icon-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                            </div>
+                        </div>
+
+                        <div class="row border-left mt-2">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-9">
+                                的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
+                            </div>
+
+                            <div class="col-1">
+
+                                <a href="" class=" icon-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class=" m-2 border-bottom pb-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9" style="padding:0">
+                            <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
+                            <a href="" class="ml-3 text-success">这是姓名</a>
+                        </div>
+                        <div class="col-3  mt-2">
+                            <small class="">2010.09.04-14:20</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h3><a href="" class="text-dark">标题</a></h3>
+                    <p>简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
+                    <div class="itemimg">
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <br>
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                    </div>
+                    <div class="row pl-3 pt-2 pb-1">
+                        <a href="" class=" icon-good pl-4">222</a>
+                        <a href="" class=" icon-collect pl-4 ml-5"></a>
+                        <a href="" class=" icon-commit pl-4 ml-5">52</a>
+                    </div>
+
+                    <div class="container text-commit">
+                        <div class="row border-left">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-10">
+                                的发顺丰水电费水电费水电
+                            </div>
+                        </div>
+
+                        <div class="row border-left mt-2">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-10">
+                                的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class=" m-2 border-bottom pb-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9" style="padding:0">
+                            <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
+                            <a href="" class="ml-3 text-success">这是姓名</a>
+                        </div>
+                        <div class="col-3  mt-2">
+                            <small class="">2010.09.04-14:20</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <h3><a href="" class="text-dark">标题</a></h3>
+                    <p>简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
+                    <div class="itemimg">
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                        <img src="./images/test.png" alt="" >
+                    </div>
+                    <div class="row pl-3 pt-2 pb-1">
+                        <a href="" class=" icon-good pl-4">222</a>
+                        <a href="" class=" icon-collect pl-4 ml-5"></a>
+                        <a href="" class=" icon-commit pl-4 ml-5">52</a>
+                    </div>
+
+                    <div class="container text-commit">
+                        <div class="row border-left">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-10">
+                                的发顺丰水电费水电费水电
+                            </div>
+                        </div>
+
+                        <div class="row border-left mt-2">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="" class=" text-success">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small>2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-10">
+                                的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+<script src="../../js/cropbox.js" th:src="@{/js/cropbox.js}"></script>
+
+<script type="text/javascript" >
+
+
+
+</script>
+
+
+</body>
+</html>

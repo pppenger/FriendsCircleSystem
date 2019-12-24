@@ -11,6 +11,8 @@ import com.pppenger.microblog.repository.UserCatalogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 /**
  * Catalog 服务.
  * 
@@ -55,14 +57,14 @@ public class CatalogServiceImpl implements CatalogService{
 	public List<Catalog> listCatalogs(String userName) {
         List<UserCatalog> userCatalogList = userCatalogRepository.findByUsername(userName);
         List<String> catalogIds = userCatalogList.stream().map(UserCatalog::getCatalogId).collect(Collectors.toList());
-		return catalogRepository.findByCatalogIdIn(catalogIds);
+		return catalogRepository.findByIdIn(catalogIds);
 	}
 
     @Override
     public List<Catalog> listCatalogNames(String catalogId) {
         List list = new ArrayList();
         list.add(catalogId);
-        return catalogRepository.findByCatalogIdIn(list);
+        return catalogRepository.findByIdIn(list);
     }
 
     @Override
@@ -73,5 +75,11 @@ public class CatalogServiceImpl implements CatalogService{
     @Override
     public List<Catalog> listCatalogs() {
         return catalogRepository.findAll();
+    }
+
+    @Transactional
+    @Override
+    public Catalog saveCatalog(Catalog catalog) {
+        return catalogRepository.save(catalog);
     }
 }

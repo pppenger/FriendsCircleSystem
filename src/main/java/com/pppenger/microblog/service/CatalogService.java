@@ -48,4 +48,6 @@ public interface CatalogService {
    List<Catalog> listCatalogs();
 
    List<UserCatalog> listUsernamesByCatalog(String catalogId);
+
+   Catalog saveCatalog(Catalog catalog);
 }
