@@ -3,6 +3,8 @@ package com.pppenger.microblog.repository;
 import java.util.List;
 
 import com.pppenger.microblog.domin.Catalog;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
@@ -32,5 +34,9 @@ public interface CatalogRepository extends JpaRepository<Catalog, Long>{
 
 	List<Catalog> findByUsernameIn(List usernames);
 
-	List<Catalog> findByIdIn(List catalogIds);
+	List<Catalog> findByIdInAndIsOpen(List catalogIds ,Integer isopen);
+
+	List<Catalog> findByIsOpen(Integer isopen);
+
+	Page<Catalog> findByIsOpen(Integer isopen, Pageable pageable);
 }

@@ -16,6 +16,8 @@
     <!-- toastr CSS -->
     <link href="../../css/toastr.min.css" th:href="@{/css/toastr.min.css}" rel="stylesheet">
 
+    <link href="../../font-awesome-4.7.0/css/font-awesome.min.css" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+
     <title>Title</title>
 
     <style>
@@ -119,6 +121,10 @@
             height: 50px;
             object-fit:cover
         }
+
+        :focus{
+            outline: 0;
+        }
     </style>
 </head>
 <body>
@@ -164,6 +170,7 @@
                     <div class="dropdown-menu" aria-labelledby="navusername">
                         <a class="dropdown-item" href="#" th:href="@{'/u/' + ${#authentication.name} + '/blogs'}" >个人微博</a>
                         <a class="dropdown-item" href="#" th:href="@{'/u/' + ${#authentication.name} + '/profile'}" >信息设置</a>
+                        <a class="dropdown-item" href="#"  sec:authorize="hasRole('ADMIN')" th:href="@{'/users'}" >后台管理</a>
                         <form action="/logout" th:action="@{/logout}" method="post">
                             <input class="dropdown-item" type="submit" value="退出">
                         </form>

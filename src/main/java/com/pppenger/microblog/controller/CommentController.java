@@ -72,9 +72,10 @@ public class CommentController {
             for (Comment comment : comments){
                 List list1 = new ArrayList();
                 for (Vote vote : comment.getVotes()){
-                    vote.getUser().getUsername().equals(principal.getUsername());
-                    list1.add(vote);
-                    break;
+                    if (vote.getUser().getUsername().equals(principal.getUsername())){
+                        list1.add(vote);
+                        break;
+                    }
                 }
                 comment.setVotes(list1);
             }

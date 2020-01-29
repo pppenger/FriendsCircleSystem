@@ -18,6 +18,11 @@ public class CodeMsg {
 
 	//权限模块
 	public static CodeMsg HAVE_NOT_AUTHORITY = new CodeMsg(500201, "权限异常：您不是微博拥有者，无操作权限");
+
+	//收藏模块
+
+	public static CodeMsg COLLECTION_REPEAT = new CodeMsg(500301, "收藏夹名字不允许重复哦！");
+	public static CodeMsg HAD_COLLECTION= new CodeMsg(500302, "您已经收藏过该文章了！");
 //	//登录模块 5002XX
 //	public static CodeMsg SESSION_ERROR = new CodeMsg(500210, "Session不存在或者已经失效");
 //	public static CodeMsg PASSWORD_EMPTY = new CodeMsg(500211, "登录密码不能为空");

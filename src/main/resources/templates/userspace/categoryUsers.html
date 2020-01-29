@@ -9,6 +9,12 @@
     a{
         color: #888;
     }
+    a:visited{
+
+    }
+    .userspan{
+        cursor: pointer;
+    }
 </style>
 
 
@@ -19,16 +25,16 @@
         <div class="rightcontent col-3 m-2 p-3 border-right border-left">
             <ul compact="nav flex-column">
                 <li class="nav-link border-bottom">
-                    <a href="">所有分区</a>
+                    <a href="./all">所有分区</a>
                 </li>
                 <li class="nav-link border-bottom">
-                    <a href="">我关注的分区</a>
+                    <a href="./my" >我关注的分区</a>
                 </li>
                 <li class="nav-link border-bottom">
-                    <a href="">分区成员</a>
+                    <a  class=" text-dark h5">分区成员</a>
                 </li>
                 <li class="nav-link border-bottom">
-                    <a href="">提议新建分区</a>
+                    <a href="./add">提议新建分区</a>
                 </li>
             </ul>
         </div>
@@ -37,93 +43,24 @@
         <div class="col-7 bg-white m-2 " >
 
             <div class="alert alert-success" role="alert">
-                <a href="#" class="badge badge-info mr-1">默认分区</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">默认分区</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">默认分区</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">默认分区</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">默认分区</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <a href="#" class="badge badge-info mr-1">分区名</a>
-                <div>当前分区：again
-                    <a href="#" class="badge badge-warning mr-1">关注</a>
-                    <a href="#" class="badge badge-warning mr-1">取消关注</a>
-                </div>
-            </div>
+                <a href="#" th:data-catalogId=-1 class="badge badge-info mr-1 catalogtag" id="defultCatalog">默认分区</a>
 
-            <div class="clearfix border-right:">
-                <div class="shadow " style="float:right;">
-                    <a href="" class=" text-success" >按热度排序</a><span class="text-success"> | </span>
-                    <a href="" class=" text-success" >按时间排序(默认)</a>
-                </div>
-            </div>
+                <a th:each="catalog : ${catalogs}" th:text="${catalog.name}"  th:data-catalogId="${catalog.id}" href="#" class="badge badge-info mr-1 catalogtag">分区名</a>
 
+            </div>
 
             <div class=" border-bottom ">
-                <div class="container">
-              <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称</a></div>
-                <div><small class="text-muted">用户名</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称gsdfgdffdhfh</a></div>
-                <div><small class="text-muted">用户名dfgfddsg</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称</a></div>
-                <div><small class="text-muted">用户名</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称gsdfgdffdhfh</a></div>
-                <div><small class="text-muted">用户名dfgfddsg</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称</a></div>
-                <div><small class="text-muted">用户名</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称gsdfgdffdhfh发gdsgsgsgf发</a></div>
-                <div><small class="text-muted">用户名dfgfddsg</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称</a></div>
-                <div><small class="text-muted">用户名</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
-                    <span class="text-center shadow"  style="display: inline-block;width: 140px;">
-                <a><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                <div><a href="" class="text-success">昵称gsdfgdffdhfh</a></div>
-                <div><small class="text-muted">用户名dfgfddsg</small></div>
-                <div><small class="text-muted">信誉度：</small></div>
-              </span>
+                <div class="container" id="catalogUsersDiv">
+                  <span  th:each="user : ${userList}"  class="text-center shadow userspan" onclick="javascript:window.open('/u/'+$(this).children('.un').val()+'/blogs');"  style="display: inline-block;width: 140px;">
+                        <input th:value="${user.username}" type="text" class="un" readonly style="display: none">
+                        <a><img th:if="${user.avatar} != null" th:src="${user.avatar}"  alt="" class="avatar-50">
+                        <img th:if="${user.avatar} == null" src="../images/avatarboy.png" alt="" class="avatar-50"></a>
+                        <div><a  th:text="${user.name}" class="text-success">昵称</a></div>
+                        <div><small th:text="'账号:'+${user.username}" class="text-muted ">用户名</small></div>
+                        <div><small th:text="${user.username}" class="text-muted">信誉度：</small></div>
+                  </span>
                 </div>
             </div>
-
         </div>
 
     </div>
@@ -140,6 +77,34 @@
 
 <script type="text/javascript" >
 
+    $(function() {
+        $(".catalogtag").click(function () {
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            var all = $(this).parent().children(".catalogtag");
+            all.attr("class", "badge badge-info mr-1 catalogtag");
+            $(this).attr("class", "badge badge-success mr-1 catalogtag");
+            var catalogId = $(this).attr('data-catalogId');
+            $.ajax({
+                url: '/catalogs/usersByCatalog',
+                type: 'GET',
+                data: {"catalogId": catalogId},
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (data) {
+                    $("#catalogUsersDiv").html(data);
+
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        })
+
+        $("#defultCatalog").click();
+    })
 
 
 </script>

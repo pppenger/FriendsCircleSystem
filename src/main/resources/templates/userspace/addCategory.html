@@ -19,16 +19,16 @@
         <div class="rightcontent col-3 m-2 p-3 border-right border-left">
             <ul compact="nav flex-column">
                 <li class="nav-link border-bottom">
-                    <a href="">所有分区</a>
+                    <a href="./all">所有分区</a>
                 </li>
                 <li class="nav-link border-bottom">
-                    <a href="">我关注的分区</a>
+                    <a href="./my">我关注的分区</a>
                 </li>
                 <li class="nav-link border-bottom">
-                    <a href="">分区成员</a>
+                    <a href="./users">分区成员</a>
                 </li>
                 <li class="nav-link border-bottom">
-                    <a href="">提议新建分区</a>
+                    <a class=" text-dark h5">提议新建分区</a>
                 </li>
             </ul>
         </div>
@@ -36,7 +36,7 @@
 
         <div class="col-7 bg-white m-2 " >
 
-            <form  action="/catalogs/add"  method="post" onsubmit="return checkBeforeSubmit()">
+            <form  th:action="@{/catalogs/add}"  method="post" onsubmit="return checkBeforeSubmit()">
                 <div class="form-group">
                     <label >分区标题</label>
                     <input type="text" name="catalogName" id="catalogName" class="form-control"  placeholder="不得超过八个字符" maxlength="8">
@@ -48,7 +48,7 @@
                     <hr>
                     <textarea type="text" name="catalogSummary"  id="catalogSummary" rows="6" maxlength="200" class="form-control" placeholder="不得超过200个字符" ></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary" id="addCatalog">提议新建</button>
+                <button type="button" class="btn btn-primary" id="addCatalog">提议新建</button>
             </form>
         </div>
 
@@ -78,41 +78,38 @@
         }
 
     }
-    // $(document).on("click",".commentSubmitVote", function () {
-    //
-    //     var commentId = $(this).attr('data-smsid');
-    //     // 获取 CSRF Token
-    //     var csrfToken = $("meta[name='_csrf']").attr("content");
-    //     var csrfHeader = $("meta[name='_csrf_header']").attr("content");
-    //     var th =$(this);
-    //     $.ajax({
-    //         url: '/votes/comment',
-    //         type: 'POST',
-    //         data:{"commentId":commentId},
-    //         beforeSend: function(request) {
-    //             request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
-    //         },
-    //         success: function(result){
-    //             if (result.code==0) {
-    //                 //toastr.info(result.data);
-    //                 // 成功后，重定向
-    //                 //window.location = blogUrl;
-    //                 //window.location = '/u/' + thisBlogUsername + '/blogs';
-    //                 window.location.reload(blogUrl);
-    //                 //th.attr("class","icon-user-good-had pl-4 blogSubmitVote");
-    //                 //th.val(th.val()+1);
-    //             } else {
-    //                 //toastr.error(result.msg);
-    //                 //toastr.error("error!");
-    //                 toastr.error("请检查是否已登录!");
-    //             }
-    //         },
-    //         error : function() {
-    //             //toastr.error("error!");
-    //             toastr.error("请先登录!");
-    //         }
-    //     });
-    // });
+    $(document).on("click","#addCatalog", function () {
+
+        var catalogName = $("#catalogName").val();
+        var catalogSummary = $("#catalogSummary").val();
+        // 获取 CSRF Token
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        $.ajax({
+            url: '/catalogs/add',
+            type: 'POST',
+            data:{
+                "catalogName":catalogName,
+                "catalogSummary":catalogSummary
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+            },
+            success: function(result){
+                if (result.code==0) {
+                    toastr.info(result.data);
+                    $("#catalogName").val("");
+                    $("#catalogSummary").val("");
+                } else {
+                    toastr.error("请检查是否已登录!");
+                }
+            },
+            error : function() {
+                //toastr.error("error!");
+                toastr.error("请先登录!");
+            }
+        });
+    });
 
 
 

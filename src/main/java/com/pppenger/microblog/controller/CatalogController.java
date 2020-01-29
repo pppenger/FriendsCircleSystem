@@ -2,6 +2,8 @@ package com.pppenger.microblog.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
@@ -12,20 +14,19 @@ import com.pppenger.microblog.domin.UserCatalog;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.CatalogService;
 import com.pppenger.microblog.service.UserService;
+import com.pppenger.microblog.vo.CatalogVO;
+import com.sun.javafx.collections.MappingChange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 
 /**
@@ -79,12 +80,30 @@ public class CatalogController {
 	 * @return
 	 */
 	@GetMapping("/my")
-    @PreAuthorize("authentication.name.equals(#username)")
-	public String myCatalogs(@PathVariable("username") String username, Model model) {
-		User user = (User)userDetailsService.loadUserByUsername(username);
-		List<Catalog> catalogs = catalogService.listCatalogs(username);
+    @PreAuthorize("isAuthenticated()")
+	public String myCatalogs(@RequestParam(value="toURL",required=false) String toURL,
+                             Model model) {
+        String catalogOwner = "";
+        User principal = null;
+        if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal !=null) {
+                catalogOwner = principal.getUsername();
+            }
+        }
+
+		User user = (User)userDetailsService.loadUserByUsername(catalogOwner);
+		List<Catalog> catalogs = catalogService.listCatalogs(catalogOwner);
 
 		model.addAttribute("catalogs", catalogs);
+
+		if ("/u".equals(toURL)){
+            return "/userspace/u :: #catalogmsg";
+        }
+        if ("/blog".equals(toURL)){
+            return "/userspace/blog :: #catalogmsg";
+        }
 		return "/userspace/myCategory";
 	}
 
@@ -95,10 +114,35 @@ public class CatalogController {
      * @return
      */
     @GetMapping("/all")
+    @PreAuthorize("isAuthenticated()")
     public String allCatalogs(Model model) {
-        List<Catalog> catalogs = catalogService.listCatalogs();
 
-        model.addAttribute("catalogs", catalogs);
+        String catalogOwner = "";
+        User principal = null;
+        if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
+            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal !=null) {
+                catalogOwner = principal.getUsername();
+            }
+        }
+
+        List<Catalog> catalogs = catalogService.listCatalogs(1);
+        if (catalogOwner!=""){
+            List<CatalogVO> catalogVOS = new ArrayList<>();
+            List<UserCatalog> userCatalogList = catalogService.findCatalogUserByUsername(catalogOwner);
+            Map<Long,Object> userCatalogMap = userCatalogList.stream().collect(Collectors.toMap(UserCatalog::getCatalogId, Function.identity(),(old, n)->old));
+            for (Catalog catalog:catalogs){
+                if (!StringUtils.isEmpty(userCatalogMap.get(catalog.getId()))){
+                    catalogVOS.add(new CatalogVO(catalog.getId(),catalog.getName(),catalog.getSummary(),catalog.getUsername(),catalog.getIsOpen(),1));
+                }else {
+                    catalogVOS.add(new CatalogVO(catalog.getId(),catalog.getName(),catalog.getSummary(),catalog.getUsername(),catalog.getIsOpen(),0));
+                }
+            }
+            model.addAttribute("catalogs", catalogVOS);
+        }else {
+            model.addAttribute("catalogs", catalogs);
+        }
         return "/userspace/allCategory";
     }
 
@@ -109,14 +153,87 @@ public class CatalogController {
      * @return
      */
     @GetMapping("/users")
-    public String listCatalogUsers(@RequestParam(value="catalogId",required=true) String catalogId, Model model) {
-        List list = new ArrayList();
-        list.add(catalogId);
-        List<UserCatalog> catalogs = catalogService.listUsernamesByCatalog(catalogId);
-        List<String> userNames = catalogs.stream().map(UserCatalog::getUsername).collect(Collectors.toList());
+    public String listCatalogUsers(Model model) {
+        List<Catalog> catalogs = catalogService.listCatalogs(1);
+        model.addAttribute("catalogs", catalogs);
+        return "/userspace/categoryUsers";
+    }
+
+    /**
+     * 关注分区
+     * @param catalogId
+     * @param model
+     * @return
+     */
+    @PostMapping("/star")
+    @PreAuthorize("authentication.name.equals(#username)")
+    @ResponseBody
+    public Result starCatalog(@RequestParam(value="catalogId",required=true) Long catalogId,
+                              @RequestParam(value="username",required=true) String username,
+                              Model model) {
+        List<UserCatalog> list = catalogService.findByUsernameAndCatalogId(username, catalogId);
+        if (list.size() != 0){
+            return Result.success("您已经关注过了！");
+        }
+
+        UserCatalog userCatalog = new UserCatalog();
+        userCatalog.setCatalogId(catalogId);
+        userCatalog.setUsername(username);
+        try {
+            catalogService.saveUserCatalog(userCatalog);
+        } catch (ConstraintViolationException e)  {
+            throw e;
+        } catch (Exception e) {
+            throw e;
+        }
+        return Result.success("成功关注！");
+    }
+
+    /**
+     * 取消关注分区
+     * @param catalogId
+     * @param model
+     * @return
+     */
+    @PostMapping("/unstar")
+    @PreAuthorize("authentication.name.equals(#username)")
+    @ResponseBody
+    public Result unstarCatalog(@RequestParam(value="catalogId",required=true) Long catalogId,
+                              @RequestParam(value="username",required=true) String username,
+                              Model model) {
+        List<UserCatalog> list = catalogService.findByUsernameAndCatalogId(username, catalogId);
+        if (list.size() == 0){
+            return Result.success("您尚未关注");
+        }
+        try {
+            catalogService.deleteByUsernameAndCatalogId(username, catalogId);
+        } catch (ConstraintViolationException e)  {
+            throw e;
+        } catch (Exception e) {
+            throw e;
+        }
+        return Result.success("已取消关注！");
+    }
+
+    /**
+     * 分区成员
+     * @param catalogId
+     * @param model
+     * @return
+     */
+    @GetMapping("/usersByCatalog")
+    public String oneCatalogUsers(@RequestParam(value="catalogId",required=true) Long catalogId, Model model) {
+        List<UserCatalog> userCatalogs;
+        List<String> userNames;
+        if (catalogId == -1){
+            userNames = userService.listUsers().stream().map(User::getUsername).distinct().collect(Collectors.toList());
+        }else {
+            userCatalogs = catalogService.listUsernamesByCatalog(catalogId);
+            userNames = userCatalogs.stream().map(u->u.getUsername()).distinct().collect(Collectors.toList());
+        }
         List<User> userList = userService.loadUserByUsernames(userNames);
         model.addAttribute("userList", userList);
-        return "/userspace/category";
+        return "/userspace/categoryUsers :: #catalogUsersDiv";
     }
 
     /**
@@ -135,6 +252,8 @@ public class CatalogController {
 	 * @return
 	 */
 	@PostMapping("/add")
+    @ResponseBody
+    @PreAuthorize("isAuthenticated()")
 	public Result createCatalog(@RequestParam(value="catalogName",required=true) String catalogName,
                          @RequestParam(value="catalogSummary",required=true) String catalogSummary) {
 
@@ -165,6 +284,44 @@ public class CatalogController {
 		return Result.success("提议成功");
 	}
 
+    @GetMapping("/unOpenCatalogs")
+    public ModelAndView list(@RequestParam(value = "pageIndex",required = false,defaultValue = "0")int pageIndex,
+                             @RequestParam(value = "pageSize",required = false,defaultValue = "10")int pageSize,
+                             Model model
+    ){
+        Page<Catalog> page=catalogService.listUnOpenCatalogs(0,pageIndex,pageSize);
+        List<Catalog> list = page.getContent();	// 当前所在页面数据列表
+
+        model.addAttribute("page", page);
+        model.addAttribute("catalogList", list);
+        //return page;
+        return new ModelAndView("admin/catalog", "model", model);
+    }
+
+    /**
+     * 审批分区通过
+     * @param username
+     * @param blog
+     * @return
+     */
+    @PostMapping("/passCatalog")
+    @ResponseBody
+    public Result saveBlog(@RequestParam(value = "catalogId",required=true)  Long catalogId) {
+        Catalog catalog = catalogService.getCatalogById(catalogId);
+        if (catalog.getIsOpen()==1){
+            return Result.success("原先就已经开启了哦");
+        }
+		try {
+			catalog.setIsOpen(1);
+			catalogService.saveCatalog(catalog);
+		} catch (ConstraintViolationException e)  {
+			throw e;
+		} catch (Exception e) {
+            throw e;
+		}
+        //String redirectUrl = "/u/" + username + "/blogs/" + blog.getId();
+        return Result.success("处理成功");
+    }
 
 
 //	/**

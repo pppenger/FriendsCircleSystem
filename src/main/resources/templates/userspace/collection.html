@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<body class="bg-light">
+<style>
+    a{
+        color: #888;
+    }
+    .icon-user-good{
+        background: url("../../images/icon-good.png") left top no-repeat;
+        background-size: 19px;
+    }
+    .icon-user-good:hover{
+        background: url("../../images/icon-good-highlight.png")  left top no-repeat;
+        background-size: 19px;
+    }
+    .icon-user-good-had{
+        background: url("../../images/icon-good-highlight.png")  left top no-repeat;
+        background-size: 19px;
+    }
+    .icon-user-collect{
+        background: url("../../images/icon-collect.png") left top no-repeat;
+        background-size: 19px;
+    }
+    .icon-user-collect:hover{
+        background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
+        background-size: 19px;
+    }
+    .icon-user-collect-had{
+         background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
+         background-size: 19px;
+     }
+    .icon-user-commit{
+        background: url("../../images/icon-commit.png") left top no-repeat;
+        background-size: 19px;
+    }
+    .icon-user-commit:hover{
+        background: url("../../images/icon-commit-highlight.png")  left top no-repeat;
+        background-size: 19px;
+    }
+    .icon {
+        width: 16px;
+        height: 16px;
+        fill: #002752;
+    }
+    .collectionIcon{
+        cursor: pointer;
+        font-size: 20px;
+        color:#6CA6CD;
+    }
+    .collectionIcon:hover{
+        color:#0056b3;
+    }
+    .collList{
+        cursor: pointer;
+    }
+</style>
+
+
+<div class="container">
+    <div class="row justify-content-center" >
+
+
+        <div class="rightcontent col-3 m-2 border-right border-left card p-0">
+            <h5 class="card-header clearfix">收藏夹
+                    <i class="fa  fa-plus-square float-right center-block" data-toggle="modal" data-target="#addColl" style="font-size: 22px;color:#454d55;cursor: pointer;"></i>
+            </h5>
+
+            <ul compact="nav" class=" p-0 m-0">
+                <li th:each="collection : ${collectionList}" class="nav-link border-bottom clearfix collli">
+                    <a th:data-id="${collection.id}" class="collList" th:text="${collection.title}">收藏夹</a>
+                    <i th:data-id="${collection.id}" class="fa  fa-times float-right center-block collectionIcon"></i>
+                    <i  th:data-id="${collection.id}" th:data-title="${collection.title}" class="fa  fa-pencil-square-o float-right center-block collectionIcon " data-toggle="modal" data-target="#editColl"></i>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-7 bg-white m-2 ">
+            <div  id="blogDIV" >
+            <div class=" m-2 border-bottom pb-2"   th:each="blog : ${blogs}">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9" style="padding:0">
+                            <a href="">
+                                <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50 shadow">
+                                <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50 shadow">
+                            </a>
+                            <a th:href="'/u/' + ${blog.user.username} + '/blogs'" target="_blank" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
+                        </div>
+                        <div class="col-3  mt-2">
+                            <small class="" th:text="${#dates.format(blog.createTime,'yyyy.MM.dd HH:mm:ss')}">2010.09.04-14:20</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <input readonly type="hidden" th:value="${blog.id}">
+                    <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" target="_blank" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
+                    <p th:text="'简介：'+ ${blog.summary}">简介：+${blog.summary}+</p>
+                    <div class="itemimg">
+                        <span th:each="picture : ${blog.pictures}" >
+                        <img th:src=${picture.pictureURL} alt="" class="bigbigpicture"  data-realsrc="./images/test.png">
+                        </span>
+                    </div>
+                    <div class="row pl-3 pt-2 pb-1">
+                        <a th:if="${blog.votes.size()} == 0" class=" icon-user-good pl-4 blogSubmitVote"  th:text="${blog.voteSize}" >222</a>
+                        <a th:if="${blog.votes.size()} gt 0" class=" icon-user-good-had pl-4 blogCancelVote" th:attr="voteId=${blog.votes[0].id}" th:text="${blog.voteSize}" >222</a>
+                        <a th:if="${blog.collectionId} == null" class=" icon-user-collect pl-4 ml-5" data-toggle="modal" data-target="#selectColl" th:data-blogId="${blog.id}"></a>
+                        <a th:if="${blog.collectionId} != null" class=" icon-user-collect-had pl-4 ml-5 uncollBlog" th:blogCollId="${blog.collectionId}" th:data-blogId="${blog.id}"></a>
+                        <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5"  th:text="${blog.commentSize}">52</a>
+                    </div>
+                    <div class="container text-commit" th:each="comment : ${blog.comments}" th:object="${comment}">
+                        <div class="row border-left">
+                            <div class="col-2" style="padding:0">
+                                <div>
+                                    <a href="">
+                                        <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50-co">
+                                        <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50-co">
+                                        <!--<img src="../../images/avatarboy.png" alt="" class="avatar-50-co">-->
+                                    </a>
+                                    <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.name}">评论姓名</a>
+                                </div>
+                                <div >
+                                    <small  th:text="*{#dates.format(createTime,'yy.MM.dd-HH:mm:ss')}" >2010.09.04-14:20</small>
+                                </div>
+
+                            </div>
+                            <div class="col-9" th:text="*{content}">
+                                的发顺丰水电费水电费水电
+                            </div>
+                            <div class="col-1">
+                                <a th:if="${comment.votes.size()} == 0"  th:data-smsid="${comment.id}"  class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
+                                <a th:if="${comment.votes.size()} gt 0"  th:data-smsid="${comment.id}" class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- 添加Modal -->
+    <div class="modal fade" id="editColl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >编辑</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- <input type="text" class="modelid" value="22"> -->
+                    <div class="form-group">
+                        <label >收藏夹名称：</label>
+
+                        <input id="collId" readonly type="hidden">
+                        <input id="edittext" type="text" class="form-control" aria-describedby="emailHelp" placeholder="请控制在10字内" maxlength="10">
+                        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-secondary" >重置</button>
+                    <button type="button" id="editCollbut" class="btn btn-outline-info">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑Modal -->
+    <div class="modal fade" id="addColl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- <input type="text" class="modelid" value="22"> -->
+                    <div class="form-group">
+                        <label >输入收藏夹名称：</label>
+                        <input type="text" id="addtext" class="form-control" aria-describedby="emailHelp" placeholder="请控制在10字内" maxlength="10">
+                        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-secondary" >重置</button>
+                    <button type="button" id="addCollbut" class="btn btn-outline-info" >确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 选择收藏夹Modal -->
+    <div class="modal fade" id="selectColl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">选择收藏夹</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <input id="collSelectBlogId" readonly type="hidden">
+                    <!-- <input type="text" class="modelid" value="22"> -->
+                    <div class="form-group " id="collSelectDIV">
+                        <!--<div >-->
+                            <!--<input type="radio" name="collSelectName" id="man" value="1" class="m-2">擦-->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeCollAddBlogBut" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-secondary" >重置</button>
+                    <button type="button" id="collAddBlogBut" class="btn btn-outline-info" >确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+<script src="../../js/cropbox.js" th:src="@{/js/cropbox.js}"></script>
+
+<script type="text/javascript" >
+
+    $(function() {
+        var thisusername = '[[${#authentication.name}]]';
+
+        // 提交点赞
+        $(document).on("click", ".blogSubmitVote", function () {
+            var blogId = $(this).parent().parent().children(0).val();
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            $.ajax({
+                url: '/votes',
+                type: 'POST',
+                data: {"blogId": blogId},
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        th.attr("class", "icon-user-good-had pl-4 blogCancelVote");
+                        th.text(th.text() * 1 + 1);
+                        th.attr("voteId", result.data);
+                        //window.location.reload('/collection/'+thisusername);
+                    } else {
+                        toastr.error(result.msg);
+                        //toastr.error("error!");
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 取消点赞
+        $(document).on("click", ".blogCancelVote", function () {
+            var blogId = $(this).parent().parent().children(0).val();
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+
+            $.ajax({
+                url: '/votes/' + $(this).attr('voteId') + '?blogId=' + blogId,
+                type: 'DELETE',
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        th.attr("class", "icon-user-good pl-4 blogSubmitVote");
+                        th.text(th.text() * 1 - 1);
+                    } else {
+                        toastr.error(result.msg);
+                        //toastr.error("error!");
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 提交评论点赞
+        $(document).on("click", ".commentSubmitVote", function () {
+
+            var commentId = $(this).attr('data-smsid');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            $.ajax({
+                url: '/votes/comment',
+                type: 'POST',
+                data: {"commentId": commentId},
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        th.attr("class", "icon-user-good-had pl-4 pt-2 commentCancelVote");
+                        th.text(th.text() * 1 + 1);
+                        th.attr("voteId", result.data);
+                        //window.location.reload('/collection/'+thisusername);
+                    } else {
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 取消评论点赞
+        $(document).on("click", ".commentCancelVote", function () {
+            var commentId = $(this).attr('data-smsid');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            $.ajax({
+                url: '/votes/comment/' + $(this).attr('voteId') + '?commentId=' + commentId,
+                type: 'DELETE',
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        th.attr("class", "icon-user-good pl-4 pt-2 commentSubmitVote");
+                        th.text(th.text() * 1 - 1);
+                        // window.location.reload('/collection/'+thisusername);
+                    } else {
+                        //toastr.error(result.msg);
+                        //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        $(".fa-times").click(function () {
+
+            var collectionId = $(this).attr("data-id");
+            var username = '[[${#authentication.name}]]';
+            layer.confirm('您确定要删除本条收藏吗？删除后内容都会清空哦！', {
+                btn: ['是的', '算了'] //按钮
+            }, function () {
+                //layer.msg('的确很重要', {icon: 1});
+                var csrfToken = $("meta[name='_csrf']").attr("content");
+                var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+                $.ajax({
+                    url: '/collection/del/' + username,
+                    type: 'POST',
+                    data: {
+                        "collectionId": collectionId
+                    },
+                    beforeSend: function (request) {
+                        request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                    },
+                    success: function (result) {
+                        if (result.code == "0") {
+                            // 成功后，重定向
+                            window.location = result.data;
+                        } else {
+                            toastr.error(result.msg);
+                        }
+                    },
+                    error: function () {
+                        toastr.error("error!");
+                    }
+                });
+            }, function () {
+                //算了
+            })
+        });
+
+
+        $(".fa-pencil-square-o").click(function () {
+            $("#edittext").val($(this).attr("data-title"));
+            $("#collId").val($(this).attr("data-id"));
+        });
+
+
+        $(document).on("click", "#addCollbut", function () {
+
+            var username = '[[${#authentication.name}]]';
+            var collTitle = $("#addtext").val();
+
+            if (collTitle == "") {
+                toastr.error("收藏夹标题不能为空！");
+                return;
+            }
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+                url: '/collection/add',
+                type: 'POST',
+                data: {
+                    "username": username,
+                    "title": collTitle
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        // 成功后，重定向
+                        window.location = result.data;
+                        $("#addtext").val("");
+                    } else if (result.code == 500301) {
+                        toastr.error(result.msg);
+                    }
+                    else {
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+
+        $(document).on("click", "#editCollbut", function () {
+
+            var username = '[[${#authentication.name}]]';
+            var collTitle = $("#edittext").val();
+
+            if (collTitle == "") {
+                toastr.error("收藏夹标题不能为空！");
+                return;
+            }
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+                url: '/collection/edit',
+                type: 'POST',
+                data: {
+                    "id": $("#collId").val(),
+                    "username": username,
+                    "title": collTitle
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        // 成功后，重定向
+                        window.location = result.data;
+                    } else if (result.code == 500301) {
+                        toastr.error(result.msg);
+                    }
+                    else {
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+
+        // $(document).on("click", ".collList", function () {
+        //     var th = $(this);
+        //     var all = $(this).parent().parent().find(".collList");
+        //     all.attr("class", "collList");
+        //     $(this).attr("class", "collList h4 ");
+        //
+        //
+        //     var collId = $(this).attr("data-id");
+        //
+        //     $.ajax({
+        //         url: '/collection/getblog',
+        //         type: 'GET',
+        //         data: {
+        //             "username": '[[${#authentication.name}]]',
+        //             "id": collId
+        //         },
+        //         success: function (data) {
+        //             $("#blogDIV").html(data);
+        //
+        //         },
+        //         error: function () {
+        //             toastr.error("error!");
+        //         }
+        //     });
+        // });
+
+        $(document).on("click", ".collList", function () {
+            var th = $(this);
+            clickCollList(th);
+        });
+
+        function clickCollList(th) {
+            var all = th.parent().parent().find(".collList");
+            all.attr("class", "collList");
+            th.attr("class", "collList h4 ");
+            var collId = th.attr("data-id");
+            $.ajax({
+                url: '/collection/getblog',
+                type: 'GET',
+                data: {
+                    "username": '[[${#authentication.name}]]',
+                    "id": collId
+                },
+                success: function (data) {
+                    $("#blogDIV").html(data);
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+        function getFirstCollection() {
+            var collli = $(".collli");
+            if (collli.length>0){
+                //alert("有收藏");
+                var thlist=collli.first();
+                clickCollList(thlist.children("a"));
+            }
+        };
+
+
+        getFirstCollection();
+
+        var collIconTh;
+
+        //点击收藏夹标签
+        $(document).on("click", ".icon-user-collect", function () {
+            var th=$(this);
+            var blogId = th.attr("data-blogId");
+            $("#collSelectBlogId").val(th.attr("data-blogId"));
+            $.ajax({
+                url: '/collection/'+thisusername+'/select',
+                type: 'GET',
+                data: {
+                    "username": thisusername,
+                },
+                success: function (result) {
+                    if (result.data.length==0){
+                        $("#closeCollAddBlogBut").click();
+                        toastr.warning("您尚未创建过收藏夹，请前往收藏管理中心创建!");
+                        return;
+                    }
+                    $("#collSelectDIV").empty();
+                    for (var i = 0; i <result.data.length; i++) {
+                        $ ("#collSelectDIV").append("<div ><input type='radio' name='collSelectName' value="+result.data[i].id+" class='m-2'>"+result.data[i].title+"</div>");
+                    };
+                    collIconTh=th;
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+
+        $(document).on("click", "#collAddBlogBut", function () {
+
+        // 获取 CSRF Token
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        var th = $(this);
+        var blogId = $("#collSelectBlogId").val();
+        var inCoolId = $('input[name="collSelectName"]:checked').val();//获取选中的单选的值
+        $.ajax({
+            url: '/collection/collBlog',
+            type: 'POST',
+            data: {
+                "inCollId":inCoolId,
+                "blogId": blogId,
+                "username": thisusername
+            },
+            beforeSend: function (request) {
+                request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+            },
+            success: function (result) {
+                if (result.code == 0) {
+
+                    collIconTh.attr("class", "icon-user-collect-had pl-4 ml-5 uncollBlog");
+                    collIconTh.attr("data-toggle", "");
+                    collIconTh.attr("data-target", "");
+                    collIconTh.attr("blogCollId", result.data);
+                    $("#closeCollAddBlogBut").click();
+
+                    toastr.info("收藏成功");
+                    //alert(result.data);
+                } else {
+                    toastr.error(result.msg);
+                }
+            },
+            error: function () {
+                //toastr.error("error!");
+                toastr.error("请先登录!");
+            }
+        });
+    })
+        // 收藏微博
+        // $(document).on("click", "#collAddBlogBut", function () {
+        //     // 获取 CSRF Token
+        //     var csrfToken = $("meta[name='_csrf']").attr("content");
+        //     var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        //     var th = $(this);
+        //     var blogId = $("#collSelectBlogId").val();
+        //     var inCoolId = $('input[name="collSelectName"]:checked').val();//获取选中的单选的值
+        //     $.ajax({
+        //         url: '/collection/collBlog',
+        //         type: 'POST',
+        //         data: {
+        //             "inCollId":inCoolId,
+        //             "blogId": blogId,
+        //             "username": thisusername
+        //         },
+        //         beforeSend: function (request) {
+        //             request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+        //         },
+        //         success: function (result) {
+        //             if (result.code == 0) {
+        //
+        //                 th.attr("class", "icon-user-collect-had pl-4 ml-5 uncollBlog");
+        //                 th.attr("data-toggle", "");
+        //                 th.attr("data-target", "");
+        //                 th.attr("blogCollId", result.data);
+        //                 //alert(result.data);
+        //             } else {
+        //                 toastr.error(result.msg);
+        //             }
+        //         },
+        //         error: function () {
+        //             //toastr.error("error!");
+        //             toastr.error("请先登录!");
+        //         }
+        //     });
+        // });
+
+
+
+        // 取消收藏微博
+        $(document).on("click", ".uncollBlog", function () {
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            var incollId = th.attr("blogCollId");
+            var blogId = th.attr("data-blogId");
+            $.ajax({
+                url: '/collection/uncollBlog',
+                type: 'POST',
+                data: {
+                    "inCollId":incollId,
+                    "blogId": blogId,
+                    "username": thisusername
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        //alert(result.data);
+                        th.attr("class", "icon-user-collect pl-4 ml-5");
+                        th.attr("data-toggle", "modal");
+                        th.attr("data-target", "#selectColl");
+                        toastr.info("成功取消收藏");
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+    })
+
+</script>
+
+
+</body>
+</html>

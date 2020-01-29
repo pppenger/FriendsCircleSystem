@@ -32,7 +32,7 @@ public interface CommentService {
 	 * @param commentId
 	 * @return
 	 */
-	Comment createVote(Long commentId);
+	Long createVote(Long commentId);
 
 	/**
 	 * 取消点赞

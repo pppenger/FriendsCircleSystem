@@ -1,0 +1,100 @@
+<div>
+    <table class="table table-hover" style="text-align: center">
+        <thead>
+        <tr>
+            <th scope="col" width="30rem">id</th>
+            <th scope="col" width="100rem">分区名</th>
+            <th scope="col" width="200rem">说明</th>
+            <th scope="col" width="100rem">提议者</th>
+            <th scope="col" width="100rem">时间</th>
+            <th scope="col" width="80rem">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="catalog : ${model.catalogList}">
+            <th scope="row"  th:text="${catalog.id}">1</th>
+            <td th:text="${catalog.name}">Mark</td>
+            <td th:text="${catalog.summary}">Otto</td>
+            <td th:text="${catalog.username}">Otto</td>
+            <td th:text="${#dates.format(catalog.createTime,'yyyy.MM.dd HH:mm:ss')}">Otto</td>
+            <td>
+                <button type="button " class="btn btn-success passCatalog" data-th-attr="catalogId=${catalog.id}"  >通过</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:replace="fragments/page :: pagehtml">...</div>
+</div>
+
+
+<script  type="text/javascript">
+    $(function() {
+        var _pageSize=5;
+
+
+
+        // 根据用户名、页面索引、页面大小获取用户列表
+        function getUnopenCatalog(pageIndex, pageSize) {
+
+            // alert($("#searchName").val());
+            $.ajax({
+                url: "/catalogs/unOpenCatalogs",
+                contentType : 'application/json',
+                data:{
+                    "pageIndex":pageIndex,
+                    "pageSize":pageSize,
+                },
+                success: function(data){
+                    //$("html").html(data)
+                    //console.log(data);
+                    $("#AdminIndex").html(data);
+                    //$("#mainContainer").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+
+        //分页
+        $(".pagebutJump").click(function () {
+            var pageIndex=$(this).attr("id")-1;
+            getUnopenCatalog(pageIndex,_pageSize);
+        });
+
+        $(".pagebutNum").click(function () {
+            var pageIndex=$(this).attr("value")-1;
+            getUnopenCatalog(pageIndex,_pageSize);
+        });
+
+        //提交，修改或者新建
+        $(".passCatalog").click(function () {
+            var catalogId = $(this).attr('catalogId');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+                url: "/catalogs/passCatalog",
+                type: 'POST',
+                data:{
+                    "catalogId":catalogId,
+                },
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        toastr.info(result.data);
+                        getUnopenCatalog($(".nowPageIndex").val()-1, _pageSize);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        });
+    })
+</script>

@@ -45,15 +45,25 @@ public class CommentServiceImpl implements CommentService {
 
 
 	@Override
-	public Comment createVote(Long commentId) {
+	public Long createVote(Long commentId) {
 		Comment originalComment = commentRepository.findOne(commentId);
 		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Vote vote = new Vote(user);
-		boolean isExist = originalComment.addVote(vote);
+		Vote newvote = new Vote(user);
+		boolean isExist = originalComment.addVote(newvote);
 		if (isExist) {
 			throw new IllegalArgumentException("该用户已经点过赞了");
 		}
-		return commentRepository.save(originalComment);
+
+		commentRepository.save(originalComment);
+		Long voteId=0L;
+		for (Vote vote : originalComment.getVotes()){
+			if (vote.getUser().getUsername().equals(user.getUsername())){
+				voteId = vote.getId();
+				break;
+			}
+		}
+		return voteId;
+		//return commentRepository.save(originalComment);
 	}
 
 	@Override

@@ -1,19 +1,10 @@
 package com.pppenger.microblog.domin;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -34,7 +25,7 @@ public class Catalog implements Serializable {
 
 	@NotEmpty(message = "名称不能为空")
 	@Size(min=2, max=8)
-	@Column(nullable = false) // 映射为字段，值不能为空
+	@Column(nullable = false, length = 8, unique = true) // 映射为字段，值不能为空
 	private String name;
 
 	@NotEmpty(message = "分区规则不能为空")
@@ -46,14 +37,20 @@ public class Catalog implements Serializable {
     @Column // 映射为字段，值不能为空
     private String username;
 
-    //是否已经启用
+    //是否已经启用(0为未开启，1为开启)
     @Column(nullable = false, columnDefinition = "TINYINT", length = 2)
     private Integer isOpen;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "catalog_blogs", joinColumns = @JoinColumn(name = "catalog_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"))
-	private List<Blog> blogs;
+	@Column(nullable = false) // 映射为字段，值不能为空
+	@org.hibernate.annotations.CreationTimestamp  // 由数据库自动创建时间
+	//@JsonFormat(shape= JsonFormat.Shape.STRING,pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+	private Timestamp createTime;
+
+
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	@JoinTable(name = "catalog_blogs", joinColumns = @JoinColumn(name = "catalog_id", referencedColumnName = "id"),
+//			inverseJoinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"))
+//	private List<Blog> blogs;
 
     public Catalog() {
 
@@ -86,13 +83,13 @@ public class Catalog implements Serializable {
 		this.name = name;
 	}
 
-	public List<Blog> getBlogs() {
-		return blogs;
-	}
-
-	public void setBlogs(List<Blog> blogs) {
-		this.blogs = blogs;
-	}
+//	public List<Blog> getBlogs() {
+//		return blogs;
+//	}
+//
+//	public void setBlogs(List<Blog> blogs) {
+//		this.blogs = blogs;
+//	}
 
     public String getUsername() {
         return username;
@@ -109,4 +106,12 @@ public class Catalog implements Serializable {
     public void setIsOpen(Integer isOpen) {
         this.isOpen = isOpen;
     }
+
+	public Timestamp getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Timestamp createTime) {
+		this.createTime = createTime;
+	}
 }

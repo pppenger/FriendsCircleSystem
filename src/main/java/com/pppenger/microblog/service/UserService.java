@@ -21,6 +21,8 @@ public interface UserService {
 	 * @return
 	 */
 	User saveUser(User user);
+
+	List<User> listUsers();
 	
 	/**
 	 * 删除用户

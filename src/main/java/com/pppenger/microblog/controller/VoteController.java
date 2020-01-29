@@ -48,16 +48,16 @@ public class VoteController {
 	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	@ResponseBody
 	public Result createVote(Long blogId) {
- 
+		Long voteId;
 		try {
-			blogService.createVote(blogId);
+			 voteId = blogService.createVote(blogId);
 		} catch (ConstraintViolationException e)  {
 			throw e;
 		} catch (Exception e) {
 			throw e;
 		}
 
-		return Result.success("点赞成功");
+		return Result.success(voteId);
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public class VoteController {
 
 
 	/**
-	 * 发表点赞
+	 * 发表评论点赞
 	 * @param commentId
 	 * @return
 	 */
@@ -108,20 +108,20 @@ public class VoteController {
 	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
 	@ResponseBody
 	public Result createCommentVote(Long commentId) {
-
+		Long voteId;
 		try {
-			commentService.createVote(commentId);
+			voteId = commentService.createVote(commentId);
 		} catch (ConstraintViolationException e)  {
 			throw e;
 		} catch (Exception e) {
 			throw e;
 		}
 
-		return Result.success("点赞成功");
+		return Result.success(voteId);
 	}
 
 	/**
-	 * 删除点赞
+	 * 删除评论点赞
 	 * @return
 	 */
 	@DeleteMapping("/comment/{id}")

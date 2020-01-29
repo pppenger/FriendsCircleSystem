@@ -2,11 +2,9 @@ package com.pppenger.microblog.service;
 
 import javax.transaction.Transactional;
 
-import com.pppenger.microblog.domin.Blog;
-import com.pppenger.microblog.domin.Comment;
-import com.pppenger.microblog.domin.User;
-import com.pppenger.microblog.domin.Vote;
+import com.pppenger.microblog.domin.*;
 import com.pppenger.microblog.repository.BlogRepository;
+import com.pppenger.microblog.repository.CatalogRepository;
 import com.pppenger.microblog.vo.PictureVO;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,9 @@ public class BlogServiceImpl implements BlogService {
 
 	@Autowired
 	private BlogRepository blogRepository;
+
+	@Autowired
+	private CatalogRepository catalogRepository;
 
 	/* (non-Javadoc)
 	 * @see com.waylau.spring.boot.blog.service.BlogService#saveBlog(com.waylau.spring.boot.blog.domain.Blog)
@@ -76,18 +77,40 @@ public class BlogServiceImpl implements BlogService {
 	}
 
 	@Override
-	public Page<Blog> listBlogsByTitleLike(User user, String title, Pageable pageable) {
+	public Page<Blog> listBlogsByTitleLike(User user,Long catalogId, String title, Pageable pageable) {
 		// 模糊查询
 		title = "%" + title + "%";
-		Page<Blog> blogs = blogRepository.findByUserAndTitleLikeOrderByCreateTimeDesc(user, title, pageable);
+		Catalog catalog =null;
+		if (!org.springframework.util.StringUtils.isEmpty(catalogId)){
+			catalog = catalogRepository.findOne(catalogId);
+		}
+
+		Page<Blog> blogs;
+		if (catalog!=null){
+			blogs= blogRepository.findByUserAndCatalogAndTitleLikeOrderByCreateTimeDesc(user,catalog, title, pageable);
+		}
+		else {
+			blogs= blogRepository.findByUserAndTitleLikeOrderByCreateTimeDesc(user, title, pageable);
+		}
 		return blogs;
 	}
 
 	@Override
-	public Page<Blog> listBlogsByTitleLikeAndSort(User user, String title, Pageable pageable) {
+	public Page<Blog> listBlogsByTitleLikeAndSort(User user,Long catalogId, String title, Pageable pageable) {
+
+		Catalog catalog =null;
+		if (!org.springframework.util.StringUtils.isEmpty(catalogId)){
+			catalog = catalogRepository.findOne(catalogId);
+		}
 		// 模糊查询
 		title = "%" + title + "%";
-		Page<Blog> blogs = blogRepository.findByUserAndTitleLike(user, title, pageable);
+		Page<Blog> blogs;
+		if (catalog!=null){
+			blogs= blogRepository.findByUserAndCatalogAndTitleLike(user,catalog, title, pageable);
+		}
+		else {
+			blogs= blogRepository.findByUserAndTitleLike(user, title, pageable);
+		}
 		return blogs;
 	}
 
@@ -169,15 +192,25 @@ public class BlogServiceImpl implements BlogService {
 	}
 
 	@Override
-	public Blog createVote(Long blogId) {
+	public Long createVote(Long blogId) {
 		Blog originalBlog = blogRepository.findOne(blogId);
+		//获取当前登录用户
 		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		Vote vote = new Vote(user);
-		boolean isExist = originalBlog.addVote(vote);
+		Vote newvote = new Vote(user);
+		boolean isExist = originalBlog.addVote(newvote);
 		if (isExist) {
 			throw new IllegalArgumentException("该用户已经点过赞了");
 		}
-		return blogRepository.save(originalBlog);
+		blogRepository.save(originalBlog);
+
+		Long voteId=0L;
+		for (Vote vote : originalBlog.getVotes()){
+			if (vote.getUser().getUsername().equals(user.getUsername())){
+				voteId = vote.getId();
+				break;
+			}
+		}
+		return voteId;
 	}
 
 	@Override

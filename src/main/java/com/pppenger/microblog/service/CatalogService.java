@@ -5,6 +5,8 @@ import java.util.List;
 import com.pppenger.microblog.domin.Catalog;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.domin.UserCatalog;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Catalog 服务接口.
@@ -39,15 +41,27 @@ public interface CatalogService {
 //	 * @return
 //	 */
 //	List<Catalog> listCatalogs(User user);
-
+   List<UserCatalog> findCatalogUserByUsername(String userName);
 
    List<Catalog> listCatalogs(String userName);
 
-   List<Catalog> listCatalogNames(String catalogId);
+//   List<Catalog> listCatalogNames(String catalogId);
 
-   List<Catalog> listCatalogs();
+   List<Catalog> listCatalogs(Integer isopen);
 
-   List<UserCatalog> listUsernamesByCatalog(String catalogId);
+   Page<Catalog> listUnOpenCatalogs(Integer isopen, int pageIndex, int pageSize);
+
+   List<UserCatalog> listUserCatalog();
+
+   List<UserCatalog> listUsernamesByCatalog(Long catalogId);
 
    Catalog saveCatalog(Catalog catalog);
+
+   UserCatalog saveUserCatalog(UserCatalog userCatalog);
+
+   List<UserCatalog> findByUsernameAndCatalogId(String username, Long catalogId);
+
+   void deleteByUsernameAndCatalogId(String username, Long catalogId);
+
+   Catalog getCatalogById(Long catalogId);
 }

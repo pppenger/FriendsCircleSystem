@@ -1,15 +1,13 @@
 package com.pppenger.microblog.controller;
 
-import com.pppenger.microblog.domin.Blog;
-import com.pppenger.microblog.domin.Comment;
-import com.pppenger.microblog.domin.Picture;
-import com.pppenger.microblog.domin.User;
-import com.pppenger.microblog.domin.Vote;
+import com.pppenger.microblog.domin.*;
+import com.pppenger.microblog.domin.Collection;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
-import com.pppenger.microblog.service.BlogService;
-import com.pppenger.microblog.service.UserService;
-import com.pppenger.microblog.service.UserspaceService;
+import com.pppenger.microblog.service.*;
+import com.pppenger.microblog.vo.BlogVO;
+import com.pppenger.microblog.vo.CollectionBlogVO;
+import com.pppenger.microblog.vo.CollectionVO;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,10 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -60,6 +56,12 @@ public class UserspaceController {
 
         @Autowired
         private BlogService blogService;
+
+        @Autowired
+        private CatalogService catalogService;
+
+        @Autowired
+        private CollectionService collectionService;
 
         @GetMapping("/{username}")
         public String userSpace(@PathVariable("username") String username, Model model) {
@@ -132,7 +134,7 @@ public class UserspaceController {
     @GetMapping("/{username}/blogs")
     public String listBlogsByOrder(@PathVariable("username") String username,
                                    @RequestParam(value="order",required=false,defaultValue="new") String order, //排序，默认按新排序
-                                   @RequestParam(value="summary",required=false ) Long summary,       //类别
+                                   @RequestParam(value="catalogId",required=false ) Long catalogId,       //类别
                                    @RequestParam(value="keyword",required=false,defaultValue="" ) String keyword,   //关键字
                                    @RequestParam(value="async",required=false) boolean async,
                                    @RequestParam(value="pageIndex",required=false,defaultValue="0") int pageIndex,
@@ -159,13 +161,20 @@ public class UserspaceController {
         if (order.equals("hot")) { // 最热查询【先按阅读量评论量等排序一个Sort，然后再去查询】
             Sort sort = new Sort(Sort.Direction.DESC,"reading","comments","likes");
             Pageable pageable = new PageRequest(pageIndex, pageSize, sort);
-            page = blogService.listBlogsByTitleLikeAndSort(user, keyword, pageable);
+            page = blogService.listBlogsByTitleLikeAndSort(user,catalogId, keyword, pageable);
         }
         if (order.equals("new")) { // 最新查询【直接按插入时间查询】
             Pageable pageable = new PageRequest(pageIndex, pageSize);
-            page = blogService.listBlogsByTitleLike(user, keyword, pageable);
+            page = blogService.listBlogsByTitleLike(user,catalogId, keyword, pageable);
         }
         List<Blog> list = page.getContent();	// 当前所在页面数据列表
+
+
+
+
+
+
+
         //对评论进行筛选
         list.stream().forEach(blog ->
         {
@@ -180,30 +189,40 @@ public class UserspaceController {
             for (Blog blog : list){
                 List list1 = new ArrayList();
                 for (Vote vote : blog.getVotes()){
-                    vote.getUser().getUsername().equals(principal.getUsername());
-                    list1.add(vote);
-                    break;
+                    if (vote.getUser().getUsername().equals(principal.getUsername())){
+                        list1.add(vote);
+                        break;
+                    }
                 }
                 blog.setVotes(list1);
-
-
                 for (Comment comment : blog.getComments()){
                     List list2 = new ArrayList();
                     for (Vote vote : comment.getVotes()){
-                        vote.getUser().getUsername().equals(principal.getUsername());
-                        list2.add(vote);
-                        break;
+                        if (vote.getUser().getUsername().equals(principal.getUsername())){
+                            list2.add(vote);
+                            break;
+                        }
                     }
                     comment.setVotes(list2);
                 }
             }
-
         }
 
+
+        List<BlogVO> blogVOS = list.stream().map(B -> new BlogVO(B.getId(), B.getTitle(), B.getSummary(), B.getUser(), B.getCreateTime(), B.getReadSize(), B.getCommentSize(), B.getVoteSize(), B.getReportSize(), B.getComments(), B.getVotes(), B.getPictures(), B.getCatalog(), null)).collect(Collectors.toList());
+        if (principal !=null) {
+            List<Collection> collectionList = collectionService.findByUser(principal);
+            if (collectionList.size() > 0) {
+                List<CollectionBlogVO> collectionBlogVOS = collectionService.selectCBbyCollIds(collectionList.stream().map(Collection::getId).collect(Collectors.toList()));
+                Map<Long, Long> BlogIdCollIdMap = collectionBlogVOS.stream().collect(Collectors.toMap(CollectionBlogVO::getBlogId, CollectionBlogVO::getCollectionId, (o, n) -> o));
+                if (!StringUtils.isEmpty(BlogIdCollIdMap)) {
+                    blogVOS.stream().forEach(CBV -> CBV.setCollectionId(BlogIdCollIdMap.get(CBV.getId())));
+                }
+            }
+        }
         model.addAttribute("order", order);
         model.addAttribute("page", page);
-        model.addAttribute("blogList", list);
-        //return (async==true?"/userspace/u :: #mainContainerRepleace":"/userspace/u");
+        model.addAttribute("blogList", blogVOS);
         //return "/userspace/blog";
 
         return (async==true?"/userspace/u :: #mainContainerRepleace":"/userspace/u");
@@ -221,7 +240,6 @@ public class UserspaceController {
     public String getBlogById(@PathVariable("username") String username,@PathVariable("id") Long id, Model model) {
         User principal = null;
         Blog blog = blogService.getBlogById(id);
-
 //        // 每次读取，简单的可以认为阅读量增加1次
 //        blogService.readingIncrease(id);
 
@@ -241,14 +259,39 @@ public class UserspaceController {
 
         if (principal !=null) {
             for (Vote vote : votes) {
-                vote.getUser().getUsername().equals(principal.getUsername());
-                currentVote = vote;
-                break;
+                if (vote.getUser().getUsername().equals(principal.getUsername())){
+                    currentVote = vote;
+                    break;
+                }
+            }
+
+            for (Comment comment : blog.getComments()){
+                List list2 = new ArrayList();
+                for (Vote vote : comment.getVotes()){
+                    if (vote.getUser().getUsername().equals(principal.getUsername())){
+                        list2.add(vote);
+                        break;
+                    }
+                }
+                comment.setVotes(list2);
             }
         }
 
+        BlogVO blogvo =new BlogVO(blog.getId(), blog.getTitle(), blog.getSummary(), blog.getUser(), blog.getCreateTime(), blog.getReadSize(), blog.getCommentSize(), blog.getVoteSize(), blog.getReportSize(), blog.getComments(), blog.getVotes(), blog.getPictures(), blog.getCatalog(), null);
+        if (principal !=null){
+            List<Collection> collectionList = collectionService.findByUser(principal);
+            if (collectionList.size()>0) {
+                List<CollectionBlogVO> collectionBlogVOS = collectionService.selectCBbyCollIds(collectionList.stream().map(Collection::getId).collect(Collectors.toList()));
+                Map<Long, Long> BlogIdCollIdMap = collectionBlogVOS.stream().collect(Collectors.toMap(CollectionBlogVO::getBlogId, CollectionBlogVO::getCollectionId, (o, n) -> o));
+                if (!StringUtils.isEmpty(BlogIdCollIdMap)) {
+                    blogvo.setCollectionId(BlogIdCollIdMap.get(blogvo.getId()));
+                }
+            }
+        }
+
+
         model.addAttribute("isBlogOwner", isBlogOwner);
-        model.addAttribute("blog",blog);
+        model.addAttribute("blog",blogvo);
         model.addAttribute("currentVote",currentVote);
         return "/userspace/blog";
     }
@@ -266,6 +309,7 @@ public class UserspaceController {
     public Result deleteBlog(@PathVariable("username") String username,@PathVariable("id") Long id) {
 
         try {
+            collectionService.delByBlogId(id);
             blogService.removeBlog(id);
         } catch (Exception e) {
             return Result.error(CodeMsg.SERVER_ERROR);

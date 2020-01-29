@@ -7,31 +7,44 @@
 <style>
     .icon-user-good{
         background: url("../../images/icon-good.png") left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
     }
     .icon-user-good:hover{
         background: url("../../images/icon-good-highlight.png")  left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
     }
     .icon-user-good-had{
         background: url("../../images/icon-good-highlight.png")  left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
     }
     .icon-user-collect{
         background: url("../../images/icon-collect.png") left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
     }
     .icon-user-collect:hover{
         background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
+    }
+    .icon-user-collect-had{
+        background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
+        background-size: 19px;
     }
     .icon-user-commit{
         background: url("../../images/icon-commit.png") left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
     }
     .icon-user-commit:hover{
         background: url("../../images/icon-commit-highlight.png")  left top no-repeat;
-        background-size: 23px;
+        background-size: 19px;
+    }
+    .cardmenu{
+        cursor:pointer;
+    }
+    .cardmenu a{
+        color: #000000;
+    }
+    .cardmenu:hover{
+        background-color: #92B8B1;
     }
 </style>
 <body class="bg-light">
@@ -51,8 +64,11 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-9" style="padding:0">
-                            <a href=""><img th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50 shadow"></a>
-                            <a href="" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
+                            <a href="">
+                                <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50 shadow">
+                                <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50 shadow">
+                            </a>
+                            <a th:href="'/u/' + ${blog.user.username} + '/blogs'" target="_blank" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
                         </div>
                         <div class="col-3  mt-2">
                             <small class="" th:text="${#dates.format(blog.createTime,'yyyy.MM.dd HH:mm:ss')}">2010.09.04-14:20</small>
@@ -62,7 +78,7 @@
 
                 <div class="pt-2">
                     <input readonly type="hidden" th:value="${blog.id}">
-                    <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
+                    <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" target="_blank" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
                     <p th:text="'简介：'+ ${blog.summary}">简介：+${blog.summary}+</p>
                     <div class="itemimg">
                         <span th:each="picture : ${blog.pictures}" >
@@ -70,16 +86,20 @@
                         </span>
                     </div>
                     <div class="row pl-3 pt-2 pb-1">
-                        <a th:if="${blog.votes.size()} == 0" name="blogSubmitVote"  class=" icon-user-good pl-4 blogSubmitVote"  th:text="*{blog.voteSize}" >222</a>
-                        <a th:if="${blog.votes.size()} gt 0" name="blogCancelVote"  class=" icon-user-good-had pl-4 blogCancelVote" th:attr="voteId=${blog.votes[0].id}" th:text="*{blog.voteSize}" >222</a>
-                        <a href="" class=" icon-user-collect pl-4 ml-5" data-smsid="填短讯id"></a>
-                        <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5" data-smsid="填短讯id" th:text="*{blog.commentSize}">52</a>
+                        <a th:if="${blog.votes.size()} == 0" class=" icon-user-good pl-4 blogSubmitVote"  th:text="${blog.voteSize}" >222</a>
+                        <a th:if="${blog.votes.size()} gt 0" class=" icon-user-good-had pl-4 blogCancelVote" th:attr="voteId=${blog.votes[0].id}" th:text="${blog.voteSize}" >222</a>
+                        <a th:if="${blog.collectionId} == null" class=" icon-user-collect pl-4 ml-5" data-toggle="modal" data-target="#selectColl" th:data-blogId="${blog.id}"></a>
+                        <a th:if="${blog.collectionId} != null" class=" icon-user-collect-had pl-4 ml-5 uncollBlog" th:blogCollId="${blog.collectionId}" th:data-blogId="${blog.id}"></a>
+                        <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5" th:text="${blog.commentSize}">52</a>
                     </div>
                     <div class="container text-commit" th:each="comment : ${blog.comments}" th:object="${comment}">
                         <div class="row border-left">
                             <div class="col-2" style="padding:0">
                                 <div>
-                                    <a href=""><img src="../../images/avatarboy.png" alt="" class="avatar-50-co"></a>
+                                    <a href="">
+                                        <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50-co">
+                                        <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50-co">
+                                    </a>
                                     <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.name}">评论姓名</a>
                                 </div>
                                 <div >
@@ -91,8 +111,8 @@
                                 的发顺丰水电费水电费水电
                             </div>
                             <div class="col-1">
-                                <a th:if="${comment.votes.size()} == 0"  class=" icon-user-good pl-4 pt-2 "  th:text="${comment.voteSize}" >222</a>
-                                <a th:if="${comment.votes.size()} gt 0"  class=" icon-user-good-had pl-4 pt-2 " th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+                                <a th:if="${comment.votes.size()} == 0"  th:data-smsid="${comment.id}"  class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
+                                <a th:if="${comment.votes.size()} gt 0"  th:data-smsid="${comment.id}" class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
 <!--                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id" th:text="*{voteSize}">23</a>-->
                             </div>
                         </div>
@@ -122,37 +142,64 @@
 
 
             <div class="bg-white p-2 shadow-sm">
-                <div class="card" style="">
+                <div class="card cardmenu" style="">
                     <div class="card-header">
                         提醒
                     </div>
                 </div>
-                <div class="card" style="">
+                <div class="card cardmenu" style="">
                     <div class="card-header">
                         我的分区
                     </div>
                 </div>
-                <div class="card" style="">
+                <div class="card cardmenu" style="">
                     <div class="card-header">
                         收藏列表
                     </div>
                 </div>
-                <div class="card" style="">
+                <div class="card cardmenu" >
                     <div class="card-header">
-                        分区管理
+                        <a href="/catalogs/all">分区管理</a>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" id="catalogmsg">
                     <div class="card-body">
                         <h6 class="card-title mb-2 text-muted">我的分区</h6>
                         <p class="card-text">
-                            <a href="#" class="badge badge-info mr-1">默认分区</a>
-                            <a href="#" class="badge badge-info mr-1">分区名</a>
-                            <a href="#" class="badge badge-info mr-1">分区名</a>
-                            <a href="#" class="badge badge-info mr-1">分区名</a>
+                            <a th:href="@{'/u/' + ${#authentication.name} + '/blogs'}" class="badge badge-info mr-1">默认分区</a>
+                            <a th:each="catalog : ${catalogs}" href="#" class="badge badge-info mr-1 catalogname" th:data-catalogId="${catalog.id}" th:text="${catalog.name}">分区名</a>
                         </p>
-                        <a href="#" class="card-link">分区管理</a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 选择收藏夹Modal -->
+    <div class="modal fade" id="selectColl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">选择收藏夹</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <input id="collSelectBlogId" readonly type="hidden">
+                    <!-- <input type="text" class="modelid" value="22"> -->
+                    <div class="form-group " id="collSelectDIV">
+                        <!--<div >-->
+                            <!--<input type="radio" name="collSelectName" id="man" value="1" class="m-2">擦-->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeCollAddBlogBut" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-outline-secondary" >重置</button>
+                    <button type="button" id="collAddBlogBut" class="btn btn-outline-info" >确定</button>
                 </div>
             </div>
         </div>
@@ -173,6 +220,8 @@
     $(function() {
 
         var thisBlogUsername = $("#thisBlogUsername").val();
+
+        var thisusername = '[[${#authentication.name}]]';
 
     function getBlogByUsername(pageIndex) {
         $.ajax({
@@ -239,13 +288,11 @@
                 },
                 success: function(result){
                     if (result.code==0) {
-                        //toastr.info(result.data);
-                        // 成功后，重定向
-                        //window.location = blogUrl;
-                        //window.location = '/u/' + thisBlogUsername + '/blogs';
-                        window.location.reload('/u/' + thisBlogUsername + '/blogs');
-                        //th.attr("class","icon-user-good-had pl-4 blogSubmitVote");
-                        //th.val(th.val()+1);
+                        //window.location.reload('/u/' + thisBlogUsername + '/blogs');
+
+                        th.attr("class", "icon-user-good-had pl-4 blogCancelVote");
+                        th.text(th.text()*1+1);
+                        th.attr("voteId", result.data);
                     } else {
                         toastr.error(result.msg);
                         //toastr.error("error!");
@@ -265,19 +312,18 @@
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
+            var th =$(this);
             $.ajax({
-                url: '/votes/'+$(this).attr('voteId')+'?blogId='+blogId,
+                url: '/votes/'+th.attr('voteId')+'?blogId='+blogId,
                 type: 'DELETE',
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
                 success: function(result){
                     if (result.code==0) {
-                        //toastr.info(result.data);
-                        // 成功后，重定向
-                        //window.location = blogUrl;
-                        //window.location ='/u/' + thisBlogUsername + '/blogs';
-                        window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                        th.attr("class", "icon-user-good pl-4 blogSubmitVote");
+                        th.text(th.text()*1-1);
+                        //window.location.reload('/u/' + thisBlogUsername + '/blogs');
                     } else {
                         toastr.error(result.msg);
                         //toastr.error("error!");
@@ -290,6 +336,39 @@
             });
         });
 
+
+        $(document).on("click",".catalogname", function () {
+            var username = '[[${#authentication.name}]]';
+            var catalogId = $(this).attr('data-catalogId');
+            var form = $("<form method='get'></form>");
+            var input1,input2;
+            form.attr({"action":"/u/"+username+"/blogs"});
+            input1 = $("<input type='hidden' name='username' value=username>");
+            input2 = $("<input type='hidden' name='catalogId'>");
+            input2.attr('value',catalogId);
+            form.append(input1);
+            form.append(input2);
+            $(document.body).append(form);
+            form.submit();
+        });
+
+        function getCatalogMsg() {
+            $.ajax({
+                url: "/catalogs/my",
+                contentType : 'application/json',
+                data:{
+                    "toURL": "/u",
+                },
+                success: function(data){
+                    $("#catalogmsg").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+        getCatalogMsg();
 
         // var _pageSize; // 存储用于搜索
         // // 根据用户名、页面索引、页面大小获取用户的博客列表
@@ -313,6 +392,183 @@
         //         }
         //     });
         // }
+        // 提交评论点赞
+        $(document).on("click",".commentSubmitVote", function () {
+
+            var commentId = $(this).attr('data-smsid');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th =$(this);
+            $.ajax({
+                url: '/votes/comment',
+                type: 'POST',
+                data:{"commentId":commentId},
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        th.attr("class", "icon-user-good-had pl-4 pt-2 commentCancelVote");
+                        th.text(th.text()*1+1);
+                        th.attr("voteId", result.data);
+                        //window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                    } else {
+                        //toastr.error(result.msg);
+                        //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 取消评论点赞
+        $(document).on("click",".commentCancelVote", function () {
+            var commentId = $(this).attr('data-smsid');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            var th =$(this);
+            $.ajax({
+                url: '/votes/comment/'+th.attr('voteId')+'?commentId='+commentId,
+                type: 'DELETE',
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+
+                        th.attr("class", "icon-user-good pl-4 pt-2 commentSubmitVote");
+                        th.text(th.text()*1-1);
+                        //window.location.reload('/u/' + thisBlogUsername + '/blogs');
+                    } else {
+                        //toastr.error(result.msg);
+                        //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+
+        var collIconTh;
+
+        //点击收藏夹标签
+        $(document).on("click", ".icon-user-collect", function () {
+            var th=$(this);
+            var blogId = th.attr("data-blogId");
+            $("#collSelectBlogId").val(th.attr("data-blogId"));
+            $.ajax({
+                url: '/collection/'+thisusername+'/select',
+                type: 'GET',
+                data: {
+                    "username": thisusername,
+                },
+                success: function (result) {
+                    if (result.data.length==0){
+                        $("#closeCollAddBlogBut").click();
+                        toastr.warning("您尚未创建过收藏夹，请前往收藏管理中心创建!");
+                        return;
+                    }
+                    $("#collSelectDIV").empty();
+                    for (var i = 0; i <result.data.length; i++) {
+                        $ ("#collSelectDIV").append("<div ><input type='radio' name='collSelectName' value="+result.data[i].id+" class='m-2'>"+result.data[i].title+"</div>");
+                    };
+                    collIconTh=th;
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+
+        $(document).on("click", "#collAddBlogBut", function () {
+
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            var blogId = $("#collSelectBlogId").val();
+            var inCoolId = $('input[name="collSelectName"]:checked').val();//获取选中的单选的值
+            $.ajax({
+                url: '/collection/collBlog',
+                type: 'POST',
+                data: {
+                    "inCollId":inCoolId,
+                    "blogId": blogId,
+                    "username": thisusername
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+
+                        collIconTh.attr("class", "icon-user-collect-had pl-4 ml-5 uncollBlog");
+                        collIconTh.attr("data-toggle", "");
+                        collIconTh.attr("data-target", "");
+                        collIconTh.attr("blogCollId", result.data);
+                        $("#closeCollAddBlogBut").click();
+
+                        toastr.info("收藏成功");
+                        //alert(result.data);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        })
+
+        // 取消收藏微博
+        $(document).on("click", ".uncollBlog", function () {
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            var incollId = th.attr("blogCollId");
+            var blogId = th.attr("data-blogId");
+            $.ajax({
+                url: '/collection/uncollBlog',
+                type: 'POST',
+                data: {
+                    "inCollId":incollId,
+                    "blogId": blogId,
+                    "username": thisusername
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        //alert(result.data);
+                        th.attr("class", "icon-user-collect pl-4 ml-5");
+                        th.attr("data-toggle", "modal");
+                        th.attr("data-target", "#selectColl");
+                        toastr.info("成功取消收藏");
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
     })
 </script>
 </body>

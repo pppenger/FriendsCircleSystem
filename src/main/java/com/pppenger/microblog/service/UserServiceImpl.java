@@ -63,6 +63,11 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	}
 
 	@Override
+	public List<User> listUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
 	public Page<User> listUsersByNameLike(String name, int pageIndex,int pageSize) {
 		Pageable pageable = new PageRequest(pageIndex, pageSize);
 		// 模糊查询

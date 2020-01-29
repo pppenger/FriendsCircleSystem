@@ -49,14 +49,14 @@ public interface BlogService {
 	 * @param user
 	 * @return
 	 */
-	Page<Blog> listBlogsByTitleLike(User user, String title, Pageable pageable);
+	Page<Blog> listBlogsByTitleLike(User user,Long catalogId, String title, Pageable pageable);
  
 	/**
 	 * 根据用户名进行分页模糊查询（最热）
 	 * @param user
 	 * @return
 	 */
-	Page<Blog> listBlogsByTitleLikeAndSort(User suser, String title, Pageable pageable);
+	Page<Blog> listBlogsByTitleLikeAndSort(User suser,Long catalogId, String title, Pageable pageable);
 	
 	/**
 	 * 阅读量递增
@@ -93,7 +93,7 @@ public interface BlogService {
 	 * @param blogId
 	 * @return
 	 */
-	Blog createVote(Long blogId);
+	Long createVote(Long blogId);
 
 	/**
 	 * 取消点赞

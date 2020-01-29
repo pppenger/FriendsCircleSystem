@@ -55,7 +55,7 @@ public class Blog implements Serializable {
     private Integer reportSize = 0;  // 举报量
 
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "blog_comment", joinColumns = @JoinColumn(name = "blog_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id"))
     private List<Comment> comments;
@@ -70,9 +70,9 @@ public class Blog implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "picture_id", referencedColumnName = "id"))
     private List<Picture> pictures;
 
-//    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-//    @JoinColumn(name="catalog_id")
-//    private Partition catalog;
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name="catalog_id")
+    private Catalog catalog;
 
 
     public Long getId() {
@@ -154,6 +154,10 @@ public class Blog implements Serializable {
 
     public void setVotes(List<Vote> votes) {
         this.votes = votes;
+    }
+
+    public void setVotes2(List<Vote> votes) {
+        this.votes = votes;
         this.voteSize = this.votes.size();
     }
 
@@ -171,6 +175,14 @@ public class Blog implements Serializable {
 
     public void setPictures(List<Picture> pictures) {
         this.pictures = pictures;
+    }
+
+    public Catalog getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(Catalog catalog) {
+        this.catalog = catalog;
     }
 
     /**

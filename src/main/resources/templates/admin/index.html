@@ -5,10 +5,27 @@
 
 </head>
 <body class="bg-light">
-<span id="loadaction"></span>
-<div class="container" id="AdminIndex">
-
-
+<div class="container">
+<div class="row justify-content-center container" >
+    <div class="col-2 shadow ">
+        <ul class="nav ">
+            <li class="nav-link border-bottom ">
+                <a class=" text-dark h5 menu" id="loadaction">用户管理</a>
+            </li>
+            <li class="nav-link border-bottom">
+                <a class="text-secondary menu" id="catalogmune">分区管理</a>
+            </li>
+            <li class="nav-link border-bottom">
+                <a class="text-secondary menu">举报管理</a>
+            </li>
+            <li class="nav-link border-bottom">
+                <a class="text-secondary menu">提议新建分区</a>
+            </li>
+        </ul>
+    </div>
+    <div class=" col-10" id="AdminIndex">
+</div>
+</div>
 
 </div>
 
@@ -40,9 +57,39 @@
                 }
             });
         });
-        $("#loadaction").trigger("click");
 
 
+    $("#catalogmune").click(function() {
+        var url = "/catalogs/unOpenCatalogs";
+
+        // 加载list模块的页面到工作区
+        $.ajax({
+            url: url,
+            contentType : 'application/json',
+            data:{
+                "pageIndex":0,
+                "pageSize":5,
+            },
+            success: function (data) {
+                //console.log(data);
+                $("#AdminIndex").html(data);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    });
+
+
+        $(document).on("click",".menu", function () {
+            var th=$(this);
+            var all = $(this).parent().parent().find(".menu");
+            all.attr("class", "text-secondary menu");
+            $(this).attr("class", "text-dark h5 menu");
+        });
+
+
+    $("#loadaction").trigger("click");
     })
 
 
