@@ -10,6 +10,7 @@ import com.pppenger.microblog.vo.CollectionBlogVO;
 import com.pppenger.microblog.vo.CollectionVO;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/u")
 public class UserspaceController {
+    @Value("${blogScore}")
+    private Integer blogScore;
 
         @Autowired
         private UserDetailsService userDetailsService;
@@ -62,6 +65,8 @@ public class UserspaceController {
 
         @Autowired
         private CollectionService collectionService;
+    @Autowired
+    private TopService topService;
 
         @GetMapping("/{username}")
         public String userSpace(@PathVariable("username") String username, Model model) {
@@ -93,7 +98,7 @@ public class UserspaceController {
         User originalUser = userService.getUserById(user.getId());
         originalUser.setEmail(user.getEmail());
         originalUser.setUsername(user.getUsername());
-        originalUser.setName(user.getName());
+//        originalUser.setName(user.getName());
 
         // 判断密码是否做了变更
         String rawPassword = originalUser.getPassword();
@@ -142,84 +147,40 @@ public class UserspaceController {
                                    Model model) {
         User  user = (User)userDetailsService.loadUserByUsername(username);
         model.addAttribute("user", user);
-        //类别
-//        if (category != null) {
-//
-//            System.out.print("category:" +category );
-//            System.out.print("selflink:" + "redirect:/u/"+ username +"/blogs?category="+category);
-//            return "/u";
-//
-//        }
 
+        //获取当前登录用户
         User principal = null;
+        User loginUser = null;
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
                 &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
             principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal !=null) {
+                loginUser = userService.getUserById(principal.getId());
+            }
         }
+        model.addAttribute("loginUser", loginUser);
+
 
         Page<Blog> page = null;
         if (order.equals("hot")) { // 最热查询【先按阅读量评论量等排序一个Sort，然后再去查询】
             Sort sort = new Sort(Sort.Direction.DESC,"reading","comments","likes");
             Pageable pageable = new PageRequest(pageIndex, pageSize, sort);
-            page = blogService.listBlogsByTitleLikeAndSort(user,catalogId, keyword, pageable);
+            page = blogService.listBlogsByUserAndCatalogAndTitleLikeAndSort(user,catalogId, keyword, pageable);
         }
         if (order.equals("new")) { // 最新查询【直接按插入时间查询】
             Pageable pageable = new PageRequest(pageIndex, pageSize);
-            page = blogService.listBlogsByTitleLike(user,catalogId, keyword, pageable);
+            page = blogService.listBlogsByUserAndCatalogAndTitleLike(user,catalogId, keyword, pageable);
         }
         List<Blog> list = page.getContent();	// 当前所在页面数据列表
 
-
-
-
-
-
-
         //对评论进行筛选
-        list.stream().forEach(blog ->
-        {
-            blog.setComments(
-                    blog.getComments().stream().sorted(
-                            Comparator.comparing(
-                                    Comment::getVoteSize).reversed()).limit(2).collect(Collectors.toList())
-            );
-        });
+        list = blogService.getBlogTop2HotComment(list);
+        //设置博客的评论的赞列表为用户点赞情况
+        list = blogService.setBlogVoteAndCommentVoteListToUser(principal,list);
 
-        if (principal !=null) {
-            for (Blog blog : list){
-                List list1 = new ArrayList();
-                for (Vote vote : blog.getVotes()){
-                    if (vote.getUser().getUsername().equals(principal.getUsername())){
-                        list1.add(vote);
-                        break;
-                    }
-                }
-                blog.setVotes(list1);
-                for (Comment comment : blog.getComments()){
-                    List list2 = new ArrayList();
-                    for (Vote vote : comment.getVotes()){
-                        if (vote.getUser().getUsername().equals(principal.getUsername())){
-                            list2.add(vote);
-                            break;
-                        }
-                    }
-                    comment.setVotes(list2);
-                }
-            }
-        }
-
-
+        //设置收藏夹信息
         List<BlogVO> blogVOS = list.stream().map(B -> new BlogVO(B.getId(), B.getTitle(), B.getSummary(), B.getUser(), B.getCreateTime(), B.getReadSize(), B.getCommentSize(), B.getVoteSize(), B.getReportSize(), B.getComments(), B.getVotes(), B.getPictures(), B.getCatalog(), null)).collect(Collectors.toList());
-        if (principal !=null) {
-            List<Collection> collectionList = collectionService.findByUser(principal);
-            if (collectionList.size() > 0) {
-                List<CollectionBlogVO> collectionBlogVOS = collectionService.selectCBbyCollIds(collectionList.stream().map(Collection::getId).collect(Collectors.toList()));
-                Map<Long, Long> BlogIdCollIdMap = collectionBlogVOS.stream().collect(Collectors.toMap(CollectionBlogVO::getBlogId, CollectionBlogVO::getCollectionId, (o, n) -> o));
-                if (!StringUtils.isEmpty(BlogIdCollIdMap)) {
-                    blogVOS.stream().forEach(CBV -> CBV.setCollectionId(BlogIdCollIdMap.get(CBV.getId())));
-                }
-            }
-        }
+        blogVOS = blogService.setBlogCollectionIdByUser(principal,blogVOS);
         model.addAttribute("order", order);
         model.addAttribute("page", page);
         model.addAttribute("blogList", blogVOS);
@@ -245,13 +206,18 @@ public class UserspaceController {
 
         // 判断操作用户是否是博客的所有者
         boolean isBlogOwner = false;
+        User loginUser = null;
         if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
                 &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
             principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal !=null){
+                loginUser = userService.getUserById(principal.getId());
+            }
             if (principal !=null && username.equals(principal.getUsername())) {
                 isBlogOwner = true;
             }
         }
+        model.addAttribute("loginUser", loginUser);
 
         // 判断操作用户的点赞情况
         List<Vote> votes = blog.getVotes();
@@ -344,7 +310,13 @@ public class UserspaceController {
                            @RequestParam(value = "id",required=false)  String id,
                            @RequestParam("title") String title,
                            @RequestParam("summary") String summary,
+                           @RequestParam("miaosha") String miaosha,
+                           @RequestParam(value = "catalogId",required=false) Long catalogId,
                            @RequestParam(value = "fileURL",required = false) String[] fileURL) {
+        User loaduser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userService.getUserById(loaduser.getId()).getScore()<blogScore){
+            return Result.error(CodeMsg.HAVE_NOT_SCORE);
+        }
         User user = (User)userDetailsService.loadUserByUsername(username);
         Blog blog=new Blog();
         List<Picture> pictureList = new ArrayList();
@@ -362,7 +334,24 @@ public class UserspaceController {
         blog.setUser(user);
         blog.setTitle(title);
         blog.setSummary(summary);
+        if (catalogId!=null){
+            blog.setCatalog(catalogService.getCatalogById(catalogId));
+        }
         Blog saveblog = blogService.saveBlog(blog);
+
+        if ("TOP1".equals(miaosha)){
+            Top top1=topService.findOne((long) 1);
+            if (user.getUsername().equals(top1.getTopUsername())){
+                user.setVoteSize(user.getVoteSize()/2);
+                userService.saveUser(user);
+
+                top1.setBlogOwnerUsername(user.getUsername());
+                top1.setTitle(title);
+                top1.setBlogId(saveblog.getId());
+                top1.setHaveSend(1);
+                topService.save(top1);
+            }
+        }
 
 
         //String redirectUrl = "/u/" + username + "/blogs/" + blog.getId();

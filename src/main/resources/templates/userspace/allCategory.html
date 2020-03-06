@@ -6,6 +6,11 @@
 </head>
 <body class="bg-light">
 <style>
+
+    body{
+        min-width:600px;
+        overflow:visible;
+    }
     a{
         color: #888;
     }
@@ -76,7 +81,7 @@
 
             <div class="shadow-sm pt-2 pl-2 pr-2 m-1 rounded " style="background-color: #F0F8FF">
                 <div class="clearfix">
-                    <a th:href="@{'/u/' + ${#authentication.name} + '/blogs'}"><h5 class="feature-title defultCatalog float-left" >默认分区</h5></a>
+                    <a th:href="@{'/blogs'}"><h5 class="feature-title defultCatalog float-left" >默认分区</h5></a>
                 </div>
                 <p class=" pb-1 text-black-50">分区内容</p>
             </div>
@@ -88,7 +93,7 @@
                 </div>
                 <p class=" pb-1 text-black-50" th:text="${catalog.summary}">分区内容</p>
             </div>
-    </div>
+        </div>
 </div>
 
 
@@ -175,11 +180,11 @@
         var catalogId = $(this).attr('data-catalogId');
         var form = $("<form method='get'></form>");
         var input1,input2,input3;
-        form.attr({"action":"/u/"+username+"/blogs"});
-        input1 = $("<input type='hidden' name='username' value=username>");
+        form.attr({"action":"/blogs"});
+        // input1 = $("<input type='hidden' name='username' value=username>");
         input2 = $("<input type='hidden' name='catalogId'>");
         input2.attr('value',catalogId);
-        form.append(input1);
+        // form.append(input1);
         form.append(input2);
         $(document.body).append(form);
         form.submit();

@@ -24,7 +24,9 @@ public interface BlogRepository extends JpaRepository<Blog, Long>{
 	 * @return
 	 */
 	Page<Blog> findByUserAndTitleLikeOrderByCreateTimeDesc(User user, String title, Pageable pageable);
-	
+
+//	Page<Blog> findAllOrderByCreateTimeDesc(Pageable pageable);
+//	Page<Blog> findAllByOrOrderByCreateTimeDesc(Pageable pageable);
 	/**
 	 * 根据用户名分页查询用户列表
 	 * @param user
@@ -46,6 +48,8 @@ public interface BlogRepository extends JpaRepository<Blog, Long>{
 	 */
 	Page<Blog> findByUserAndCatalogAndTitleLikeOrderByCreateTimeDesc(User user, Catalog catalog, String title, Pageable pageable);
 
+	Page<Blog> findByCatalogOrderByCreateTimeDesc(Catalog catalog, Pageable pageable);
+
 	/**
 	 * 根据用户名分页查询用户列表
 	 * @param user
@@ -55,4 +59,6 @@ public interface BlogRepository extends JpaRepository<Blog, Long>{
 	 * @return
 	 */
 	Page<Blog> findByUserAndCatalogAndTitleLike(User user,Catalog catalog, String title, Pageable pageable);
+
+	Page<Blog> findByCatalog(Catalog catalog,Pageable pageable);
 }

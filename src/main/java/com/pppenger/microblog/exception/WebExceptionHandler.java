@@ -12,6 +12,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -46,15 +47,21 @@ public class WebExceptionHandler {
 			for (ConstraintViolation<?> constraintViolation : ((ConstraintViolationException) e).getConstraintViolations()) {
 				msgList.add(constraintViolation.getMessage());
 			}
-			return Result.success(msgList.toString());
+			return Result.error(CodeMsg.SERVER_ERROR2.fillArgs(msgList));
+//			return Result.success(msgList.toString());
 		}else if(e instanceof BindException) {
 			BindException ex = (BindException)e;
 			List<ObjectError> errors = ex.getAllErrors();
 			ObjectError error = errors.get(0);
 			String msg = error.getDefaultMessage();
 			return Result.error(CodeMsg.BIND_ERROR.fillArgs(msg));
+		}else if(e instanceof MultipartException) {
+			MultipartException ex = (MultipartException)e;
+			String msg = ex.getMessage();
+			return Result.error(CodeMsg.UPOLAD_SIZE_TOO_BIG);
 		}else if(e instanceof AccessDeniedException) {
-			System.out.println("检测到权限异常");
+			//出现此异常，抛出后安全框架会拦截，转跳到登录页面,如果是ajax的方式则只能返回页面，不能自动转跳
+			System.out.println("【检测到权限异常】");
 			throw new AccessDeniedException("不允许访问-异常-抛出给Security处理");
 			//return null;
 			//AccessDeniedException ex = (AccessDeniedException)e;

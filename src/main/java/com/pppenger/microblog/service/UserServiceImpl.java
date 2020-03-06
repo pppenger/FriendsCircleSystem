@@ -36,6 +36,12 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 
 	@Transactional
 	@Override
+	public List<User> saveUserList(List<User> userlist) {
+		return userRepository.save(userlist);
+	}
+
+	@Transactional
+	@Override
 	public void removeUser(Long id) {
 		userRepository.delete(id);
 	}
@@ -122,5 +128,10 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		return userList;
 	}
 
+	@Override
+	public List<User> loadUserByScore(Integer score) {
+		List<User> userList=userRepository.findByScoreLessThan(score);
+		return userList;
+	}
 
 }

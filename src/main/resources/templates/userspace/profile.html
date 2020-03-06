@@ -80,8 +80,8 @@
                     <input type="text" name="username" class="form-control" id="username"  maxlength="20" readonly="readonly" th:value="*{username}">
                 </div>
                 <div class="form-group">
-                    <label >昵称</label>
-                    <input type="text" name="name"  class="form-control" id="name"  maxlength="20" placeholder="请输入账号(个数在3到20之间)"  th:value="*{name}">
+                    <label >评分</label>
+                    <input type="text" name="score"  class="form-control" id="score"  maxlength="20" readonly="readonly"  th:value="*{score}">
                 </div>
                 <div class="form-group">
                     <label >邮箱</label>
@@ -147,10 +147,10 @@
             return false;
         }
 
-        if ($("#name").val().length<3){
-            toastr.error("昵称长度不得小于3");
-            return false;
-        }
+        // if ($("#name").val().length<3){
+        //     toastr.error("昵称长度不得小于3");
+        //     return false;
+        // }
 
         if ($("#password").val()==""){
             toastr.error("密码长度不符!");

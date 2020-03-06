@@ -1,6 +1,7 @@
 package com.pppenger.microblog.service;
 
 import com.pppenger.microblog.domin.Vote;
+import com.pppenger.microblog.vo.UserVoteSizeRankVO;
 
 /**
  * Vote 服务接口.
@@ -21,4 +22,6 @@ public interface VoteService {
 	 * @return
 	 */
 	void removeVote(Long id);
+
+	UserVoteSizeRankVO selectRankByVoteSize(String username);
 }

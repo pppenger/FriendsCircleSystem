@@ -38,12 +38,12 @@ public class MainController {
 	
 	@GetMapping("/")
 	public String root() {
-		return "index";
+		return "redirect:/index";
 	}
 	
 	@GetMapping("/index")
 	public String index() {
-		return "index";
+		return "redirect:/blogs";
 	}
 
 	@GetMapping("/403")
@@ -109,8 +109,9 @@ public class MainController {
 		List<Authority> authorities = new ArrayList<>();
 		authorities.add(authorityService.getAuthorityById(ROLE_USER_AUTHORITY_ID));
 		user.setAuthorities(authorities);
-		user.setName(user.getName());
+		//user.setName(user.getName());
 		user.setEncodePassword(user.getPassword());
+		user.setScore(100);
 		userService.saveUser(user);
 		return Result.success();
 	}

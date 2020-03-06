@@ -53,6 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/h2-console/**").permitAll() // 都可以访问
 				//.antMatchers("/admins/**").hasRole("ADMIN") // 需要相应的角色才能访问
 				.antMatchers("/users/**").hasRole("ADMIN")
+				.antMatchers("/supervise/**").hasAnyRole(new String[]{"ADMIN","SUPERVISE"})
+				.antMatchers("/collection/**").authenticated()
+				.antMatchers("/votes/**").authenticated()
 				.and()
 				//任何尚未匹配的URL只需要对用户进行身份验证
 				//.anyRequest().authenticated()

@@ -5,6 +5,11 @@
 
 </head>
 <style>
+
+    body{
+        min-width:600px;
+        overflow:visible;
+    }
     .icon-user-good{
         background: url("../../images/icon-good.png") left top no-repeat;
         background-size: 19px;
@@ -37,14 +42,13 @@
         background: url("../../images/icon-commit-highlight.png")  left top no-repeat;
         background-size: 19px;
     }
+
     .cardmenu{
         cursor:pointer;
+        background-color: white;
     }
-    .cardmenu a{
-        color: #000000;
-    }
-    .cardmenu:hover{
-        background-color: #92B8B1;
+    .cardmenu:hover>a{
+        color: black;
     }
 </style>
 <body class="bg-light">
@@ -54,19 +58,19 @@
         <div class="col-7 bg-white m-2 ">
             <div  id="mainContainerRepleace">
                 <input th:value="${user.username}" type="hidden" id="thisBlogUsername">
-            <div class="clearfix border-right:">
-                <div class="shadow " style="float:right;">
-                    <a href="" class=" text-success" >按热度排序</a><span class="text-success"> | </span>
-                    <a href="" class=" text-success" >按时间排序(默认)</a>
-                </div>
-            </div>
+            <!--<div class="clearfix border-right:">-->
+                <!--<div class="shadow " style="float:right;">-->
+                    <!--<a class=" text-success orderByHot" >按热度排序</a><span class="text-success"> | </span>-->
+                    <!--<a class=" text-success orderByTime" >按时间排序(默认)</a>-->
+                <!--</div>-->
+            <!--</div>-->
             <div class=" m-2 border-bottom pb-2"   th:each="blog : ${blogList}">
                 <div class="container">
                     <div class="row">
                         <div class="col-9" style="padding:0">
-                            <a href="">
-                                <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50 shadow">
-                                <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50 shadow">
+                            <a >
+                                <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="bigbigpicture avatar-50 shadow">
+                                <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="bigbigpicture avatar-50 shadow">
                             </a>
                             <a th:href="'/u/' + ${blog.user.username} + '/blogs'" target="_blank" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
                         </div>
@@ -81,8 +85,9 @@
                     <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" target="_blank" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
                     <p th:text="'简介：'+ ${blog.summary}">简介：+${blog.summary}+</p>
                     <div class="itemimg">
-                        <span th:each="picture : ${blog.pictures}" >
+                        <span th:each="picture,iterStat : ${blog.pictures}" >
                         <img th:src=${picture.pictureURL} alt="" class="bigbigpicture"  data-realsrc="./images/test.png">
+                            <br th:if="${iterStat.index==3}">
                         </span>
                     </div>
                     <div class="row pl-3 pt-2 pb-1">
@@ -93,14 +98,14 @@
                         <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5" th:text="${blog.commentSize}">52</a>
                     </div>
                     <div class="container text-commit" th:each="comment : ${blog.comments}" th:object="${comment}">
-                        <div class="row border-left">
+                        <div class="row ">
                             <div class="col-2" style="padding:0">
                                 <div>
-                                    <a href="">
-                                        <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50-co">
-                                        <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50-co">
+                                    <a >
+                                        <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="bigbigpicture avatar-50-co">
+                                        <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="bigbigpicture avatar-50-co">
                                     </a>
-                                    <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.name}">评论姓名</a>
+                                    <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.username}">评论姓名</a>
                                 </div>
                                 <div >
                                     <small  th:text="*{#dates.format(createTime,'yy.MM.dd-HH:mm:ss')}" >2010.09.04-14:20</small>
@@ -111,8 +116,8 @@
                                 的发顺丰水电费水电费水电
                             </div>
                             <div class="col-1">
-                                <a th:if="${comment.votes.size()} == 0"  th:data-smsid="${comment.id}"  class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
-                                <a th:if="${comment.votes.size()} gt 0"  th:data-smsid="${comment.id}" class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+                                <a th:if="${comment.votes.size()} == 0" th:data-commentFormUserName="${comment.formUser.username}" th:data-smsid="${comment.id}"  class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
+                                <a th:if="${comment.votes.size()} gt 0" th:data-commentFormUserName="${comment.formUser.username}"  th:data-smsid="${comment.id}" class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
 <!--                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id" th:text="*{voteSize}">23</a>-->
                             </div>
                         </div>
@@ -126,52 +131,90 @@
         <div class="rightcontent col-3 m-2 p-3 " style="text-align:center">
             <div class="bg-white p-3 mb-3 shadow-sm">
                 <div class="mb-3 ">
-                    <a href="">
+                    <a>
+                        <span th:if="${user} == null">
                         <img src="../../images/test.png" alt="" id="rightavter" class="avatar-100 m-auto"  style="display:block;">
+                        </span>
+                        <span th:if="${user} != null">
+                        <img th:if="${user.avatar} == null" th:src="@{/images/avatarboy.png}" class="avatar-100 m-auto">
+                        <img th:if="${user.avatar} != null" th:src="${user.avatar}" src="./images/avatarboy.png"  class="avatar-100 m-auto">
+                        </span>
                     </a>
                 </div>
-                <div  class="mb-2 text-secondary">
-                    <span>邮箱：958310042@qq.com</span>
+                <!--<div  class="mb-2 text-secondary">-->
+                    <!--<span>邮箱：958310042@qq.com</span>-->
+                <!--</div>-->
+
+                <span th:if="${user} != null">
+                <div   class="mb-2 text-secondary">
+                    <span th:text="'用户名：'+${user.username}">用户名</span>
                 </div>
                 <div   class="mb-2 text-secondary">
-                    <span>用户名</span>
+                    <span th:text="'分数：'+${user.score}">评分</span>
+                      <a style="color: #FD482C;cursor: pointer;font-size: 18px;"><i tabindex="0" class="fa  fa-exclamation-triangle center-block "  data-placement="bottom" data-toggle="popover" data-trigger="focus" title="评分规则："
+                                                                                    data-content="当您发表的微博或评论被举报，且监督员审批通过该举报则会对您的分数做相应的扣除。
+                          分数少于80分：若您当前是监督员身份，则会失去监督资格。分数少于60分：不允许发表评论。分数少于30分：
+                           则不允许发表微博且无法举报他人。温馨提示：每周六晚十二点所有人的评分会加10分(上限100，下限为0)。"></i>
+                        </a>
                 </div>
-                <input type="button" class="btn btn-outline-primary btn-sm mb-3" value="更改个人信息">
+                <div   class="mb-2 text-secondary">
+                    <span th:text="${user.email}">youx</span>
+                </div>
+                 </span>
+
+                <!--<input type="button" class="btn btn-outline-primary btn-sm mb-3" value="更改个人信息">-->
             </div>
 
 
 
             <div class="bg-white p-2 shadow-sm">
                 <div class="card cardmenu" style="">
-                    <div class="card-header">
-                        提醒
-                    </div>
-                </div>
-                <div class="card cardmenu" style="">
-                    <div class="card-header">
-                        我的分区
-                    </div>
-                </div>
-                <div class="card cardmenu" style="">
+                    <a th:href="@{'/collection/' + ${#authentication.name}}">
                     <div class="card-header">
                         收藏列表
                     </div>
+                    </a>
                 </div>
                 <div class="card cardmenu" >
-                    <div class="card-header">
-                        <a href="/catalogs/all">分区管理</a>
+                    <a href="/catalogs/all">
+                    <div class="card-header">分区管理
                     </div>
+                    </a>
                 </div>
-                <div class="card" id="catalogmsg">
+                <div  sec:authorize="isAuthenticated()" class="card" id="catalogmsg">
                     <div class="card-body">
                         <h6 class="card-title mb-2 text-muted">我的分区</h6>
                         <p class="card-text">
-                            <a th:href="@{'/u/' + ${#authentication.name} + '/blogs'}" class="badge badge-info mr-1">默认分区</a>
+                            <a th:href="@{'/blogs'}" class="badge badge-info mr-1">默认分区</a>
                             <a th:each="catalog : ${catalogs}" href="#" class="badge badge-info mr-1 catalogname" th:data-catalogId="${catalog.id}" th:text="${catalog.name}">分区名</a>
                         </p>
                     </div>
                 </div>
             </div>
+
+
+            <div class="bg-white p-2 mb-3 shadow-sm mt-3" style="border-radius: 3%;">
+                <h5><strong>今日头条</strong></h5><hr/>
+                <a style="color:#336699" id="gotoTop1Blog"><strong id="top1Blog">今日头条今日头条今日头条今日头条今日头条今日头条</strong></a>
+                <br>
+                <input  sec:authorize="isAuthenticated()" data-toggle="modal" id="getPickTopModel" data-target="#pickTop" type="button" class="btn btn-outline-secondary btn-sm " value="抢头条">
+            </div>
+
+            <div id="top10" class=" p-2 shadow-sm">
+                <strong>TOP10</strong>
+                <ul class="list-group"  style="font-size:10px;">
+                    <li th:each="blog,iterStat : ${top10List}"  class="p-2 list-group-item d-flex list-group-item-action  align-items-center">
+                        <a th:href="'/u/' + ${blog.username} + '/blogs/'+ ${blog.blogId}" target="_blank">
+                            <span th:if="${iterStat.index}+1 == 1"><span class="badge badge-danger badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+                            <span th:if="${iterStat.index}+1 == 2"><span class="badge badge-success badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+                            <span th:if="${iterStat.index}+1 == 3"><span class="badge badge-info badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+                            <span th:if="3 lt ${iterStat.index}+1"><span class="badge badge-secondary badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+                            [[${blog.title}]]
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
 
@@ -232,12 +275,6 @@
                 "async": true,
             },
             success: function(data){
-                //$("#AdminIndex").html(data);
-                //$("#mainContainerRepleace").html(data);
-                //console.log(data);
-                //$(html).innerHTML=data;
-                //document.write(data);
-                //$("html").html(data);
                 $("#mainContainerRepleace").html(data);
             },
             error : function() {
@@ -282,7 +319,10 @@
             $.ajax({
                 url: '/votes',
                 type: 'POST',
-                data:{"blogId":blogId},
+                data:{
+                    "blogId":blogId,
+                    "thisBlogUsername":thisBlogUsername
+                },
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
@@ -294,8 +334,9 @@
                         th.text(th.text()*1+1);
                         th.attr("voteId", result.data);
                     } else {
-                        toastr.error(result.msg);
+                        //toastr.error(result.msg);
                         //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
                     }
                 },
                 error : function() {
@@ -314,7 +355,7 @@
 
             var th =$(this);
             $.ajax({
-                url: '/votes/'+th.attr('voteId')+'?blogId='+blogId,
+                url: '/votes/'+th.attr('voteId')+'?blogId='+blogId+'&thisBlogUsername='+thisBlogUsername,
                 type: 'DELETE',
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
@@ -336,21 +377,22 @@
             });
         });
 
-
+        //转跳到某个分区
         $(document).on("click",".catalogname", function () {
             var username = '[[${#authentication.name}]]';
             var catalogId = $(this).attr('data-catalogId');
             var form = $("<form method='get'></form>");
             var input1,input2;
-            form.attr({"action":"/u/"+username+"/blogs"});
-            input1 = $("<input type='hidden' name='username' value=username>");
+            form.attr({"action":"/blogs"});
+            // input1 = $("<input type='hidden' name='username' value=username>");
             input2 = $("<input type='hidden' name='catalogId'>");
             input2.attr('value',catalogId);
-            form.append(input1);
+            // form.append(input1);
             form.append(input2);
             $(document.body).append(form);
             form.submit();
         });
+
 
         function getCatalogMsg() {
             $.ajax({
@@ -396,6 +438,7 @@
         $(document).on("click",".commentSubmitVote", function () {
 
             var commentId = $(this).attr('data-smsid');
+            var commentFormUserName = $(this).attr('data-commentFormUserName');
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
@@ -403,7 +446,10 @@
             $.ajax({
                 url: '/votes/comment',
                 type: 'POST',
-                data:{"commentId":commentId},
+                data:{
+                    "commentId":commentId,
+                    "commentFormUserName":commentFormUserName
+                },
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                 },
@@ -429,13 +475,14 @@
         // 取消评论点赞
         $(document).on("click",".commentCancelVote", function () {
             var commentId = $(this).attr('data-smsid');
+            var commentFormUserName = $(this).attr('data-commentFormUserName');
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
             var th =$(this);
             $.ajax({
-                url: '/votes/comment/'+th.attr('voteId')+'?commentId='+commentId,
+                url: '/votes/comment/'+th.attr('voteId')+'?commentId='+commentId+'&commentFormUserName='+commentFormUserName,
                 type: 'DELETE',
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
@@ -463,10 +510,16 @@
         var collIconTh;
 
         //点击收藏夹标签
-        $(document).on("click", ".icon-user-collect", function () {
+         $(document).on("click", ".icon-user-collect", function () {
+             if ( '[[${#authentication.authorities}]]' == '[ROLE_ANONYMOUS]') {
+                 toastr.error("您尚未登录!");
+                 $("#closeCollAddBlogBut").click();
+                 return;
+             }
             var th=$(this);
             var blogId = th.attr("data-blogId");
             $("#collSelectBlogId").val(th.attr("data-blogId"));
+            alert(thisusername);
             $.ajax({
                 url: '/collection/'+thisusername+'/select',
                 type: 'GET',
@@ -475,14 +528,15 @@
                 },
                 success: function (result) {
                     if (result.data.length==0){
-                        $("#closeCollAddBlogBut").click();
+                         $("#closeCollAddBlogBut").click();
+                        //$('#selectColl').modal('hide')
                         toastr.warning("您尚未创建过收藏夹，请前往收藏管理中心创建!");
                         return;
                     }
                     $("#collSelectDIV").empty();
                     for (var i = 0; i <result.data.length; i++) {
                         $ ("#collSelectDIV").append("<div ><input type='radio' name='collSelectName' value="+result.data[i].id+" class='m-2'>"+result.data[i].title+"</div>");
-                    };
+                    }
                     collIconTh=th;
                 },
                 error: function () {
@@ -493,7 +547,10 @@
 
 
         $(document).on("click", "#collAddBlogBut", function () {
-
+            if ( '[[${#authentication.authorities}]]' == '[ROLE_ANONYMOUS]') {
+                toastr.error("您尚未登录!");
+                return;
+            }
             // 获取 CSRF Token
             var csrfToken = $("meta[name='_csrf']").attr("content");
             var csrfHeader = $("meta[name='_csrf_header']").attr("content");
@@ -569,6 +626,44 @@
                 }
             });
         });
+
+
+        function getTOP10() {
+            $.ajax({
+                url: "/blogs/search",
+                contentType : 'application/json',
+                data:{
+                    "order":"hot",
+                    "pageSize":10,
+                    "toURL": "/top10",
+                },
+                success: function(data){
+                    $("#top10").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+        getTOP10();
+
+
+        function getTOP1() {
+            $.ajax({
+                url: "/blogs/getTOP1",
+                contentType : 'application/json',
+                success: function(result){
+                    $("#top1Blog").text(result.data.title);
+
+                    $('#gotoTop1Blog').attr('href','/u/'+result.data.blogOwnerUsername+'/blogs/'+result.data.blogId);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+        getTOP1();
+
     })
 </script>
 </body>

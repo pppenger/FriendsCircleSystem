@@ -30,6 +30,9 @@
         a{
             color: #888;
         }
+        nav a{
+            color: #000;
+        }
         a:hover{
             color: black;
             text-decoration: none;
@@ -56,8 +59,8 @@
             width: 30px;
         }
         .itemimg img{
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             margin-top: 5px;
             object-fit:cover
         }
@@ -125,43 +128,40 @@
         :focus{
             outline: 0;
         }
+
+        .modal-backdrop{
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 20;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+        }
     </style>
 </head>
 <body>
-<nav class=" navbar navbar-expand-lg navbar-dark bg-success" style="background-color: #e3f2fd;">
+<nav class=" navbar navbar-expand-lg sticky-top bg-white shadow-sm" >
     <div class="container ">
-        <a class="navbar-brand" href="/index">首页</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <a class="navbar-brand" href="/index" style="color: #0084ff;font-size: 24px;">首页</a>
+        <button style="border: #007bff solid 2px;" class="navbar-toggler " type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span  style="color: #007bff" class="navbar-toggler-icon">~</span>
         </button>
         <div class="collapse navbar-collapse justify-content-around" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">所有分区</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        我的分区
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
                 <li  sec:authorize="isAuthenticated()" class="nav-item">
-                    <a class="nav-link active" href="#" data-toggle="modal" data-target="#wirteblog">写微博</a>
+                    <a class="nav-link active" id="writeBlog"  data-toggle="modal" data-target="#wirteblog">写微博</a>
                 </li>
             </ul>
 
-            <form class="form-inline ">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">搜索</button>
+            <form class="form-inline " th:action="@{/blogs/search}">
+                <input name="keyword" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-primary my-2 my-sm-0" type="submit">搜索</button>
             </form>
 
             <ul sec:authorize="isAnonymous()" class="navbar-nav">
-                <a href="/login" ><button type="button" class="btn btn-outline-light"> 登录 </button></a>
-                <a href="/register" ><button  type="button" class="btn btn-outline-light"> 注册</button></a>
+                <a href="/login" ><button type="button" class="btn btn-outline-primary"> 登录 </button></a>
+                <a href="/register" ><button  type="button" class="btn btn-outline-primary"> 注册</button></a>
             </ul>
             <ul sec:authorize="isAuthenticated()" class="navbar-nav">
                 <li class="nav-item nav-link active">你好,</li>
@@ -170,6 +170,7 @@
                     <div class="dropdown-menu" aria-labelledby="navusername">
                         <a class="dropdown-item" href="#" th:href="@{'/u/' + ${#authentication.name} + '/blogs'}" >个人微博</a>
                         <a class="dropdown-item" href="#" th:href="@{'/u/' + ${#authentication.name} + '/profile'}" >信息设置</a>
+                        <a class="dropdown-item" href="#"  sec:authorize="hasAnyRole('ADMIN','SUPERVISE')" th:href="@{'/supervise'}" >举报管理</a>
                         <a class="dropdown-item" href="#"  sec:authorize="hasRole('ADMIN')" th:href="@{'/users'}" >后台管理</a>
                         <form action="/logout" th:action="@{/logout}" method="post">
                             <input class="dropdown-item" type="submit" value="退出">
@@ -188,7 +189,7 @@
     </div>
 
     <!-- 写文章Modal -->
-    <div class="modal fade" id="wirteblog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="wirteblog" tabindex="1050" role="dialog"  aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -209,7 +210,6 @@
                         <textarea class="form-control" id="blogEditSummary" rows="6" maxlength="150" placeholder="请控制在150字内"></textarea>
                     </div>
 
-
                     <div class="clearfix">
                         <p>上传图片：</p>
                         <div id="imgPreview">
@@ -219,14 +219,18 @@
                         </form>
                     </div>
                     <br>
-
-
                     <form class="form-inline">
                         <div class="form-group mb-2">
-                            <label  class="sr-only">分区</label>
-                            <input id="blogEditPartition" type="test" class="form-control"  placeholder="输入分区名搜索">
+                            <!--<input id="blogEditPartition" type="test" class="form-control"  placeholder="输入分区名搜索">-->
+                            <select id="catalogSelectDIV" class="form-control form-control-chosen" data-placeholder="请选择">
+                                <option value="2">默认分区</option>
+                            </select>
+
+                            <a class="ml-3" style="color:#0069d9; cursor: pointer;font-size: 18px;"><i tabindex="0" class="fa  fa-exclamation-triangle center-block "  data-placement="right" data-toggle="popover" data-trigger="focus"
+                                data-content="只能选择您关注的分区，关于分区可到分区管理页面设置。(默认分区包含了所有的微博)"></i>
+                            </a>
                         </div>
-                        <button type="submit" class="btn btn-outline-info mb-2">搜</button>
+                        <!--<button type="submit" class="btn btn-outline-info mb-2">搜</button>-->
                     </form>
 
                 </div>
@@ -234,14 +238,53 @@
                     <button type="button" class="btn btn-outline-secondary" id="closeEditBlog"  data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-outline-secondary" id="resetEditBlog">重置</button>
                     <button type="button" class="btn btn-outline-info" id="postEditBlog">发布</button>
+
+                    <input id="postMiaoshaBlogFlag" readonly hidden>
                 </div>
             </div>
         </div>
     </div>
+
+
+
+    <!-- 抢头条Modal -->
+    <div class="modal fade" id="pickTop" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">关于抢头条</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class=" pt-2 pl-2 pr-2 " style="text-align: center">
+                        <p class=" p-2 m-2 rounded" style="background-color: #336699;color: white;">
+                            <small>
+                                关于头条：每个用户的微博和评论点赞量会累积,当累积达到用户排名前<span style="color: #bd2130">10%</span>的时候,可以参与抢头条活动,
+                                抢头条活动在每天晚上十一点开始,抢到资格将会把您的点赞量扣除一半,随后您有资格发布头条,若一直没用户发布头条,则头条榜单不会变更。
+                            </small>
+                        </p>
+                        <p>当前点赞量：<span id="userVoteSize">20000</span></p>
+                        <p>排名：前<span  id="votePercentage">30%</span></p>
+                        <p id="haveQui">您尚未有资格参加抢头条活动</p>
+                    </div>
+                    <!-- <input type="text" class="modelid" value="22"> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closePickTopBut" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+                    <button type="button" id="sendTopBlogBut" class="btn btn-outline-info" >发布头条</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </nav>
 
 
 <script type="text/javascript" >
+
 
 
 </script>

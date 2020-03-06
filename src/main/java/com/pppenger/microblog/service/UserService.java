@@ -22,6 +22,8 @@ public interface UserService {
 	 */
 	User saveUser(User user);
 
+	List<User> saveUserList(List<User> userlist);
+
 	List<User> listUsers();
 	
 	/**
@@ -77,4 +79,6 @@ public interface UserService {
 	String hadRegister(String username,String email,User user);
 
 	List<User> loadUserByUsernames(List usernames) throws UsernameNotFoundException;
+
+	List<User> loadUserByScore(Integer score);
 }

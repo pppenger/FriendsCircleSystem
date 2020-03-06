@@ -6,6 +6,11 @@
 </head>
 <body class="bg-light">
 <style>
+
+    body{
+        min-width:600px;
+        overflow:visible;
+    }
     a{
         color: #888;
     }
@@ -55,9 +60,9 @@
                         <input th:value="${user.username}" type="text" class="un" readonly style="display: none">
                         <a><img th:if="${user.avatar} != null" th:src="${user.avatar}"  alt="" class="avatar-50">
                         <img th:if="${user.avatar} == null" src="../images/avatarboy.png" alt="" class="avatar-50"></a>
-                        <div><a  th:text="${user.name}" class="text-success">昵称</a></div>
-                        <div><small th:text="'账号:'+${user.username}" class="text-muted ">用户名</small></div>
-                        <div><small th:text="${user.username}" class="text-muted">信誉度：</small></div>
+                        <!--<div><a  th:text="${user.name}" class="text-success">昵称</a></div>-->
+                        <div><small th:text="''+${user.username}" class="text-success ">用户名</small></div>
+                        <div><small th:text="${user.score}" class="text-muted">风评：</small></div>
                   </span>
                 </div>
             </div>

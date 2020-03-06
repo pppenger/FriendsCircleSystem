@@ -117,6 +117,7 @@ public class UserController {
         user.setAuthorities(authorities);
         //不存在，新建用户
         if(user.getId() == null) {
+            user.setAvatar(null);
             if (userService.hadRegister(user.getUsername(),user.getEmail())!=null){
                 return Result.error(CodeMsg.BIND_ERROR.fillArgs(userService.hadRegister(user.getUsername(),user.getEmail())));
             }
@@ -125,6 +126,9 @@ public class UserController {
         }
         //存在，更改用户
         else {
+            if ("".equals(user.getAvatar())){
+                user.setAvatar(null);
+            }
             // 判断密码是否做了变更
             User originalUser = userService.getUserById(user.getId());
             if (userService.hadRegister(user.getUsername(),user.getEmail(),originalUser)!=null){

@@ -9,6 +9,7 @@
     <!-- JavaScript -->
     <script src="../../js/jquery-3.1.1.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
     <script src="../../js/bootstrap.min.js" th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+    <script src="../../js/bootstrap.min.js" th:src="@{/js/bootstrap/bootstrap.bundle.min.js}"></script>
 
     <script src="../../js/jquery.form.min.js" th:src="@{/js/jquery.form.min.js}"></script>
     <script src="../../js/toastr.min.js" th:src="@{/js/toastr.min.js}"></script>
@@ -39,7 +40,18 @@
             "hideMethod": "fadeOut" //消失时的动画方式
         };
 
-        $("#resetEditBlog").click(function (){resetEditBlog()});
+        $("#resetEditBlog").click(function (){
+            resetEditBlog();
+        });
+
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
 
         function resetEditBlog(){
                 $("#blogEditTitle").val("");
@@ -71,6 +83,8 @@
                     summary: $('#blogEditSummary').val(),
                     // "partition":$('#blogEditPartition').val(),
                     fileURL: arr,
+                    catalogId: $("#catalogSelectDIV").val(), //获取选中的项
+                    miaosha: $("#postMiaoshaBlogFlag").val()  //获取选中的项
                 },
                 beforeSend: function(request) {
                     request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
@@ -84,9 +98,8 @@
                         $("#closeEditBlog").click();
                         window.location.reload();
                     } else {
-                        toastr.error("服务器result："+result.msg);
+                        toastr.error(result.msg);
                     }
-
                 },
                 error : function() {
                     toastr.error("error!");
@@ -120,12 +133,17 @@
                             request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
                         },
                         success:function(result){
-                            var dvPreview = $("#imgPreview");
-                            $.each(result.data,function(index,items){
-                                var img = $("<img class='bigbigpicture shadow' />");
-                                img.attr("src", items.compressPath);
-                                dvPreview.append(img);
-                            });
+
+                            if (result.code == 0) {
+                                var dvPreview = $("#imgPreview");
+                                $.each(result.data, function (index, items) {
+                                    var img = $("<img class='bigbigpicture shadow' />");
+                                    img.attr("src", items.compressPath);
+                                    dvPreview.append(img);
+                                });
+                            }else {
+                                toastr.error(result.msg);
+                            }
                         },
                         error:function(e){
                             toastr.error("发生未知错误！！");
@@ -141,22 +159,159 @@
                 var src = $(this).attr('src');
                 var realpath = src.substring(src.lastIndexOf('/'),src.lastIndexOf('g')+1);
                 //自定页
-                    layer.open({
-                        type: 1,
-                        skin: 'layui-layer-img', //样式类名
-                        closeBtn: 0, //不显示关闭按钮
-                        anim: 2,
-                        title: false, //不显示标题
-                        shadeClose: true, //开启遮罩关闭
-                        content: "<img src='"+realpath+"'/>",
-                        success:function(layero,index){
-                            layer.style(index, {
-                                top: '50%',
-                                transform:'translateY(-50%)'
-                            });
-                        }
-                    });
+            getImageWidth(realpath,function (w,h) {
+                // w = h > 360? w/h*360: w;
+                // h = h > 360? 360: h;
+                var wh=window.screen.availHeight * 0.7;
+                var ww=window.screen.availWidth * 0.7;
+                if (h>wh||w>ww){
+                    if ((h-wh)>(w-ww)) {
+                        w=w*(1-(h-wh)/h);
+                        h=wh;
+                    }else {
+                        h=h*(1-(w-ww)/w);
+                        w=ww;
+                    }
+                }
+                layer.open({
+                    type: 1,
+                    // skin: 'layui-layer-img', //样式类名
+                    closeBtn: 1, //不显示关闭按钮
+                    anim: 2,
+                    scrollbar:true,
+                    area: [ w+'px', h+'px' ],
+                    title: false, //不显示标题
+                    shadeClose: true, //开启遮罩关闭
+                    content: "<img  style=\"max-width: 100%;max-height: 100%\"  src='" + realpath + "'/>",
+                    // success:function(layero,index){
+                    //     layer.style(index, {
+                    //         top: 'translateX(-50%)',
+                    //         transform:'translateY(-50%)'
+                    //     });
+                    // }
+                });
+            })
         })
+
+        // 获取图片真实高度
+        function getImageWidth(url, callback) {
+            var img = new Image();
+            img.src = url;
+            // 如果图片被缓存，则直接返回缓存数据
+            if (img.complete) {
+                callback(img.width, img.height);
+            } else {
+                img.onload = function () {
+                    callback(img.width, img.height);
+                }
+            }
+        }
+
+
+
+        $(document).on("click", "#writeBlog", function () {
+            getCreateBlogCatalog();
+            $("#postMiaoshaBlogFlag").val("");
+        });
+        //发布博客时获取当前用户关注的分区
+        function getCreateBlogCatalog() {
+            $.ajax({
+                url: '/catalogs/myRe',
+                type: 'GET',
+                success: function (result) {
+                    $("#catalogSelectDIV").empty();
+                    $("#catalogSelectDIV").append("<option value=''>默认分区</option>");
+                    for (var i = 0; i < result.data.length; i++) {
+                        $("#catalogSelectDIV").append("<option value=" + result.data[i].id + ">" + result.data[i].name + "</option>");
+                    }
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            })
+        };
+
+
+        //点击抢头条按钮，提取model数据
+        $(document).on("click", "#getPickTopModel", function () {
+
+            $("#sendTopBlogBut").hide();
+            var th=$(this);
+            // $("#collSelectBlogId").val(th.attr("data-blogId"));
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+                url: '/votes/getRank',
+                type: 'POST',
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                data: {
+                    "loginUsername": '[[${#authentication.name}]]',
+                },
+                success: function (result) {
+                    $("#userVoteSize").text(result.data.voteSize);
+                    $("#votePercentage").text(result.data.percentage);
+                    if (result.data.haveQua == "not"){
+                        $("#haveQui").text("您尚未有资格参加抢头条活动");
+                    }else if (result.data.haveQua == "yes"){
+                        if (result.data.canGrab=="yes"){
+                            $("#haveQui").text("");
+                            $("#haveQui").append("<button type='button' id='PickTopBut' class='btn btn-outline-info' >抢头条</button>");
+                        }else if (result.data.canGrab=="not"){
+
+                            $("#haveQui").text("此次头条榜已被秒杀，请于23:00准时参加抢夺哦！");
+                        }
+                    }
+                    //如果抢到了，而且还没发布的话：
+                    if (result.data.hadSend=="not") {
+                        $("#sendTopBlogBut").show();
+                    }
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+
+        //点击抢头条
+        $(document).on("click", "#PickTopBut", function () {
+            var th=$(this);
+            // $("#collSelectBlogId").val(th.attr("data-blogId"));
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            $.ajax({
+                url: '/blogs/pickTop1',
+                type: 'POST',
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                data: {
+                    "username": '[[${#authentication.name}]]',
+                },
+                success: function (result) {
+                    toastr.success(result.data);
+                    $("#PickTopBut").remove();
+                    if (result.data=="秒杀成功"){
+                        $("#sendTopBlogBut").show();
+                    }
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+        //点击抢头条
+        $(document).on("click", "#sendTopBlogBut", function () {
+            $("#writeBlog").click();
+            $("#postMiaoshaBlogFlag").val("TOP1");
+
+        });
+
 
 
 

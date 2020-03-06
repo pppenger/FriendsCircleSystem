@@ -35,4 +35,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	User findByEmail(String email);
 
 	List<User> findByUsernameIn(List username);
+
+	List<User> findByScoreLessThan(Integer score);
+
 }

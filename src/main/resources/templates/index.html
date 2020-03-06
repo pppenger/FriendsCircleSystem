@@ -1,319 +1,666 @@
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-  <head  th:replace="~{fragments/header :: header}">
+<head  th:replace="~{fragments/header :: header}">
 
-  </head>
-  <body class="bg-light">
+</head>
+<style>
+  .icon-user-good{
+    background: url("../../images/icon-good.png") left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-good:hover{
+    background: url("../../images/icon-good-highlight.png")  left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-good-had{
+    background: url("../../images/icon-good-highlight.png")  left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-collect{
+    background: url("../../images/icon-collect.png") left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-collect:hover{
+    background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-collect-had{
+    background: url("../../images/icon-collect-highlight.png")  left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-commit{
+    background: url("../../images/icon-commit.png") left top no-repeat;
+    background-size: 19px;
+  }
+  .icon-user-commit:hover{
+    background: url("../../images/icon-commit-highlight.png")  left top no-repeat;
+    background-size: 19px;
+  }
 
-    <div class="container">
-      <div class="row justify-content-center" >
-        <div class="col-7 bg-white m-2 " >
-          <div class="clearfix border-right:">
-            <div class="shadow " style="float:right;">
-              <a href="" class=" text-success" >按热度排序</a><span class="text-success"> | </span>
-              <a href="" class=" text-success" >按时间排序(默认)</a>
-            </div>
-          </div>
-          <div class=" m-2 border-bottom pb-2">
-            <div class="container">
-              <div class="row">
-                <div class="col-9" style="padding:0">
-                  <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                  <a href="" class="ml-3 text-success">这是姓名</a>
-                </div>
-                <div class="col-3  mt-2">
-                  <small class="">2010.09.04-14:20</small>
-                </div>
+  .cardmenu{
+    cursor:pointer;
+    background-color: white;
+  }
+  .cardmenu:hover>a{
+    color: black;
+  }
+  body{
+    min-width:600px;
+    overflow:visible;
+  }
+</style>
+<body class="bg-light">
+
+<div class="container">
+  <div class="row justify-content-center" >
+    <div class="col-7 bg-white m-2 ">
+      <div  id="mainContainerRepleace">
+        <!--<input th:value="${user.username}" type="hidden" id="thisBlogUsername">-->
+        <div class=" m-2 border-bottom pb-2"   th:each="blog : ${blogList}">
+          <div class="container">
+            <div class="row">
+              <div class="col-9" style="padding:0">
+                <a >
+                  <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50 shadow bigbigpicture">
+                  <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="bigbigpicture avatar-50 shadow">
+                </a>
+                <a th:href="'/u/' + ${blog.user.username} + '/blogs'" target="_blank" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
               </div>
-            </div>
-
-            <div class="pt-2">
-              <h3><a href="" class="text-dark">标题</a></h3>
-              <p>简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
-              <div class="itemimg">
-                <img src="images/test.png" alt="" data-realsrc="./images/test.png">
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <br>
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-              </div>
-              <div class="row pl-3 pt-2 pb-1">
-              <a href="" class=" icon-good pl-4" data-smsid="填短讯id">222</a>
-              <a href="" class=" icon-collect pl-4 ml-5" data-smsid="填短讯id"></a>
-              <a href="" class=" icon-commit pl-4 ml-5" data-smsid="填短讯id">52</a>
-              </div>
-              <div class="container text-commit">
-                  <div class="row border-left">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-9">
-                    的发顺丰水电费水电费水电
-                  </div>
-                  <div class="col-1">
-                    
-                    <a href="" class=" icon-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
-                  </div>
-                  </div>
-
-                  <div class="row border-left mt-2">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-9">
-                    的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
-                  </div>
-
-                  <div class="col-1">
-                    
-                    <a href="" class=" icon-good pl-4 pt-2" data-smsid="填短讯id和评论id">23</a>
-                  </div>
-                  </div>
+              <div class="col-3  mt-2">
+                <small class="" th:text="${#dates.format(blog.createTime,'yyyy.MM.dd HH:mm:ss')}">2010.09.04-14:20</small>
               </div>
             </div>
           </div>
 
-          
-          <div class=" m-2 border-bottom pb-2">
-            <div class="container">
-              <div class="row">
-                <div class="col-9" style="padding:0">
-                  <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                  <a href="" class="ml-3 text-success">这是姓名</a>
-                </div>
-                <div class="col-3  mt-2">
-                  <small class="">2010.09.04-14:20</small>
-                </div>
-              </div>
+          <div class="pt-2">
+            <input readonly type="hidden" th:value="${blog.id}">
+            <h3><a th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}" target="_blank" class="text-dark" th:text="${blog.title}">${blog.title}</a></h3>
+            <p th:text="'简介：'+ ${blog.summary}">简介：+${blog.summary}+</p>
+            <div class="itemimg">
+                        <span th:each="picture,iterStat  : ${blog.pictures}" >
+                        <img th:src=${picture.pictureURL} alt="" class="bigbigpicture"  data-realsrc="./images/test.png">
+                          <br th:if="${iterStat.index==3}">
+                        </span>
             </div>
-
-            <div class="pt-2">
-              <h3><a href="" class="text-dark">标题</a></h3>
-              <p>简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
-              <div class="itemimg">
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <br>
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-              </div>
-              <div class="row pl-3 pt-2 pb-1">
-              <a href="" class=" icon-good pl-4">222</a>
-              <a href="" class=" icon-collect pl-4 ml-5"></a>
-              <a href="" class=" icon-commit pl-4 ml-5">52</a>
-              </div>
-
-              <div class="container text-commit">
-                  <div class="row border-left">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-10">
-                    的发顺丰水电费水电费水电
-                  </div>
-                  </div>
-
-                  <div class="row border-left mt-2">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-10">
-                    的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
-                  </div>
-                  </div>
-              </div>
+            <div class="row pl-3 pt-2 pb-1">
+              <a th:if="${blog.votes.size()} == 0"  th:data-thisBlogUsername="${blog.user.username}" class=" icon-user-good pl-4 blogSubmitVote"  th:text="${blog.voteSize}" >222</a>
+              <a th:if="${blog.votes.size()} gt 0"  th:data-thisBlogUsername="${blog.user.username}" class=" icon-user-good-had pl-4 blogCancelVote" th:attr="voteId=${blog.votes[0].id}" th:text="${blog.voteSize}" >222</a>
+              <a th:if="${blog.collectionId} == null" class=" icon-user-collect pl-4 ml-5" data-toggle="modal" data-target="#selectColl" th:data-blogId="${blog.id}"></a>
+              <a th:if="${blog.collectionId} != null" class=" icon-user-collect-had pl-4 ml-5 uncollBlog" th:blogCollId="${blog.collectionId}" th:data-blogId="${blog.id}"></a>
+              <a  th:href="'/u/' + ${blog.user.username} + '/blogs/'+ ${blog.id}"  class=" icon-user-commit pl-4 ml-5" th:text="${blog.commentSize}">52</a>
             </div>
-          </div>
+            <div class="container text-commit" th:each="comment : ${blog.comments}" th:object="${comment}">
+              <div class="row ">
+                <div class="col-2" style="padding:0">
+                  <div>
+                    <a >
+                      <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50-co bigbigpicture">
+                      <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="bigbigpicture avatar-50-co">
+                    </a>
+                    <a th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.username}">评论姓名</a>
+                  </div>
+                  <div >
+                    <small  th:text="*{#dates.format(createTime,'yy.MM.dd-HH:mm:ss')}" >2010.09.04-14:20</small>
+                  </div>
 
-          
-          <div class=" m-2 border-bottom pb-2">
-            <div class="container">
-              <div class="row">
-                <div class="col-9" style="padding:0">
-                  <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50"></a>
-                  <a href="" class="ml-3 text-success">这是姓名</a>
                 </div>
-                <div class="col-3  mt-2">
-                  <small class="">2010.09.04-14:20</small>
+                <div class="col-9" th:text="*{content}">
+                  的发顺丰水电费水电费水电
                 </div>
-              </div>
-            </div>
-
-            <div class="pt-2">
-              <h3><a href="" class="text-dark">标题</a></h3>
-              <p>简介：三生三世嗖嗖嗖所所所所所所所所付所付多所过多付过的孙菲菲是的富商大贾都十点半V型的三国杀广东省高手高手</p>
-              <div class="itemimg">
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-                <img src="./images/test.png" alt="" >
-              </div>
-              <div class="row pl-3 pt-2 pb-1">
-              <a href="" class=" icon-good pl-4">222</a>
-              <a href="" class=" icon-collect pl-4 ml-5"></a>
-              <a href="" class=" icon-commit pl-4 ml-5">52</a>
-              </div>
-
-              <div class="container text-commit">
-                  <div class="row border-left">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-10">
-                    的发顺丰水电费水电费水电
-                  </div>
-                  </div>
-
-                  <div class="row border-left mt-2">
-                  <div class="col-2" style="padding:0">
-                    <div>
-                      <a href=""><img src="./images/avatarboy.png" alt="" class="avatar-50-co"></a>
-                      <a href="" class=" text-success">评论姓名</a>
-                    </div>
-                    <div >
-                      <small>2010.09.04-14:20</small>
-                    </div>
-
-                  </div>
-                  <div class="col-10">
-                    的发顺丰水电费水电费水电费水电费都是防守打法垫付多少是车新不新错不做不多付说所付多或或或或或或或或或或或或11
-                  </div>
-                  </div>
+                <div class="col-1">
+                  <a th:if="${comment.votes.size()} == 0"  th:data-commentFormUserName="${comment.formUser.username}"  th:data-smsid="${comment.id}"  class=" icon-user-good pl-4 pt-2 commentSubmitVote"  th:text="${comment.voteSize}" >222</a>
+                  <a th:if="${comment.votes.size()} gt 0"  th:data-commentFormUserName="${comment.formUser.username}"  th:data-smsid="${comment.id}" class=" icon-user-good-had pl-4 pt-2 commentCancelVote" th:attr="voteId=${comment.votes[0].id}" th:text="${comment.voteSize}" >222</a>
+                  <!--                                <a href="" class=" icon-user-good pl-4 pt-2" data-smsid="填短讯id和评论id" th:text="*{voteSize}">23</a>-->
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="rightcontent col-3 m-2 p-3 " style="text-align:center">
-          <div class="bg-white p-3 mb-3 shadow-sm">
-            <div class="mb-3 ">
-              <a href="">
-                <img src="./images/test.png" alt="" id="rightavter" class="avatar-100 m-auto"  style="display:block;">
-              </a>
-            </div>
-            <div  class="mb-2 text-secondary">
-              <span>邮箱：958310042@qq.com</span>
-            </div>
-            <div   class="mb-2 text-secondary">
-              <span>用户名</span>
-            </div>
-            <input type="button" class="btn btn-outline-primary btn-sm mb-3" value="更改个人信息">
-          </div>
-
-
-
-          <div class="bg-white p-2 shadow-sm">
-            <div class="card" style="">
-              <div class="card-header">
-                提醒
-              </div>
-            </div>
-            <div class="card" style="">
-              <div class="card-header">
-                我的分区
-              </div>
-            </div>
-            <div class="card" style="">
-              <div class="card-header">
-                收藏列表
-              </div>
-            </div>
-            <div class="card" style="">
-              <div class="card-header">
-                分区管理
-              </div>
-            </div>
-          </div>
-        </div>
+        <div th:replace="fragments/page :: pagehtml">...</div>
       </div>
     </div>
 
+    <div class="rightcontent col-3 m-2 p-3 " style="text-align:center">
+      <div class="bg-white p-3 mb-3 shadow-sm">
+        <div class="mb-3 ">
+          <a >
+                        <span th:if="${loginUser} == null">
+                        <img src="../../images/test.png" alt="" id="rightavter" class="avatar-100 m-auto"  style="display:block;">
+                        </span>
+            <span th:if="${loginUser} != null">
+                        <img th:if="${loginUser.avatar} == null" th:src="@{/images/avatarboy.png}" class="avatar-100 m-auto">
+                        <img th:if="${loginUser.avatar} != null" th:src="${loginUser.avatar}" src="./images/avatarboy.png"  class="avatar-100 m-auto">
+                        </span>
+          </a>
+        </div>
+        <!--<div  class="mb-2 text-secondary">-->
+        <!--<span>邮箱：958310042@qq.com</span>-->
+        <!--</div>-->
+
+        <span th:if="${loginUser} != null">
+                <div   class="mb-2 text-secondary">
+                    <span th:text="'用户名：'+${loginUser.username}">用户名</span>
+                </div>
+
+                <div   class="mb-2 text-secondary">
+                    <span th:text="'评分：'+${loginUser.score}">评分</span>
+                    <!--<i class="fa  fa-times float-right center-block  " data-toggle="tooltip" data-placement="top"-->
+                       <!--title="评分规则：当您发表的微博或评论被举报，且监督员审批通过该举报会对您的分数做相应的扣除。-->
+                          <!--分数少于80分,若您当前是监督员身份，则会失去监督资格。分数少于60分，则不允许发表评论；分数少于30分，-->
+                           <!--则不允许发表微博且无法举报他人。温馨提示：每周六晚十二点所有人的评分会加10分(上限100，下限为0)">-->
+                    <!--</i>-->
+                      <a style="color: #FD482C;cursor: pointer;font-size: 18px;"><i tabindex="0" class="fa  fa-exclamation-triangle center-block "  data-placement="bottom" data-toggle="popover" data-trigger="focus" title="评分规则："
+                         data-content="当您发表的微博或评论被举报，且监督员审批通过该举报则会对您的分数做相应的扣除。
+                          分数少于80分：若您当前是监督员身份，则会失去监督资格。分数少于60分：不允许发表评论。分数少于30分：
+                           则不允许发表微博且无法举报他人。温馨提示：每周六晚十二点所有人的评分会加10分(上限100，下限为0)。"></i>
+                        </a>
+                </div>
+                 </span>
+
+        <!--<input type="button" class="btn btn-outline-primary btn-sm mb-3" value="更改个人信息">-->
+      </div>
+
+
+
+      <div class="bg-white p-2 shadow-sm">
+        <div class="card cardmenu" style="">
+          <a th:href="@{'/collection/' + ${#authentication.name}}">
+            <div class="card-header">
+              收藏列表
+            </div>
+          </a>
+        </div>
+        <div class="card cardmenu" >
+          <a href="/catalogs/all">
+            <div class="card-header">分区管理
+            </div>
+          </a>
+        </div>
+        <div  sec:authorize="isAuthenticated()"  class="card" id="catalogmsg">
+          <div class="card-body">
+            <h6 class="card-title mb-2 text-muted">我的分区</h6>
+            <p class="card-text">
+              <a th:href="@{'/blogs'}" class="badge badge-info mr-1">默认分区</a>
+              <a th:each="catalog : ${catalogs}" href="#" class="badge badge-info mr-1 catalogname" th:data-catalogId="${catalog.id}" th:text="${catalog.name}">分区名</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="bg-white p-2 mb-3 shadow-sm mt-3" style="border-radius: 3%;">
+        <h5><strong>今日头条</strong></h5><hr/>
+        <a style="color:#336699" id="gotoTop1Blog"><strong id="top1Blog">今日头条今日头条今日头条今日头条今日头条今日头条</strong></a>
+        <br>
+        <input  sec:authorize="isAuthenticated()" data-toggle="modal" id="getPickTopModel" data-target="#pickTop" type="button" class="btn btn-outline-secondary btn-sm " value="抢头条">
+      </div>
+
+      <div id="top10" class=" p-2 shadow-sm">
+        <strong>TOP10</strong>
+        <ul class="list-group"  style="font-size:10px;">
+          <li th:each="blog,iterStat : ${top10List}"  class="p-2 list-group-item d-flex list-group-item-action  align-items-center">
+            <a th:href="'/u/' + ${blog.username} + '/blogs/'+ ${blog.blogId}" target="_blank">
+              <span th:if="${iterStat.index}+1 == 1"><span class="badge badge-danger badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+              <span th:if="${iterStat.index}+1 == 2"><span class="badge badge-success badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+              <span th:if="${iterStat.index}+1 == 3"><span class="badge badge-info badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+              <span th:if="3 lt ${iterStat.index}+1"><span class="badge badge-secondary badge-pill mr-2">[[${iterStat.index}+1]]</span></span>
+            [[${blog.title}]]
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- 选择收藏夹Modal -->
+  <div class="modal fade" id="selectColl" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">选择收藏夹</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <input id="collSelectBlogId" readonly type="hidden">
+          <!-- <input type="text" class="modelid" value="22"> -->
+          <div class="form-group " id="collSelectDIV">
+            <!--<div >-->
+            <!--<input type="radio" name="collSelectName" id="man" value="1" class="m-2">擦-->
+            <!--</div>-->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="closeCollAddBlogBut" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+          <button type="button" class="btn btn-outline-secondary" >重置</button>
+          <button type="button" id="collAddBlogBut" class="btn btn-outline-info" >确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
 
 
 
 
 
 
-    <div th:replace="~{fragments/footer :: footer}">...</div>
-<!--    <script src="../js/jquery-3.3.1.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>-->
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>-->
-<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>-->
-<!--    <script src="../js/layer/layer.js"></script>-->
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
 
 
-    <script type="text/javascript" >
-    $(".itemimg").on("click","img",function(){
+<script type="text/javascript" >
+    //DOM加载完就执行
+    $(function() {
 
-     
-      //console.log($(this).attr("data-realsrc"));
-      //自定页
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
 
-      layer.open({
-        type: 1,
-        area: 'auto',
-        maxWidth: 1000,
-        skin: 'layui-layer-img', //样式类名
-        closeBtn: 0, //不显示关闭按钮
-        anim: 2,
-        title: false, //不显示标题
-        shadeClose: true, //开启遮罩关闭
-        content: '<img src="'+$(this).attr('data-realsrc')+'"/>'
-      });
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+        var thisusername = '[[${#authentication.name}]]';
+
+        function getBlogByUsername(pageIndex) {
+            $.ajax({
+                url: "/blogs",
+                contentType : 'application/json',
+                data:{
+                    "pageIndex":pageIndex,
+                    "async": true,
+                },
+                success: function(data){
+                    $("#mainContainerRepleace").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+        //分页
+        //$(".pagebutJump").on('click', function(){
+        $(document).on("click", ".pagebutJump", function () {
+            var pageIndex=$(this).attr("id")-1;
+            getBlogByUsername(pageIndex);
+        });
+
+        //$(".pagebutNum").on('click', function(){
+        $(document).on("click", ".pagebutNum", function () {
+            var pageIndex=$(this).attr("value")-1;
+            getBlogByUsername(pageIndex);
+        });
+
+
+
+
+
+        $(".icon-good").click(function(){
+            alert($(this).attr('data-smsid'));
+        })
+
+        $(".icon-collect").click(function(){
+            alert($(this).attr('data-smsid'));
+        })
+
+
+        // 提交微博点赞
+        $(document).on("click",".blogSubmitVote", function () {
+            var blogId = $(this).parent().parent().children(0).val();
+            var thisBlogUsername = $(this).attr('data-thisBlogUsername');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th =$(this);
+            $.ajax({
+                url: '/votes',
+                type: 'POST',
+                data:{
+                    "blogId":blogId,
+                    "thisBlogUsername":thisBlogUsername
+                },
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        th.attr("class", "icon-user-good-had pl-4 blogCancelVote");
+                        th.text(th.text()*1+1);
+                        th.attr("voteId", result.data);
+                    } else {
+                        toastr.error("请检查是否已登录！");
+                        //toastr.error("error!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 取消微博点赞
+        $(document).on("click",".blogCancelVote", function () {
+            var blogId = $(this).parent().parent().children(0).val();
+            var thisBlogUsername = $(this).attr('data-thisBlogUsername');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            var th =$(this);
+            $.ajax({
+                url: '/votes/'+th.attr('voteId')+'?blogId='+blogId+'&thisBlogUsername='+thisBlogUsername,
+                type: 'DELETE',
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        th.attr("class", "icon-user-good pl-4 blogSubmitVote");
+                        th.text(th.text()*1-1);
+                    } else {
+                        toastr.error("请检查是否已登录！");
+                        //toastr.error("error!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+
+        $(document).on("click",".catalogname", function () {
+            var username = '[[${#authentication.name}]]';
+            var catalogId = $(this).attr('data-catalogId');
+            var form = $("<form method='get'></form>");
+            var input1,input2;
+            form.attr({"action":"/blogs"});
+            // input1 = $("<input type='hidden' name='username' value=username>");
+            input2 = $("<input type='hidden' name='catalogId'>");
+            input2.attr('value',catalogId);
+            // form.append(input1);
+            form.append(input2);
+            $(document.body).append(form);
+            form.submit();
+        });
+
+        function getCatalogMsg() {
+            $.ajax({
+                url: "/catalogs/my",
+                contentType : 'application/json',
+                data:{
+                    "toURL": "/u",
+                },
+                success: function(data){
+                    $("#catalogmsg").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+        getCatalogMsg();
+
+        // var _pageSize; // 存储用于搜索
+        // // 根据用户名、页面索引、页面大小获取用户的博客列表
+        // function getBlogsByName(pageIndex, pageSize) {
+        //     alert("getBlogsByName方法");
+        //     $.ajax({
+        //         url: "/u/" + username + "/blogs",
+        //         contentType: 'application/json',
+        //         data: {
+        //             "async": true,
+        //             // "pageIndex": pageIndex,
+        //             // "pageSize": pageSize,
+        //             //"keyword": $("#keyword").val()
+        //         },
+        //         success: function (data) {
+        //             alert(data);
+        //             $("#mainContainerRepleace").html(data);
+        //         },
+        //         error: function () {
+        //             toastr.error("error!");
+        //         }
+        //     });
+        // }
+        // 提交评论点赞
+        $(document).on("click",".commentSubmitVote", function () {
+
+            var commentId = $(this).attr('data-smsid');
+            var commentFormUserName = $(this).attr('data-commentFormUserName');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th =$(this);
+            $.ajax({
+                url: '/votes/comment',
+                type: 'POST',
+                data:{
+                    "commentId":commentId,
+                    "commentFormUserName" :commentFormUserName
+                },
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        th.attr("class", "icon-user-good-had pl-4 pt-2 commentCancelVote");
+                        th.text(th.text()*1+1);
+                        th.attr("voteId", result.data);
+                    } else {
+                        //toastr.error(result.msg);
+                        //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+        // 取消评论点赞
+        $(document).on("click",".commentCancelVote", function () {
+            var commentId = $(this).attr('data-smsid');
+            var commentFormUserName = $(this).attr('data-commentFormUserName');
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            var th =$(this);
+            $.ajax({
+                url: '/votes/comment/'+th.attr('voteId')+'?commentId='+commentId+'&commentFormUserName='+commentFormUserName,
+                type: 'DELETE',
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+
+                        th.attr("class", "icon-user-good pl-4 pt-2 commentSubmitVote");
+                        th.text(th.text()*1-1);
+                    } else {
+                        //toastr.error(result.msg);
+                        //toastr.error("error!");
+                        toastr.error("请检查是否已登录!");
+                    }
+                },
+                error : function() {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+
+        var collIconTh;
+        //点击收藏夹标签
+        $(document).on("click", ".icon-user-collect", function () {
+            if ( '[[${#authentication.authorities}]]' == '[ROLE_ANONYMOUS]') {
+                toastr.error("您尚未登录!");
+                $("#closeCollAddBlogBut").click();
+                return;
+            }
+            var th=$(this);
+            var blogId = th.attr("data-blogId");
+            $("#collSelectBlogId").val(th.attr("data-blogId"));
+            $.ajax({
+                url: '/collection/'+thisusername+'/select',
+                type: 'GET',
+                data: {
+                    "username": thisusername,
+                },
+                success: function (result) {
+                    if (result.data.length==0){
+                        $("#closeCollAddBlogBut").click();
+                        toastr.warning("您尚未创建过收藏夹，请前往收藏管理中心创建!");
+                        return;
+                    }
+                    $("#collSelectDIV").empty();
+                    for (var i = 0; i <result.data.length; i++) {
+                        $ ("#collSelectDIV").append("<div ><input type='radio' name='collSelectName' value="+result.data[i].id+" class='m-2'>"+result.data[i].title+"</div>");
+                    };
+                    collIconTh=th;
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        });
+
+
+        $(document).on("click", "#collAddBlogBut", function () {
+
+            if ( '[[${#authentication.authorities}]]' == '[ROLE_ANONYMOUS]') {
+                toastr.error("您尚未登录!");
+                return;
+            }
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            var blogId = $("#collSelectBlogId").val();
+            var inCoolId = $('input[name="collSelectName"]:checked').val();//获取选中的单选的值
+            $.ajax({
+                url: '/collection/collBlog',
+                type: 'POST',
+                data: {
+                    "inCollId":inCoolId,
+                    "blogId": blogId,
+                    "username": thisusername
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+
+                        collIconTh.attr("class", "icon-user-collect-had pl-4 ml-5 uncollBlog");
+                        collIconTh.attr("data-toggle", "");
+                        collIconTh.attr("data-target", "");
+                        collIconTh.attr("blogCollId", result.data);
+                        $("#closeCollAddBlogBut").click();
+
+                        toastr.info("收藏成功");
+                        //alert(result.data);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        })
+
+        // 取消收藏微博
+        $(document).on("click", ".uncollBlog", function () {
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var th = $(this);
+            var incollId = th.attr("blogCollId");
+            var blogId = th.attr("data-blogId");
+            $.ajax({
+                url: '/collection/uncollBlog',
+                type: 'POST',
+                data: {
+                    "inCollId":incollId,
+                    "blogId": blogId,
+                    "username": thisusername
+                },
+                beforeSend: function (request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        //alert(result.data);
+                        th.attr("class", "icon-user-collect pl-4 ml-5");
+                        th.attr("data-toggle", "modal");
+                        th.attr("data-target", "#selectColl");
+                        toastr.info("成功取消收藏");
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                },
+                error: function () {
+                    //toastr.error("error!");
+                    toastr.error("请先登录!");
+                }
+            });
+        });
+
+
+        function getTOP10() {
+            $.ajax({
+                url: "/blogs/search",
+                contentType : 'application/json',
+                data:{
+                    "order":"hot",
+                    "pageSize":10,
+                    "toURL": "/top10",
+                },
+                success: function(data){
+                    $("#top10").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+        getTOP10();
+
+        function getTOP1() {
+            $.ajax({
+                url: "/blogs/getTOP1",
+                contentType : 'application/json',
+                success: function(result){
+                    $("#top1Blog").text(result.data.title);
+
+                    $('#gotoTop1Blog').attr('href','/u/'+result.data.blogOwnerUsername+'/blogs/'+result.data.blogId);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+        getTOP1();
+
     })
-
-
-
-    $(".icon-good").click(function(){
-      alert($(this).attr('data-smsid'));
-    })
-
-    $(".icon-collect").click(function(){
-      alert($(this).attr('data-smsid'));
-    })
-    </script>
-  </body>
+</script>
+</body>
 </html>

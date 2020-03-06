@@ -15,7 +15,8 @@
             <th scope="col">id</th>
             <th scope="col" >邮箱</th>
             <th scope="col" >用户名</th>
-            <th scope="col" >昵称</th>
+            <th scope="col" >风评</th>
+            <!--<th scope="col" >昵称</th>-->
             <th scope="col" >角色</th>
             <th scope="col">操作</th>
         </tr>
@@ -25,7 +26,7 @@
             <th scope="row"  th:text="${user.id}">1</th>
             <td th:text="${user.email}">Mark</td>
             <td th:text="${user.username}">Otto</td>
-            <td th:text="${user.name}">Otto</td>
+            <td th:text="${user.score}">Otto</td>
             <td th:text="${user.authorities}">Otto</td>
             <td>
                 <button type="button " class="btn btn-success  edit-modal" data-th-attr="userId=${user.id}" data-toggle="modal" data-target="#exampleModal" >修改</button>
@@ -64,9 +65,13 @@
                         <input name="username" type="text" class="form-control" id="model-username" maxlength="20" placeholder="请输入账号(个数在3到20之间)">
                     </div>
 
+                    <!--<div class="form-group ">-->
+                        <!--<label  class="col-form-label">昵称</label>-->
+                        <!--<input name="name" type="text" class="form-control" id="model-name" maxlength="20" placeholder="请输入账号(个数在3到20之间)">-->
+                    <!--</div>-->
                     <div class="form-group ">
-                        <label  class="col-form-label">昵称</label>
-                        <input name="name" type="text" class="form-control" id="model-name" maxlength="20" placeholder="请输入账号(个数在3到20之间)">
+                        <label  class="col-form-label">风评</label>
+                        <input name="score" type="text" class="form-control" id="model-score" maxlength="3" placeholder="请输入评分(0-100)">
                     </div>
 
                     <div class="form-group ">
@@ -80,6 +85,7 @@
                         <select id="model-authoritie" name="authorityId" class="form-control form-control-chosen" data-placeholder="请选择">
                             <option value="2">博主</option>
                             <option value="1">管理员</option>
+                            <option value="3">举报监督员</option>
                         </select>
                     </div>
                 </form>
@@ -146,6 +152,7 @@
          $("#model-avatar").val("");
          $("#model-email").val("");
          $("#model-username").val("");
+         $("#model-score").val(100);
          $("#model-password").val("");
          $("#model-password2").val("");
     });
@@ -163,7 +170,8 @@
                     $("#model-avatar").val(result.data.avatar);
                     $("#model-email").val(result.data.email);
                     $("#model-username").val(result.data.username);
-                    $("#model-name").val(result.data.name);
+                    // $("#model-name").val(result.data.name);
+                    $("#model-score").val(result.data.score);
                     $("#model-password").val(result.data.password);
                     $("#model-password2").val(result.data.password);
                 },

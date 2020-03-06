@@ -30,6 +30,11 @@
     .form-control:focus {
         box-shadow: none;
     }
+      .si{
+        width: 100px;
+        height: 100px;
+        background-color: red;
+      }
     </style>
   </head>
   <body class="text-center bg-light">
@@ -40,8 +45,8 @@
     <div class="form-group border ">
       <input type="text" class="form-control bg-light rounded-0"
              name="username" id="exampleInputUsername1"  placeholder="用户名 (唯一且不可更改)">
-      <input type="text" class="form-control bg-light rounded-0"
-             name="name" id="exampleInputName1"  placeholder="个性昵称">
+      <!--<input type="text" class="form-control bg-light rounded-0"-->
+             <!--name="name" id="exampleInputName1"  placeholder="个性昵称">-->
       <input type="email" class="form-control bg-light rounded-0"
              name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="邮箱 (唯一)">
       <input type="password" class="form-control bg-light rounded-0"
@@ -52,7 +57,8 @@
 
     <button type="button" id="sub" class="btn btn-outline-primary btn-block rounded-pill">注册</button>
     <p class="mt-5 mb-3 text-muted" style="font-size:5px;">点击‘注册’则表示您同意并愿意遵守<br>
-      <a href="">用户协议</a> 和 <a href="">隐私政策</a> </p>
+      <a style="cursor: pointer;color: #007bff;" id="UserAgreement">用户协议</a> 和
+      <a style="cursor: pointer;color: #007bff;"  id="Privacy">隐私政策</a> </p>
   </form>
 
 
@@ -67,6 +73,7 @@
 
   <script src="../../js/jquery.form.min.js" th:src="@{/js/jquery.form.min.js}"></script>
   <script src="../../js/toastr.min.js" th:src="@{/js/toastr.min.js}"></script>
+  <script src="../../js/layer/layer.js" th:src="@{/js/layer/layer.js}"></script>
 
   <script>
 
@@ -112,6 +119,35 @@
             }
         });
     })
+
+
+    $('#UserAgreement').on('click', function(){
+        layer.open({
+            type: 1,
+            title: false,
+            area: ['600px', '240px'],
+            shadeClose: true, //点击遮罩关闭
+            content: '\<\div style="padding:20px;color:white;background-color:#009688;">\<\p>注册并成为该网站的一员意味着您在网站上的行为都必须接受管理员的控制\<\/p>' +
+                '\<\p>一切争议以都要服从管理员安排，并一起维护好社区和谐\<\/p> ' +
+                '\<\p>关于社区中的监督员角色，是有网站管理者挑选出来的，不允许有异议\<\/p>' +
+                '\<\p>拒绝黄赌毒等一切危害人类身心健康的活动\<\/p> ' +
+                '\<\p>禁止谈论政治，否则后果自负\<\/p>  \<\/div>'
+        });
+    });
+
+    $('#Privacy').on('click', function(){
+        layer.open({
+            type: 1,
+            title: false,
+            area: ['600px', '240px'],
+            shadeClose: true, //点击遮罩关闭
+            content: '\<\div style="padding:20px;color:white;background-color:#3F51B5;">\<\p>本网站在未经管理员允许的情况下不会泄露用户隐私\<\/p>' +
+                '\<\p>最终权利由管理员决定\<\/p> ' +
+                '\<\p>网站开发人员不承担任何责任\<\/p>' +
+                '\<\p>希望您能自己保护好隐私，不要发布私密内容\<\/p> ' +
+                '\<\p>霸道是我们的宗旨，欧耶\<\/p>  \<\/div>'
+        });
+    });
   </script>
   </body>
 </html>

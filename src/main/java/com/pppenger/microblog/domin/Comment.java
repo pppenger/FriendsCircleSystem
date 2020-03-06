@@ -43,7 +43,7 @@ public class Comment implements Serializable {
     @JoinColumn(name="form_user_id")
     private User formUser;
 
-    //谁发表的评论
+    //谁被@
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name="to_user_id")
     private User toUser;

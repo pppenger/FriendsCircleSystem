@@ -3,8 +3,12 @@ package com.pppenger.microblog.service;
 import javax.transaction.Transactional;
 
 import com.pppenger.microblog.domin.*;
+import com.pppenger.microblog.domin.Collection;
+import com.pppenger.microblog.domin.es.EsBlog;
 import com.pppenger.microblog.repository.BlogRepository;
 import com.pppenger.microblog.repository.CatalogRepository;
+import com.pppenger.microblog.vo.BlogVO;
+import com.pppenger.microblog.vo.CollectionBlogVO;
 import com.pppenger.microblog.vo.PictureVO;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -41,13 +44,33 @@ public class BlogServiceImpl implements BlogService {
 	@Autowired
 	private CatalogRepository catalogRepository;
 
+	@Autowired
+	private EsBlogService esBlogService;
+
+
+	@Autowired
+	private CollectionService collectionService;
+
 	/* (non-Javadoc)
 	 * @see com.waylau.spring.boot.blog.service.BlogService#saveBlog(com.waylau.spring.boot.blog.domain.Blog)
 	 */
 	@Transactional
 	@Override
 	public Blog saveBlog(Blog blog) {
-		return blogRepository.save(blog);
+
+		boolean isNew = (blog.getId() == null);
+		EsBlog esBlog = null;
+		Blog returnBlog = blogRepository.save(blog);
+
+		if (isNew) {
+			esBlog = new EsBlog(returnBlog);
+		} else {
+			esBlog = esBlogService.getEsBlogByBlogId(blog.getId());
+			esBlog.update(returnBlog);
+		}
+
+		esBlogService.updateEsBlog(esBlog);
+		return returnBlog;
 	}
 
 	/* (non-Javadoc)
@@ -57,6 +80,8 @@ public class BlogServiceImpl implements BlogService {
 	@Override
 	public void removeBlog(Long id) {
 		blogRepository.delete(id);
+		EsBlog esblog = esBlogService.getEsBlogByBlogId(id);
+		esBlogService.removeEsBlog(esblog.getId());
 	}
 
 	/* (non-Javadoc)
@@ -77,7 +102,7 @@ public class BlogServiceImpl implements BlogService {
 	}
 
 	@Override
-	public Page<Blog> listBlogsByTitleLike(User user,Long catalogId, String title, Pageable pageable) {
+	public Page<Blog> listBlogsByUserAndCatalogAndTitleLike(User user,Long catalogId, String title, Pageable pageable) {
 		// 模糊查询
 		title = "%" + title + "%";
 		Catalog catalog =null;
@@ -96,7 +121,7 @@ public class BlogServiceImpl implements BlogService {
 	}
 
 	@Override
-	public Page<Blog> listBlogsByTitleLikeAndSort(User user,Long catalogId, String title, Pageable pageable) {
+	public Page<Blog> listBlogsByUserAndCatalogAndTitleLikeAndSort(User user,Long catalogId, String title, Pageable pageable) {
 
 		Catalog catalog =null;
 		if (!org.springframework.util.StringUtils.isEmpty(catalogId)){
@@ -114,11 +139,50 @@ public class BlogServiceImpl implements BlogService {
 		return blogs;
 	}
 
+
+	@Override
+	public Page<Blog> listBlogsByCatalogLike(Long catalogId, Pageable pageable) {
+		Catalog catalog =null;
+		if (!org.springframework.util.StringUtils.isEmpty(catalogId)){
+			catalog = catalogRepository.findOne(catalogId);
+		}
+
+		Page<Blog> blogs;
+		if (catalog!=null){
+			blogs= blogRepository.findByCatalogOrderByCreateTimeDesc(catalog,pageable);
+		}
+		else {
+			//blogs= blogRepository.findAllOrderByCreateTimeDesc(pageable);
+			blogs= blogRepository.findAll(pageable);
+			//List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime).reversed()).collect(Collectors.toList());
+
+		}
+		return blogs;
+	}
+
+	@Override
+	public Page<Blog> listBlogsByCatalogLikeAndSort(Long catalogId, Pageable pageable) {
+
+		Catalog catalog =null;
+		if (!org.springframework.util.StringUtils.isEmpty(catalogId)){
+			catalog = catalogRepository.findOne(catalogId);
+		}
+		Page<Blog> blogs;
+		if (catalog!=null){
+			blogs= blogRepository.findByCatalog(catalog, pageable);
+		}
+		else {
+			blogs= blogRepository.findAll(pageable);
+		}
+		return blogs;
+	}
+
 	@Override
 	public void readingIncrease(Long id) {
 		Blog blog = blogRepository.findOne(id);
 		blog.setReadSize(blog.getCommentSize() + 1);
-		blogRepository.save(blog);
+		//blogRepository.save(blog);
+		saveBlog(blog);
 	}
 
 	@Override
@@ -129,7 +193,7 @@ public class BlogServiceImpl implements BlogService {
 		Comment comment;
 		if (StringUtils.isNotEmpty(toUserName)){
 			User toUser = (User) userDetailsService.loadUserByUsername(toUserName);
-			commentContent="@"+toUserName+"："+toUser.getName();
+			commentContent="@"+toUserName+"："+commentContent;
 			 comment = new Comment(formuser,toUser, commentContent);
 			 //添加提醒信息——未完成
 		}else{
@@ -137,14 +201,15 @@ public class BlogServiceImpl implements BlogService {
 			 comment = new Comment(formuser, commentContent);
 		}
 		originalBlog.addComment(comment);
-		return blogRepository.save(originalBlog);
+		return saveBlog(originalBlog);
 	}
 
 	@Override
 	public void removeComment(Long blogId, Long commentId) {
 		Blog originalBlog = blogRepository.findOne(blogId);
 		originalBlog.removeComment(commentId);
-		blogRepository.save(originalBlog);
+		//blogRepository.save(originalBlog);
+		saveBlog(originalBlog);
 	}
 
 	@Override
@@ -201,7 +266,8 @@ public class BlogServiceImpl implements BlogService {
 		if (isExist) {
 			throw new IllegalArgumentException("该用户已经点过赞了");
 		}
-		blogRepository.save(originalBlog);
+		//blogRepository.save(originalBlog);
+		saveBlog(originalBlog);
 
 		Long voteId=0L;
 		for (Vote vote : originalBlog.getVotes()){
@@ -217,6 +283,68 @@ public class BlogServiceImpl implements BlogService {
 	public void removeVote(Long blogId, Long voteId) {
 		Blog originalBlog = blogRepository.findOne(blogId);
 		originalBlog.removeVote(voteId);
-		blogRepository.save(originalBlog);
+		saveBlog(originalBlog);
+		//blogRepository.save(originalBlog);
 	}
+
+	@Override
+	public List<Blog> getBlogTop2HotComment(List<Blog> list){
+		list.stream().forEach(blog ->
+		{
+			blog.setComments(
+					blog.getComments().stream().sorted(
+							Comparator.comparing(
+									Comment::getVoteSize).reversed()).limit(2).collect(Collectors.toList())
+			);
+		});
+		return list;
+	}
+
+	@Override
+	public List<Blog> setBlogVoteAndCommentVoteListToUser(User principal,List<Blog> list){
+		if (principal !=null) {
+			for (Blog blog : list){
+				List list1 = new ArrayList();
+				for (Vote vote : blog.getVotes()){
+					if (vote.getUser().getUsername().equals(principal.getUsername())){
+						list1.add(vote);
+						break;
+					}
+				}
+				//如果用户点过博客的赞，则list返回，不然就返回null
+				blog.setVotes(list1);
+				for (Comment comment : blog.getComments()){
+					List list2 = new ArrayList();
+					for (Vote vote : comment.getVotes()){
+						if (vote.getUser().getUsername().equals(principal.getUsername())){
+							list2.add(vote);
+							break;
+						}
+					}
+					//如果用户点过该评论的赞，则list返回，不然就返回null
+					comment.setVotes(list2);
+				}
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<BlogVO> setBlogCollectionIdByUser(User principal,List<BlogVO> blogVOS){
+		if (principal !=null) {
+			//查询用户的收藏夹信息
+			List<Collection> collectionList = collectionService.findByUser(principal);
+			if (collectionList.size() > 0) {
+				//查出该用户的各个博客是否有收藏过，有的话将收藏夹id设置进去
+				List<CollectionBlogVO> collectionBlogVOS = collectionService.selectCBbyCollIds(collectionList.stream().map(Collection::getId).collect(Collectors.toList()));
+				Map<Long, Long> BlogIdCollIdMap = collectionBlogVOS.stream().collect(Collectors.toMap(CollectionBlogVO::getBlogId, CollectionBlogVO::getCollectionId, (o, n) -> o));
+				if (!org.springframework.util.StringUtils.isEmpty(BlogIdCollIdMap)) {
+					blogVOS.stream().forEach(CBV -> CBV.setCollectionId(BlogIdCollIdMap.get(CBV.getId())));
+				}
+			}
+		}
+		return blogVOS;
+	}
+
+
 }

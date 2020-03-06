@@ -1,0 +1,137 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<style>
+    a{
+        color: #888;
+    }
+    a:hover{
+        color: black;
+        text-decoration: none;
+    }
+    .avatar-50 {
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+    }
+    .itemimg img{
+        width: 40px;
+        height: 40px;
+        margin-top: 5px;
+        object-fit:cover
+    }
+
+    .blogContent p{
+        font-size: 14px;
+    }
+</style>
+<body class="bg-light">
+
+<div class="container">
+    <div class="row justify-content-center blogContent" id="mainContainerRepleace">
+        <!--type="hidden"-->
+        <input id="keyword" readonly type="hidden" th:value="${keyword}">
+        <input id="TotalPages" readonly  type="hidden" th:value="${page.totalPages}">
+        <input id="NumberIndex" readonly type="hidden" th:value="${page.getNumber()+1} ">
+
+        <div class="m-2  float-left" style="width:300px;"  th:each="blog : ${blogList}">
+            <div class=" border-bottom p-2 shadow bg-white">
+                <div >
+                    <a href="">
+                        <img th:if="${blog.avatar} == null" th:src="@{/images/avatarboy.png}"  alt="" class="avatar-50">
+                        <img th:if="${blog.avatar} != null" th:src="${blog.avatar}"  alt="" class="avatar-50">
+                    </a>
+                    <a th:href="'/u/' + ${blog.username} + '/blogs'" target="_blank" class="ml-3 text-success" th:text="${blog.username}"> ${user.username}</a>
+                </div>
+
+                <div class="pt-2 ">
+                    <h5><a th:href="'/u/' + ${blog.username} + '/blogs/'+ ${blog.id}" target="_blank" class="text-dark" th:text="${blog.title}">标题</a></h5>
+                    <p  th:text="'简介：'+ ${blog.summary}">简介：国杀广东省高手高手</p>
+                    <div class="itemimg"  style="width:200px;">
+                        <span th:each="picture : ${blog.pictures}" >
+                        <img th:src=${picture} alt="" class="bigbigpicture"  data-realsrc="./images/test.png">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+
+
+<script type="text/javascript" >
+    //DOM加载完就执行
+    $(function() {
+
+        function getBlogByUsername(pageIndex) {
+            $.ajax({
+                url: "/blogs",
+                contentType: 'application/json',
+                data: {
+                    "pageIndex": pageIndex,
+                    "async": true,
+                },
+                success: function (data) {
+                    $("#mainContainerRepleace").html(data);
+                },
+                error: function () {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+        //分页
+        //$(".pagebutJump").on('click', function(){
+        $(document).on("click", ".pagebutJump", function () {
+            var pageIndex = $(this).attr("id") - 1;
+            getBlogByUsername(pageIndex);
+        });
+
+        //$(".pagebutNum").on('click', function(){
+        $(document).on("click", ".pagebutNum", function () {
+            var pageIndex = $(this).attr("value") - 1;
+            getBlogByUsername(pageIndex);
+        });
+
+        $(window).scroll(function (event) {
+            var wScrollY = window.scrollY; // 当前滚动条位置
+            var wInnerH = window.innerHeight; // 设备窗口的高度（不会变）
+            var bScrollH = document.body.scrollHeight; // 滚动条总高度
+            if (wScrollY + wInnerH >= bScrollH) {
+                if ( parseInt($("#TotalPages").val()) > parseInt($("#NumberIndex").val())){
+                    $.ajax({
+                        url: "/blogs/search",
+                        type: "GET",
+                        data:{
+                            "pageIndex": $("#NumberIndex").val(),
+                            "keyword": $("#keyword").val(),
+                            "async" : true
+                        },
+                        success: function(data){
+                            $("#mainContainerRepleace").append(data);
+                            $("#NumberIndex").val( parseInt($("#NumberIndex").val())+1);
+                        },
+                        error : function() {
+                            toastr.error("error!");
+                        }
+                    });
+                }
+            }
+        });
+    })
+</script>
+</body>
+</html>

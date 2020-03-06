@@ -13,11 +13,14 @@ public class CodeMsg {
 	public static CodeMsg SUCCESS = new CodeMsg(0, "success");
 	public static CodeMsg SERVER_ERROR = new CodeMsg(500100, "服务端异常");
 
-	public static CodeMsg SERVER_ERROR2 = new CodeMsg(5001002, "服务端异常：%s");
+	public static CodeMsg SERVER_ERROR2 = new CodeMsg(500100, "服务端异常：%s");
 	public static CodeMsg BIND_ERROR = new CodeMsg(500101, "参数校验异常：%s");
+	public static CodeMsg UPOLAD_SIZE_TOO_BIG = new CodeMsg(500102, "图片太大了哦！");
 
 	//权限模块
 	public static CodeMsg HAVE_NOT_AUTHORITY = new CodeMsg(500201, "权限异常：您不是微博拥有者，无操作权限");
+	public static CodeMsg HAVE_NOT_SCORE = new CodeMsg(500202, "权限异常：您的评分过低，无权进行此操作");
+	public static CodeMsg CHANGED_USERNAME = new CodeMsg(500202, "权限异常：您访问的内容不是您用户本身的");
 
 	//收藏模块
 

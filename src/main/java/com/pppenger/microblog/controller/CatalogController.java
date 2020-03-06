@@ -83,17 +83,11 @@ public class CatalogController {
     @PreAuthorize("isAuthenticated()")
 	public String myCatalogs(@RequestParam(value="toURL",required=false) String toURL,
                              Model model) {
-        String catalogOwner = "";
-        User principal = null;
-        if (SecurityContextHolder.getContext().getAuthentication() !=null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
-                &&  !SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")) {
-            principal = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (principal !=null) {
-                catalogOwner = principal.getUsername();
-            }
-        }
+        //获取当前登录用户
+        User loginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String catalogOwner = loginUser.getUsername();
 
-		User user = (User)userDetailsService.loadUserByUsername(catalogOwner);
+		//User user = (User)userDetailsService.loadUserByUsername(catalogOwner);
 		List<Catalog> catalogs = catalogService.listCatalogs(catalogOwner);
 
 		model.addAttribute("catalogs", catalogs);
@@ -106,6 +100,17 @@ public class CatalogController {
         }
 		return "/userspace/myCategory";
 	}
+
+    @GetMapping("/myRe")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public Result myCatalogsRe() {
+        //获取当前登录用户
+        User loginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String catalogOwner = loginUser.getUsername();
+        List<Catalog> catalogs = catalogService.listCatalogs(catalogOwner);
+        return Result.success(catalogs);
+    }
 
 
     /**

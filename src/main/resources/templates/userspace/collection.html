@@ -6,6 +6,11 @@
 </head>
 <body class="bg-light">
 <style>
+
+    body{
+        min-width:600px;
+        overflow:visible;
+    }
     a{
         color: #888;
     }
@@ -84,9 +89,9 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-9" style="padding:0">
-                            <a href="">
-                                <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50 shadow">
-                                <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50 shadow">
+                            <a >
+                                <img th:if="${blog.user.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="bigbigpicture avatar-50 shadow">
+                                <img th:if="${blog.user.avatar} != null" th:src="${blog.user.avatar}" src="./images/avatarboy.png" alt="" class="bigbigpicture avatar-50 shadow">
                             </a>
                             <a th:href="'/u/' + ${blog.user.username} + '/blogs'" target="_blank" class="ml-3 text-success" th:text="${blog.user.username}"> ${user.username}</a>
                         </div>
@@ -116,12 +121,12 @@
                         <div class="row border-left">
                             <div class="col-2" style="padding:0">
                                 <div>
-                                    <a href="">
-                                        <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="avatar-50-co">
-                                        <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="avatar-50-co">
+                                    <a >
+                                        <img th:if="*{formUser.avatar} == null" th:src="@{/images/avatarboy.png}" alt="" class="bigbigpicture avatar-50-co">
+                                        <img th:if="*{formUser.avatar} != null" th:src="*{formUser.avatar}" src="./images/avatarboy.png" alt="" class="bigbigpicture avatar-50-co">
                                         <!--<img src="../../images/avatarboy.png" alt="" class="avatar-50-co">-->
                                     </a>
-                                    <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.name}">评论姓名</a>
+                                    <a href="" th:href="'/u/'+ *{formUser.username}" class=" text-success" th:text="*{formUser.username}">评论姓名</a>
                                 </div>
                                 <div >
                                     <small  th:text="*{#dates.format(createTime,'yy.MM.dd-HH:mm:ss')}" >2010.09.04-14:20</small>

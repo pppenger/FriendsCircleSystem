@@ -14,8 +14,10 @@ import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.BlogService;
 import com.pppenger.microblog.service.CommentService;
+import com.pppenger.microblog.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +42,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/comments")
 public class CommentController {
+
+
+    @Value("${commentScore}")
+    private Integer commentScore;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private BlogService blogService;
@@ -98,9 +107,14 @@ public class CommentController {
      * @return
      */
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  // 指定角色权限才能操作方法
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER','ROLE_SUPERVISE')")  // 指定角色权限才能操作方法
     @ResponseBody
     public Result createComment(Long blogId, String commentContent,String toUserName) {
+        //获取当前登录用户
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userService.getUserById(user.getId()).getScore()<commentScore){
+            return Result.error(CodeMsg.HAVE_NOT_SCORE);
+        }
         try {
             blogService.createComment(blogId, commentContent,toUserName);
         } catch (ConstraintViolationException e)  {
@@ -141,7 +155,7 @@ public class CommentController {
 //        return Result.success("删除评论成功");
 //    }
     /**
-     * 更新评论(设为默认值)
+     * 删除评论(设为默认值)
      * @return
      */
     @DeleteMapping("/{id}")

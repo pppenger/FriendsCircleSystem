@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="~{fragments/header :: header}">
+
+</head>
+<style>
+
+    body{
+        min-width:600px;
+        overflow:visible;
+    }
+</style>
+<body class="bg-light">
+<div class="container">
+    <div class="row justify-content-center container" >
+        <div class="col-2 shadow ">
+            <ul class="nav ">
+                <li class="nav-link border-bottom">
+                    <a class="text-secondary menu" id="tipoffmune">举报管理</a>
+                </li>
+            </ul>
+        </div>
+        <div class=" col-10" >
+            <div id="AdminIndex">
+            <table class="table table-hover" style="text-align: center">
+                <thead>
+                <tr>
+                    <th scope="col" width="20rem">id</th>
+                    <th scope="col" width="80rem">举报者</th>
+                    <th scope="col" width="80rem">被举报者</th>
+                    <th scope="col" width="20rem">类型</th>
+                    <th scope="col" width="200rem">原因</th>
+                    <th scope="col" width="20rem">微博</th>
+                    <th scope="col" width="20rem">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tipoff : ${model.tipoffList}">
+                    <th scope="row"  th:text="${tipoff.id}">1</th>
+                    <td th:text="${tipoff.formUsername}">Mark</td>
+                    <td th:text="${tipoff.toUsername}">Otto</td>
+                    <td th:text="${tipoff.type}">Otto</td>
+                    <td th:text="${tipoff.reason}">Otto</td>
+                    <td>
+                        <a class="text-white"  target="_blank" th:href="'/u/'+${tipoff.blogOwner}+'/blogs/'+${tipoff.blogId}">
+                        <button type="button " class="btn btn-success" >前往</button></a>
+                    </td>
+                    <td>
+                        <button type="button " data-toggle="modal" data-target="#handler" th:data-tipoffId="${tipoff.id}" th:data-toUsername="${tipoff.toUsername}" class="btn btn-success handlerTipoff" >处理</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:replace="fragments/page :: pagehtml">...</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 举报Modal -->
+    <div class="modal fade" id="handler" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">请操作</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <input id="handlerTipoffId" readonly hidden>
+                    <div>用户 【<span id="handlerUsername">cs</span>】的评分为： <span id="handlerUserScore">666</span></div>
+                    <label class="col-form-label">请选择要扣多少分(若减去后值小于0则默认为0)</label>
+                    <select  id="selectScore">
+                        <option value="0">0</option>
+                        <option value="5">-5</option>
+                        <option value="10">-10</option>
+                        <option value="20">-20</option>
+                        <option value="30">-30</option>
+                        <option value="40">-40</option>
+                        <option value="50">-50</option>
+                        <option value="60">-60</option>
+                        <option value="70">-70</option>
+                        <option value="80">-80</option>
+                        <option value="90">-90</option>
+                        <option value="100">-100</option>
+                    </select>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeTipoffBut" class="btn btn-outline-secondary"  data-dismiss="modal">关闭</button>
+                    <button type="button" id="tipoffBut" class="btn btn-outline-info" >确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+
+<script>
+
+    // DOM 加载完再执行
+    $(function() {
+
+// 根据用户名、页面索引、页面大小获取用户列表
+        function getTipoff(pageIndex, pageSize) {
+
+            // alert($("#searchName").val());
+            $.ajax({
+                url: "/supervise",
+                contentType : 'application/json',
+                data:{
+                    "pageIndex":pageIndex,
+                    "pageSize":pageSize,
+                    "async":true
+                },
+                success: function(data){
+                    //$("html").html(data)
+                    $("#AdminIndex").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        }
+
+
+        //分页
+        $(document).on("click", ".pagebutJump", function () {
+            var pageIndex=$(this).attr("id")-1;
+            getTipoff(pageIndex,5);
+        });
+
+        $(document).on("click", ".pagebutNum", function () {
+            var pageIndex=$(this).attr("value")-1;
+            getTipoff(pageIndex,5);
+        });
+
+
+        $(document).on("click", ".handlerTipoff", function () {
+            var toUsername = $(this).attr("data-toUsername");
+            $("#handlerUsername").html(toUsername);
+            $("#handlerTipoffId").val($(this).attr("data-tipoffId"));
+            $.ajax({
+                url: "/supervise/userScore/"+toUsername,
+                contentType : 'application/json',
+                success: function(result){
+                    $("#handlerUserScore").html(result.data);
+                    //$("#mainContainer").html(data);
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+
+        });
+
+
+        $("#tipoffBut").click(function(){
+            // 获取 CSRF Token
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                //默认get请求
+                url: "/supervise/editScore",
+                method:"POST",
+                data:{
+                    "username":$("#handlerUsername").text(),
+                    "score":$("#selectScore option:selected").val(),
+                    "tipoffId":$("#handlerTipoffId").val()
+                },
+                beforeSend: function(request) {
+                    request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+                },
+                success: function(result){
+                    if (result.code==0) {
+                        //从新刷新主界面
+                        toastr.info(result.data);
+                        getTipoff($(".nowPageIndex").val()-1, 5);
+                    } else {
+                        toastr.error(result.msg);
+                    }
+                    $("#closeTipoffBut").click();
+                },
+                error : function() {
+                    toastr.error("error!");
+                }
+            });
+        });
+    })
+
+
+</script>
+</body>
+</html>
