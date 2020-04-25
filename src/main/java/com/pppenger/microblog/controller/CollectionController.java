@@ -102,6 +102,14 @@ public class CollectionController {
         if (!StringUtils.isEmpty(BlogIdCollIdMap)){
             blogVOS.stream().forEach(CBV->CBV.setCollectionId(BlogIdCollIdMap.get(CBV.getId())));
         }
+        blogVOS = blogVOS.stream().filter(blogVO -> blogVO.getUser().getClose()==0).collect(Collectors.toList());
+        for (BlogVO blog : blogVOS){
+            blog.getComments().forEach(comment ->{
+                if (comment.getFormUser().getClose()==1){
+                    comment.setContent("该用户已被封号，相关内容被隐藏！");
+                }
+            });
+        }
 
         model.addAttribute("blogs", blogVOS);
         return "/userspace/collection :: #blogDIV";

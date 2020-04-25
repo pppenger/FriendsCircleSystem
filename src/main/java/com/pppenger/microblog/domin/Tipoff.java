@@ -24,6 +24,7 @@ public class Tipoff implements Serializable {
     @Column(nullable = false, length =20) // 映射为字段，值不能为空
     private String toUsername;
 
+    private int toUserIsClosed;
 
     @NotEmpty(message = "微博拥有者不能为空")
     @Column(nullable = false, length =20) // 映射为字段，值不能为空
@@ -55,6 +56,14 @@ public class Tipoff implements Serializable {
     private Timestamp createTime;
 
     protected Tipoff() {
+    }
+
+    public int getToUserIsClosed() {
+        return toUserIsClosed;
+    }
+
+    public void setToUserIsClosed(int toUserIsClosed) {
+        this.toUserIsClosed = toUserIsClosed;
     }
 
     public Long getId() {

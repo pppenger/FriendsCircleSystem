@@ -92,7 +92,15 @@ public class BlogController {
 
         //设置收藏夹信息
         List<BlogVO> blogVOS = list.stream().map(B -> new BlogVO(B.getId(), B.getTitle(), B.getSummary(), B.getUser(), B.getCreateTime(), B.getReadSize(), B.getCommentSize(), B.getVoteSize(), B.getReportSize(), B.getComments(), B.getVotes(), B.getPictures(), B.getCatalog(), null)).collect(Collectors.toList());
+        blogVOS = blogVOS.stream().filter(blogVO -> blogVO.getUser().getClose()==0).collect(Collectors.toList());
         blogVOS = blogService.setBlogCollectionIdByUser(principal,blogVOS);
+        for (BlogVO blog : blogVOS){
+            blog.getComments().forEach(comment ->{
+                if (comment.getFormUser().getClose()==1){
+                    comment.setContent("该用户已被封号，相关内容被隐藏！");
+                }
+            });
+        }
         model.addAttribute("order", order);
         model.addAttribute("page", page);
         model.addAttribute("blogList", blogVOS);

@@ -65,6 +65,10 @@ public class User implements UserDetails, Serializable {
 	@Column(length = 200)
 	private String avatar; // 头像图片地址
 
+	//是否封禁(0为未封，1为封号)
+	@Column(columnDefinition = "TINYINT", length = 2)
+	private Integer close;
+
 	@ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 		inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
@@ -175,6 +179,14 @@ public class User implements UserDetails, Serializable {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public Integer getClose() {
+		return close;
+	}
+
+	public void setClose(Integer close) {
+		this.close = close;
 	}
 
 	@Override

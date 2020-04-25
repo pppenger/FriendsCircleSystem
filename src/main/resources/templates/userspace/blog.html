@@ -114,7 +114,7 @@
                         </div>
 
                       </div>
-                      <div class="col-8" th:text="*{content}">
+                      <div class="col-8 commenC" th:text="*{content}">
                         的发顺丰水电费水电费水电
                       </div>
                       <div class="col-2">
@@ -164,7 +164,7 @@
                               <a href="#replyName" class="reply" th:data-replyusername="*{formUser.username}">回复</a>
                               <span sec:authorize="isAuthenticated()">
                               <span  th:if="*{formUser.username} == ${#authentication.name}">
-                              <a  th:if="*{content}!='[系统提示：改评论内容已被删除！]'" class="delCommentId" th:attr="data-commentId=*{id}" >删除</a>
+                              <a  th:if="*{content}!='[系统提示：改评论内容已被删除！]'" class="   " th:attr="data-commentId=*{id}" >删除</a>
                               </span>
                               <span  th:if="*{formUser.username} != ${#authentication.name}">
                               <a  th:if="*{content}!='[系统提示：改评论内容已被删除！]'"  data-toggle="modal" data-target="#tipoff" class="tipoffCommentId" th:data-commentId="*{id}" th:data-commentCon="*{content}"  th:data-commentFU="*{formUser.username}">举报</a>
@@ -411,7 +411,7 @@
 
         //删除评论
         $(document).on("click",".delCommentId",function(){
-            var th = $(this).parent().parent().prev();
+            var th = $(this).parent().parent().parent().prev(".commenC");
             var commemtId = $(this).attr("data-commentId");
             layer.confirm('确定删除评论内容吗？', {
                 btn: ['是的', '算了'] //按钮

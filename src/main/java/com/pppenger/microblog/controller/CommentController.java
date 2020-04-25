@@ -90,6 +90,11 @@ public class CommentController {
             }
         }
 
+        comments.forEach(comment -> {
+            if (comment.getFormUser().getClose()==1){
+                comment.setContent("该用户已被封号，相关内容被隐藏！");
+            }
+        });
         List<Comment> hotList = comments.stream().sorted(Comparator.comparing(Comment::getVoteSize).reversed()).limit(5).collect(Collectors.toList());
         List<Comment> timeList = comments.stream().sorted(Comparator.comparing(Comment::getCreateTime).reversed()).collect(Collectors.toList());
 

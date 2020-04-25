@@ -222,8 +222,8 @@ public class VoteController {
 //            System.out.println(now);
             //当前时间  距离当天凌晨  秒数 也就是今天过了多少秒
 //            System.out.println(overTime);
-            //当前时间  距离当天晚上22:59:59  秒数 也就是今天还剩多少秒
-            long TimeNext = 23*60*60 - overTime;
+            //当前时间  距离当天晚上23:59:59  秒数 也就是今天还剩多少秒
+            long TimeNext = 1*60*60 - overTime;
             //如果到了秒杀时间而且还没被秒杀，那就允许显示秒杀按钮
             Top betop=topService.findOne((long) 1);
             if ((TimeNext<=0)&&("".equals(betop.getTopUsername())||betop.getTopUsername()==null)){

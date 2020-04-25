@@ -134,4 +134,11 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		return userList;
 	}
 
+
+	@Override
+	public List<User> getUserByClose(int close){
+
+		List<User> userList=userRepository.findByClose(close);
+		return userList;
+	}
 }

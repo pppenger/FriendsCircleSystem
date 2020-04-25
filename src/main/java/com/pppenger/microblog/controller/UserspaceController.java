@@ -147,7 +147,6 @@ public class UserspaceController {
                                    Model model) {
         User  user = (User)userDetailsService.loadUserByUsername(username);
         model.addAttribute("user", user);
-
         //获取当前登录用户
         User principal = null;
         User loginUser = null;
@@ -160,6 +159,11 @@ public class UserspaceController {
         }
         model.addAttribute("loginUser", loginUser);
 
+        if (user.getClose()==1){
+            if (loginUser==null||!loginUser.getUsername().equals(username)){
+                return "/fenghao";
+            }
+        }
 
         Page<Blog> page = null;
         if (order.equals("hot")) { // 最热查询【先按阅读量评论量等排序一个Sort，然后再去查询】
@@ -180,6 +184,15 @@ public class UserspaceController {
 
         //设置收藏夹信息
         List<BlogVO> blogVOS = list.stream().map(B -> new BlogVO(B.getId(), B.getTitle(), B.getSummary(), B.getUser(), B.getCreateTime(), B.getReadSize(), B.getCommentSize(), B.getVoteSize(), B.getReportSize(), B.getComments(), B.getVotes(), B.getPictures(), B.getCatalog(), null)).collect(Collectors.toList());
+//        //剔除黑名单用户的微博
+//        blogVOS = blogVOS.stream().filter(blogVO -> blogVO.getUser().getClose()==0).collect(Collectors.toList());
+        for (BlogVO blog : blogVOS){
+            blog.getComments().forEach(comment ->{
+                if (comment.getFormUser().getClose()==1){
+                    comment.setContent("该用户已被封号，相关内容被隐藏！");
+                }
+            });
+        }
         blogVOS = blogService.setBlogCollectionIdByUser(principal,blogVOS);
         model.addAttribute("order", order);
         model.addAttribute("page", page);
@@ -201,6 +214,7 @@ public class UserspaceController {
     public String getBlogById(@PathVariable("username") String username,@PathVariable("id") Long id, Model model) {
         User principal = null;
         Blog blog = blogService.getBlogById(id);
+
 //        // 每次读取，简单的可以认为阅读量增加1次
 //        blogService.readingIncrease(id);
 
@@ -215,6 +229,12 @@ public class UserspaceController {
             }
             if (principal !=null && username.equals(principal.getUsername())) {
                 isBlogOwner = true;
+            }
+        }
+
+        if (blog.getUser().getClose()==1){
+            if (!isBlogOwner){
+                return "/fenghao";
             }
         }
         model.addAttribute("loginUser", loginUser);
@@ -254,6 +274,12 @@ public class UserspaceController {
                 }
             }
         }
+        //封号用户处理
+        blogvo.getComments().forEach(comment ->{
+                if (comment.getFormUser().getClose()==1){
+                    comment.setContent("该用户已被封号，相关内容被隐藏！");
+                }
+        });
 
 
         model.addAttribute("isBlogOwner", isBlogOwner);

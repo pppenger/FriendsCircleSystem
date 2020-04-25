@@ -53,6 +53,13 @@ public interface UserService {
 	 * @return
 	 */
 	User getUserById(Long id);
+
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	List<User> getUserByClose(int close);
 	
 	/**
 	 * 获取用户列表
@@ -81,4 +88,5 @@ public interface UserService {
 	List<User> loadUserByUsernames(List usernames) throws UsernameNotFoundException;
 
 	List<User> loadUserByScore(Integer score);
+
 }

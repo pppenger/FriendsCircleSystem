@@ -86,7 +86,6 @@ public class MainController {
 	 * 注册用户
 	 * @param user
 	 * @param result
-	 * @param redirect
 	 * @return
 	 */
 //	@PostMapping("/register")
@@ -112,6 +111,7 @@ public class MainController {
 		//user.setName(user.getName());
 		user.setEncodePassword(user.getPassword());
 		user.setScore(100);
+		user.setScore(0);
 		userService.saveUser(user);
 		return Result.success();
 	}
