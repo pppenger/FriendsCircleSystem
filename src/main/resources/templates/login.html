@@ -1,7 +1,24 @@
-<!doctype html>
-<html lang="ch-CN">
-  <head>
-    <!-- Required meta tags -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4" data-th-fragment="header">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- CSRF -->
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <!-- default header name is X-CSRF-TOKEN -->
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+  <!-- Bootstrap CSS -->
+  <link href="/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <!-- toastr CSS -->
+  <link href="../../css/toastr.min.css" th:href="@{/css/toastr.min.css}" rel="stylesheet">
+
+  <link href="../../font-awesome-4.7.0/css/font-awesome.min.css" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+
+  <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -32,6 +49,9 @@
     <div class="form-group ">
       <input type="username"  name="username" class="form-control bg-light" id="username" placeholder="Enter username">
       <input type="password" name="password" class="form-control bg-light" id="exampleInputPassword1" placeholder="Password">
+      <input type="text" name="captcha" class="form-control bg-light" id="captcha" placeholder="captcha">
+      <input type="hidden" name="uuid" id="uuid"/>
+      <img src="" id="code" alt="验证码" onclick="refresh(this)"/>
     </div>
     <div class="row justify-content-around">
     <div class=" form-group form-check">
@@ -57,10 +77,47 @@
 
 
 
+  <!--<div th:replace="~{fragments/footer :: footer}">...</div>-->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>-->
+    <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>-->
+
+  <!--<script src="/js/jquery-3.1.1.min.js" ></script>-->
+  <script src="../../js/jquery-3.1.1.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+
+  <script>
+
+      // $(function() {
+          window.onload = function () {
+              $("#code").click();
+          };
+
+      // })
+
+
+      function refresh(obj) {
+          // 获取 CSRF Token
+          var csrfToken = $("meta[name='_csrf']").attr("content");
+          var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+          $.ajax({
+              url: '/getCode',
+              type: 'GET',
+              beforeSend: function (request) {
+                  request.setRequestHeader(csrfHeader, csrfToken); // 添加  CSRF Token
+              },
+              success: function (result) {
+                  console.log(result);
+                  obj.src=result.data.img;
+                  $("#uuid").val(result.data.uuid);
+              },
+              error: function () {
+                 alert("获取验证码失败！")
+              }
+          });
+      };
+  </script>
   </body>
 </html>

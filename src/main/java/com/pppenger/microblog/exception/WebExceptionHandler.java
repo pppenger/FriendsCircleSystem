@@ -3,6 +3,7 @@
  */
 package com.pppenger.microblog.exception;
 
+import com.pppenger.microblog.config.VerifyCodeException;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,10 @@ public class WebExceptionHandler {
 			MultipartException ex = (MultipartException)e;
 			String msg = ex.getMessage();
 			return Result.error(CodeMsg.UPOLAD_SIZE_TOO_BIG);
+		}else if(e instanceof VerifyCodeException) {
+			MultipartException ex = (MultipartException)e;
+			String msg = ex.getMessage();
+			return Result.error(CodeMsg.CODE_ERR);
 		}else if(e instanceof AccessDeniedException) {
 			//出现此异常，抛出后安全框架会拦截，转跳到登录页面,如果是ajax的方式则只能返回页面，不能自动转跳
 			System.out.println("【检测到权限异常】");

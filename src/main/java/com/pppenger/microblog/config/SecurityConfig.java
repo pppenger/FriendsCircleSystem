@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Spring Security 配置类.
@@ -27,6 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+	@Autowired
+	private VerifyCodeFilter verifyCodeFilter;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -67,6 +70,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().exceptionHandling().accessDeniedPage("/404");  // 处理异常，无权限时拒绝访问就重定向到 403 页面
 		http.csrf().ignoringAntMatchers("/h2-console/**"); // 禁用 H2 控制台的 CSRF 防护
 		http.headers().frameOptions().sameOrigin(); // 允许来自同一来源的H2 控制台的请求
+
+		/* 添加验证码过滤器 */
+		http.addFilterBefore(verifyCodeFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	/**

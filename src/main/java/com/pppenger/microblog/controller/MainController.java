@@ -1,21 +1,27 @@
 package com.pppenger.microblog.controller;
 
 import com.pppenger.microblog.domin.Authority;
+import com.pppenger.microblog.vo.ImgVO;
 import com.pppenger.microblog.domin.User;
 import com.pppenger.microblog.result.CodeMsg;
 import com.pppenger.microblog.result.Result;
 import com.pppenger.microblog.service.AuthorityService;
 import com.pppenger.microblog.service.UserService;
+import com.pppenger.microblog.utils.UUIDUtil;
+import com.pppenger.microblog.utils.VerifyCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +91,6 @@ public class MainController {
 	/**
 	 * 注册用户
 	 * @param user
-	 * @param result
 	 * @return
 	 */
 //	@PostMapping("/register")
@@ -114,6 +119,27 @@ public class MainController {
 		user.setScore(0);
 		userService.saveUser(user);
 		return Result.success();
+	}
+
+
+
+	@GetMapping("/getCode")
+	@ResponseBody
+	public Result getCode(HttpServletRequest request) {
+		/* 生成验证码字符串 */
+		String verifyCode = VerifyCodeUtil.generateVerifyCode(4);
+		String uuid = UUIDUtil.GeneratorUUIDOfSimple();
+		HttpSession session = request.getSession();
+		session.setAttribute(uuid,verifyCode);
+		int w = 111,h = 36;
+		try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+			VerifyCodeUtil.outputImage(w, h, stream, verifyCode);
+			//return new BaseResult(ReturnCode.SUCCESS.getCode(), ReturnCode.SUCCESS.getMessage(),new ImgVO("data:image/gif;base64,"+ Base64Utils.encodeToString(stream.toByteArray()),uuid));
+			return Result.success(new ImgVO("data:image/gif;base64,"+ Base64Utils.encodeToString(stream.toByteArray()),uuid));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 
